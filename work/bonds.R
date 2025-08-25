@@ -13,13 +13,8 @@ dgs3mo <- suppressMessages(read_csv('./work/fred/dgs3mo.csv')) %>%
 #    observation_start = ymd(20250101)
 #)
 #write.csv(dgs6mo, file='./work/fred/dgs6mo.csv', row.names=F)
-#dgs6mo
-
-dgs9mo <- fredr(series_id = 'DGS9MO',
-    observation_start = ymd(20250101)
-)
-write.csv(dgs9mo, file='./work/fred/dgs9mo.csv', row.names=F)
-dgs9mo
+dgs6mo <- suppressMessages(read_csv('./work/fred/dgs6mo.csv')) %>%
+    filter(!is.na(value))
 
 reference <- c(1/4, 1/2, 3/4, 1, 1.5, 2, 3, 4, 5, 10, 20, 30)
 labels <- c( '3m', '6m', '9m', '1y', '1.5y', '2y', '3y', '4y', '5y', '10y', '20y', '30y')
@@ -108,17 +103,17 @@ tbonds <- bonds(files) %>%
         )
     )
 
-#tzeros %>%
-#  group_by(ATTM) %>%
-#  summarize(
-#     YTM = max(YTM)
-#  )
-#
-#tbonds %>%
-#    group_by(ATTM) %>%
-#    summarize(
-#        YTM = max(YTM)
-#    )
+tzeros %>%
+  group_by(ATTM) %>%
+  summarize(
+     YTM = max(YTM)
+  )
+
+tbonds %>%
+    group_by(ATTM) %>%
+    summarize(
+        YTM = max(YTM)
+    )
 
 #ttm <- tbonds$TTM
 #reference[which.min(abs(reference - ttm))]
