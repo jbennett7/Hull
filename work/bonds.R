@@ -1,24 +1,45 @@
+suppressMessages(require(zoo))
 suppressMessages(require(tidyverse))
 suppressMessages(require(fredr))
 fredr_set_key(readLines('~/.fred_key'))
 
-#dgs3mo <- fredr(series_id = 'DGS3MO',
-#      observation_start = ymd(20250101)
-#)
-#write.csv(dgs3mo, file='./work/fred/dgs3mo.csv', row.names=F)
-dgs3mo <- suppressMessages(read_csv('./work/fred/dgs3mo.csv')) %>%
-    filter(!is.na(value))
+# Fred data - from the St. Louis Federal Reserve
 
-#dgs6mo <- fredr(series_id = 'DGS6MO',
-#    observation_start = ymd(20250101)
-#)
-#write.csv(dgs6mo, file='./work/fred/dgs6mo.csv', row.names=F)
-dgs6mo <- suppressMessages(read_csv('./work/fred/dgs6mo.csv')) %>%
-    filter(!is.na(value))
+## Market yield on U.S. Treasury securities, constant maturity, quoted on an investment basis
+interest.rates <- c(
+    'DGS1MO',  # 1-Month
+    'DGS3MO',  # 3-Month
+    'DGS6MO',  # 6-Month
+    'DGS1',    # 1-Year
+    'DGS2',    # 2-Year
+    'DGS3',    # 3-Year
+    'DGS5',    # 5-Year
+    'DGS7',    # 7-Year
+    'DGS10',   # 10-Year
+    'DGS20',   # 20-Year
+    'DGS30'    # 30-Year
+)
 
-reference <- c(1/4, 1/2, 3/4, 1, 1.5, 2, 3, 4, 5, 10, 20, 30)
-labels <- c( '3m', '6m', '9m', '1y', '1.5y', '2y', '3y', '4y', '5y', '10y', '20y', '30y')
+## Download each series from fred and save locally
+download_interest_rate_reference_data <- function() {
+    sapply(interest.rates, function(i) {
+        tmp <- fredr(series_id = i, observation_start = ymd(20250101))
+        write.csv(tmp, file=paste0('./work/fred/', tolower(i), '.csv'), row.names=F)
+    })
+}
 
+## Read each of the fred reference data from file and create a zoo object from
+## them.
+series_list <- suppressMessages(lapply(interest.rates, function(i) {
+    tmp <- read_csv(
+        paste0('./work/fred/', tolower(i), '.csv')) %>% filter(!is.na(value)
+    )
+    zoo(tmp$value, tmp$date)
+}))
+reference.rates <- do.call(merge, series_list)
+colnames(reference.rates) <- tolower(interest.rates)
+
+# Coupon bearing U.S. Treasury bonds
 files <- c(
            './work/bonds/3m.csv',
            './work/bonds/6m.csv',
@@ -34,6 +55,7 @@ files <- c(
            './work/bonds/30yr.csv'
 )
 
+# U.S. Treasury zeros
 zeros <- c(
            './work/zeros/z3m.csv',
            './work/zeros/z6m.csv',
@@ -49,10 +71,7 @@ zeros <- c(
            './work/zeros/z30yr.csv'
 )
 
-d30d <- duration(num=30, units='days')
-d90d <- duration(num=90, units='days')
-d180d <- duration(num=180, units='days')
-
+## Load U.S. Bond data (downloaded from  Schwab)
 bonds <- function(files){
     suppressWarnings(do.call(rbind,
          lapply(files,
@@ -69,6 +88,7 @@ bonds <- function(files){
     )
 }
 
+## An attempt to figure out my own YTM.
 zero.rate <- function(data){
   func <- function(r, price, ttm) price * exp(r * ttm) - 100
 
@@ -78,6 +98,11 @@ zero.rate <- function(data){
       Zero = uniroot(func, c(-1, 1), Price, TTM)$root*100
   )
 }
+
+### ATTM is a factor that aggregates bonds by maturity
+### type: 3-month 6-month, etc...
+reference <- c(1/4, 1/2, 3/4, 1, 1.5, 2, 3, 4, 5, 10, 20, 30)
+labels <- c( '3m', '6m', '9m', '1y', '1.5y', '2y', '3y', '4y', '5y', '10y', '20y', '30y')
 
 tzeros <- bonds(zeros) %>%
     select(Maturity, Price, YTM, TTM) %>%
@@ -92,6 +117,7 @@ tzeros <- bonds(zeros) %>%
     )
 
 tbonds <- bonds(files) %>%
+    filter(Coupon > 0) %>%
     select(Maturity, Coupon, Price, YTM, TTM) |>
     rowwise() |>
     mutate(
@@ -103,17 +129,30 @@ tbonds <- bonds(files) %>%
         )
     )
 
-tzeros %>%
-  group_by(ATTM) %>%
-  summarize(
-     YTM = max(YTM)
-  )
 
+## Now do something with this
+rollmean(reference.rates, 2)['2025-08-21']
+reference.rates['2025-08-21']
+reference.rates['2025-08-22']
 tbonds %>%
     group_by(ATTM) %>%
     summarize(
         YTM = max(YTM)
     )
+
+#dgs3mo %>% filter(date == '2025-08-22')
+#
+#tzeros %>%
+#  group_by(ATTM) %>%
+#  summarize(
+#     YTM = max(YTM)
+#  )
+#
+#tbonds %>%
+#    group_by(ATTM) %>%
+#    summarize(
+#        YTM = max(YTM)
+#    )
 
 #ttm <- tbonds$TTM
 #reference[which.min(abs(reference - ttm))]
