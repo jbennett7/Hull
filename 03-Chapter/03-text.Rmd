@@ -1,0 +1,1399 @@
+---
+title: Hedging Strategies Using Futures
+output:
+    pdf_document:
+        toc: true
+---
+
+# Chapter examples
+
+## Example 3.1
+
+It is March 1. A U.S. company expects to receive 50 million Japanese yen at the
+end of July. Yen futures contracts on the CME Group have delivery months of
+March, June, September, and December. One contract is for the delivery of 12.5
+million yen. The company therefore shorts four September yen futures contracts
+on March 1. When the yen are received at the end of July, the company closes out
+its position. We suppose that the futures price on March 1 in cents per yen is
+1.0800 and that the spot and futures prices when the contract is closed out are
+1.0200 and 1.0250 respectively.
+
+The gain on the futures contract is 1.0800 - 1.0250 = 0.0550 cents per yen. The
+basis is 1.0200 - 1.0250 = -0.0050 cents per yen when the contract is closed
+out. The effective price obtained in cents per yen is the final spot price plus
+the gian on the futures:
+
+$$
+1.0200 + 0.0550 = 1.0750
+$$
+
+This can also be written as the initial futures price plus the final basis:
+
+$$
+1.0800 + )-0.0050) = 1.0750
+$$
+
+The total amount received by the company for the 50 million yen is
+$50 \times 0.01075$ million dollars, or \$537,500.
+
+---
+
+## Example 3.2
+
+It is June 8 and a company knows that it will need to purchase 20,000 barrels of
+crude oil at some time in October or November. Oil futures contracts are
+currently traded for delivery every month by the CME Group and the contract size
+is 1,000 barrels. The company therefore decides to use the December contract for
+hedging and takes a long position in 20 December contracts. The futures price on
+June 8 is \$48.00 per barrel. The company finds that it is ready to purchase the
+crude oil on November 10. It therefore closes out its futures contract on that
+date. The spot price and futures price on November 10 are \$50.00 per barrel and
+\$49.10 per barrel.
+
+The gain on the futures contract is 49.10 - 48.00 = \$1.10 per barrel. The bases
+when the cotnract is closed out is 50.00 - 49.10 = \$0.90 per barrel. The
+effective price paid (in dollars per barrel) is the final spot price less the
+gain on the futures, or
+
+$$
+50.00 - 1.10 = 48.90
+$$
+
+This can also be calculated as the initial futures price plus the final basis,
+
+$$
+48.00 + 0.90 = 48.90
+$$
+
+The total price paid is $48.90 \times 20,000 = \$978,000$.
+
+---
+
+## Example 3.3
+
+An airline expects to purchase 2 million gallons of jet fuel in 1 month and
+decides to use heating oil futures for hedging. We suppose that Table 3.2 gives,
+for 15 successive months, data on the change, $\Delta S$, is the jet fuel price
+per gallion and the corresponding change, $\Delta F$, in the futures price for
+the contract on heating oil that would be used for hedgin price changes during
+the month. In this case, the usual formulas for calculating standard deviations
+and correlations give $\sigma_F = 0.0313$, $\sigma_S = 0.0263$, and 
+$\rho = 0.928$.
+
+```{r example 3.3: table 3.2, echo=F}
+month <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+delta.futures <- c(0.021, 0.035, -0.046, 0.001, 0.044, -0.029, -0.026, -0.029,
+                   0.048, -0.006, -0.036, -0.011, 0.019, -0.027, 0.029)
+delta.spot <- c(0.029, 0.020, -0.044, 0.008, 0.026, -0.019, -0.010, -0.007,
+                0.043, 0.011, -0.036, -0.018, 0.009, -0.032, 0.023)
+knitr::kable(data.frame(Month = month, DFutures = delta.futures,
+                        DSpot = delta.spot),
+             caption = "Data to calculate minimum variance hedge ratio")
+```
+
+$$
+h^* = \rho \frac{\sigma_S}{\sigma_F}\tag{3.1}
+$$
+
+$$
+N^* = \frac{h^* Q_A}{Q_F}\tag{3.2}
+$$
+
+```{r example 3.3: calculating standard deviation and correlation, echo = F}
+cat("Standard deviation for spot:", sd(delta.spot), "\n",
+    "Standard deviation for futures:", sd(delta.futures), "\n",
+    "Correlation:", cor(delta.futures, delta.spot), "\n")
+```
+From equation (3.1), the minimum variance hedge ratio, $h^*$, is therefore
+
+$$
+0.928 \times \frac{0.0263}{0.0313} = 0.78
+$$
+
+Each heating oil contract traded by the CME Group is on 42,000 gallons of
+heating oil. From equation (3.2), the optimal number of contracts is
+
+$$
+\frac{0.78 \times 2,000,000}{42,000} \approx 37
+$$
+
+which is 37 when rounded to the nearest whole number.
+
+# Practice Questions
+
+## 1. Perfect hedge
+
+Explain what is meant by a _perfect hedge_. Does a perfect hedge always lead to
+a better outcome than an imperfect hedge? Explain your answer.
+
+---
+
+A perfect hedge is one that completely eliminates the risk. Perfect hedges are
+rate. For the most part, a study of hedging using futures contracts is a study
+of the ways in which hedges can be constructed so that they perform as close to
+perfectly as possible.
+
+A perfect hedge does not always lead to better outcomes, because it may
+eliminate upside potential and be costlier or less flexible than an imperfect
+hedge. The choice between perfect and imperfect hedges depends on risk
+tolerance, objectives, and cost-benefit trade-offs.
+
+---
+
+## 2. Minimum variance hedge
+
+Under what circumstances does a minimum variance hedge portfolio lead to no
+hedging at all?
+
+---
+
+A minimum variance hedge portfolio aims to reduce the variance (volatility) of
+the value of a position by finding the hedge ratio that minimizes risk.
+However, it can lead to no hedging at all under certain conditions.
+
+The conditions under which a minimum variance hedge portfolio leads to no
+hedging occur when:
+
+a. No correlation between the spot (underlying) asset and the hedging instrument
+(e.g., futures contract).
+
+> * If the correlation coefficient ($\rho$) between the changes in the spot
+    price and the hedge instrument is zero, then hedging provides no risk
+    reduction.
+
+> * In that case, the minimum variance hedge ration $(h^*) = 0$.
+
+$$
+h^* = \rho \cdot \frac{\sigma_S}{\sigma_F} = 0
+$$
+
+> Where:
+
+> * $h^*$ is the optimal hedge ratio
+> * $\rho$ is the correlation between spot and futures price changes
+> * $\sigma_S, \sigma_F$ are the standard deviations of spot and futures price
+    changes.
+
+> If $\rho = 0$, then $h^* = 0$ no hedge.
+
+b. Hedging instrument is ineffective: If the futures or other derivative does
+not track the risk source well, the hedge might actually introduce more
+variablility.
+
+c. Costs outweigh benefits: Even if there's some correlation, high transaction
+costs or margin requirements may make it optimal to not hege if the variance
+reduction is minimal.
+
+A minimum variance hedge portfolio leads to no hedging when the spot and hedge
+instrument returns are uncorrelated ($\rho = 0$). In such cases, hedging
+wouldn't reduce risk and might even worsen outcomes.
+
+---
+
+## 3. Optimal hedge ratio
+
+Suppose that the standard deviation of quarterly changes in the prices of a
+commodity is \$0.65, the standard deviation of quarterly changes in a futures
+price on the commodity is \$0.81, and the coefficient of correlation between the
+two changes is 0.8. What is the optimal hedge ratio for a 3-month contract? What
+does it mean?
+
+---
+
+### Given:
+
+* $\rho = 0.8$
+* $\sigma_S = \$0.65$
+* $\sigma_F = \$0.81$
+
+$$
+\begin{aligned}
+h^* &= \rho \cdot \frac{\sigma_S}{\sigma_F}\\
+  &= 0.8 \cdot \frac{0.65}{0.81}\\
+  &\approx 0.642
+\end{aligned}
+$$
+
+### Interpretation:
+  
+* The optima hedge ratio is approximately 0.642, or 64.2\%.
+* This means that for every \$1 of exposure in the spot market, you should
+  hedge \$0.642 using futures to minimize risk.
+* In practical terms, if you're managing a position in the physical
+  commodity, you'd short (or long) a futures position sized at 64.2\% of the
+  spot exposure.
+
+---
+
+## 4. Hedging an equity portfolio and changing the portfolio beta
+
+A company has a \$20 million portfolio with a beta of 1.2. It would like to use
+futures contracts on a stock index to hedge its risk. The index futures price is
+currently standing at 1080, and each contract is for delivery of \$250 times the
+index. What is the hedge that minimizes risk? What should the company do if it
+wants to reduce the beta of the portfolio to 0.6?
+
+---
+
+### Given:
+
+* Portfolio value: \$20,000,000
+* Beta: 1.2
+* Index futures price: \$1080
+* \$250 times index
+
+### Hedge to minimize risk (i.e., reduce beta to 0)
+
+$$
+\begin{aligned}
+N &= \frac{\beta \cdot V}{F \cdot Q}\\\\
+N &= \frac{1.2 \cdot 20,000,000}{1080 \cdot 250}\\
+  &= 88.89
+\end{aligned}
+$$
+
+The company should short 89 index futures contracts to fully hedge (beta = 0)
+and minimize risk.
+
+### Hedge to reduce beta to 0.6
+
+$$
+\begin{aligned}
+N &= \frac{(\beta - \beta^*) \cdot V}{F \cdot Q}\\\\
+N &= \frac{(1.2 - 0.6) \cdot 20,000,000}{1080 \cdot 250}\\
+  &= 44.44
+\end{aligned}
+$$
+
+To reduce the portfolio beta to 0.6, the company should short 44 or 45 index
+futures contracts.
+
+---
+
+## 5. Minimizing basis risk
+
+In the corn futures contract traded on an exchange, the following delivery
+months are available: March, May, July, September, and December. Which of the
+available contracts should be used for hedging when the expiration of the hedge
+is in (a) June, (b) July, and (c) January.
+
+---
+
+Choose the futures contract with an expiration date that is just after the
+expiration of the hedge. This minimizes basis risk---the risk that the spot and
+futures prices won't move perfectly in sync.
+
+### Hedge expires in June
+
+* Choose the July contract
+
+### Hedge expires in July
+
+* Choose the July contract
+
+### Expires in January
+
+* Choose the March contract
+
+---
+
+## 6. Perfect hedge
+
+Does a perfect hedge always succeed in locking in the current spot price of an
+asset for a future transaction? Explain your answer.
+
+---
+
+A perfect hedge does not always lock in the current spot price, even though it
+eliminates price risk.
+
+### What a perfect hedge does do
+
+A perfect hedge ensures that the net outcome is known in advance, regardless of
+what happens to prices. It locks in a known future net price, but that price may
+be different from today's spot price.
+
+### Why it might not lock in the current spot price
+
+#### Futures prices $\ne$ spot prices today
+
+A futures contract locks in the futures price, which may include interest rates,
+storage costs, or expectations. If the futures price is higher or lower htan the
+current spot price, your locked-in price reflects that.
+
+#### Basis risk (for imperfect timing)
+
+If the hedge doesn't mature exactly when the transaction occurs, the difference
+between spot and futures (the basis) might change unpredictably. Even with a
+hedge in place, you might not realize today's spot price due to basis movement.
+
+### Summary
+
+A perfect hedge eliminates price risk but does not necessarily lock in the
+current spot price. It locks in the futures price, which may differ from the
+spot price due to market conditions, interest rates, or time value.
+
+---
+
+## 7. The basis in hedging
+
+Explain why a short hedger's position improves when the basis strengthens
+unexpectedly and worsens when the basis weakens unexpectedly.
+
+---
+
+### What is the basis?
+
+The _basis_ in a hedging situation is:
+
+$$
+\text{Basis} = \text{Spot price} - \text{Futures price}
+$$
+
+If the asset to be hedged and the asset underlying the futures contract are the
+same, the basis should be zero at the expiration of the futures contract.
+
+#### A short hedger (like a producer planning to sell an asset later)
+
+Sells a futures contract now to lock in a selling price. Hopes to protect
+against falling spot prices.
+
+#### When the basis strengthens unexpectedly
+
+That means the spot price falls less than the futures price (or even rises). So,
+although the spot price might drop, the futures price drops more, creating a
+bigger gain on the short futures position.
+
+As a result, spot revenue is better than expected and futures position profits
+more than expected. The hedger is better off overall.
+
+#### When the basis weakens unexpectedly
+
+The spot price drops more than the futures price. The futures position doesn't
+offset as much of the spot price loss as expected.
+
+As a result, spot revenue is worse than expected and futures gain is smaller.
+The hedger is worse off overall.
+
+---
+
+## 8. Hedging foreign exchange risk
+
+Imagine you are the treasurer of a Japanese company exporting electronic
+equipment to the United States. Discuss how you would design a foreign exchange
+hedging strategy and the arguments you would use to sell the strategy to your
+fellow executives.
+
+---
+
+The objective is to protect the company's revenue (in JPY) from potential losses
+due to a weakening USD (i.e., when USD/JPY declines).
+
+### Step-by-step: Designing the FX hedging strategy
+
+#### 1. Identify the exposure
+
+* Sales are in USD, but costs are in JPY.
+* You're exposed to USD depreciation against the JPY.
+
+#### 2. Choose hedging instruments
+
+| Instrument | How it works | Notes |
+|:---|:---|:---|
+| Forward contracts | Lock in exchange rate now for future settlement | Simple, flexible terms |
+| FX options | Right (not obligation) to exchange at a specific rate | Useful if you want upside potential |
+| Natural hedge | Match costs and revenues in the same currency | Harder for exporters |
+| Currency swaps | Exchange cash flows over time | More complex, used for long-term hedging |
+
+#### 3. Hedge the amount and timing
+
+* Match hedge size to expected USD revenue over time.
+* Consider using rolling hedges if cash flows are continuous.
+
+#### 4. Monitor and adjust
+
+* Regularly re-evaluate hedges as forecasts and market conditions change.
+
+### Selling the strategy to executives
+
+#### 1. Risk reduction
+
+"We're protecting predictable cash flows. FX volatility can wipe out 5--10\% of
+profits overnight."
+
+#### 2. Earnings stability
+
+"This gives us more predictable quarterly results---and more investor
+confidence."
+
+#### 3. Cost vs. benefit
+
+"hedging is relatively low-cost insurance against large potential losses."
+
+#### 4. Strategic flexibility
+
+"We'll start with simple hedging (like forwards), and can adapt as we grow."
+
+### Summary of your pitch
+
+"Our exposure to USD/JPY puts millions in yen revenue at risk. A forward
+contract hedge is simple, effective, and helps us lock in known outcomes, which
+is vital in a volatile FX environment. With this strategy, we protect margins,
+reduce earnings volatility, and demonstrate fiscal responsibility to
+stakeholders."
+
+---
+
+## 9. Using the hedge ratio to determine optimal risk exposure
+
+Suppose that in Example 3.2 above the company decides to use a hedge ratio of
+0.8. How does the decision affect the way in which the hedge is implemented and
+the result?
+
+---
+
+If the company decides to use a hedge ratio of 0.8 then it is choosing to hedge
+only 80\% of its exposure using futures.
+
+### What is the hedge ratio?
+
+A hedge ratio of 0.8 means the company is only hedging:
+
+$$
+0.8 \times 20,000\ \text{barrels} = 16,000\ \text{barrels}
+$$
+
+Since each futures contract covers 1,000 barrels, the company now takes a long
+position in 16 contracts instead of 20.
+
+### How is the hedge implemented differently?
+
+* __Original hedge:__ 20 futures contracts (100\% hedge)
+* __ With hedge ratio of 0.8:__ 16 futures contracts (80\% hedge)
+* Everything else (dates, prices, close-out timing) remains the same.
+
+### Recalculate the result
+
+#### Gain on futures:
+
+$$
+\begin{aligned}
+49.10 - 48.00 = 1.10\ \text{per barrel}\\
+\text{Total gain} = 1.10 \times 16,000 = \$17,600
+\end{aligned}
+$$
+
+#### Spot market purchase:
+
+On Nov 10, the company buys 20,000 barrels at \$50.00 = \$1,000,000
+
+#### Net effective cost:
+
+$$
+\begin{aligned}
+1,000,000 - 17,600 = 982,400\\
+\text{Effective price per barrel} = \frac{982,400}{20,000} = \$49.12
+\end{aligned}
+$$
+
+### Compared to full hedge
+
+| Strategy | Effective price/barrel | Total cost
+|:---|:---|:---|
+| Full hedge | \$48.90 | \$978,000 |
+| 80\% hedge | \$49.12 | \$982,400 |
+
+### Interpretation
+
+The partial hedge reduced risk, but not as much as a full hedge. The effective
+purchase price is higher than with a full hedge because less gain was realized
+from the futures contracts. However, the company might have chosen a hedge ratio
+of 0.8 to leave room for potentially favorable price movements (e.g., if oil
+prices fell).
+
+### Summary
+
+Using a hedge ratio of 0.8 means the company is only hedging 80\% of its
+exposure and is taking on some risk, but possibly preserves more upside. Pays an
+effective price of \$49.12 per barrel instead of \$48.90.
+
+---
+
+## 10. Minimum variance hedge ratio and the perfect hedge
+
+"If the minimum variance hedge ratio is calculated as 1.0, the hedge must be
+perfect." Is this statement true? Explain your answer.
+
+---
+
+The statement is not necessarily true.
+
+### What is the minimum variance hedge ratio (MVHR)?
+
+It's calculated as
+
+$$
+h^* = \frac{\text{Cov}(\Delta S, \Delta F)}{\text{Var}(\Delta F)}
+$$
+
+Where:
+
+* $\Delta S$: change in spot price
+* $\Delta F$: change in futures price
+
+It tells you the number of futures contracts per unit of exposure that minimizes
+variance (i.e., risk) of your position.
+
+### What does $h^* = 1.0$ mean?
+
+It means that the best risk-reducing strategy is to hedge the entire position
+one-for-one using futures---i.e., for every dollar of exposure, take one
+dollar's worth of futures.
+
+However a perfect hedge would eliminate all risk---meaning that:
+
+$$
+\Delta S = \Delta F
+$$
+
+In practive the spot and futures prices don't move perfectly together. This
+means there is basis risk (the spot-futures relationship changes unpredictably).
+So even with $h^* = 1$, the hedge still has residual risk.
+
+---
+
+## 11. Basis risk and minimum variance hedge ratio
+
+"If there is no basis risk, the minimum variance hedge ratio is always 1.0." Is
+this statement true? Explain this statement.
+
+---
+
+This statement is true. If there is no basis risk then the futures price and the
+spot price move perfectly together, meaning
+
+$$
+\Delta S = \Delta F
+$$
+
+There correlation is 1 and the variance of their difference is 0.
+
+$$
+\begin{aligned}
+h^* = \frac{\text{Cov}(\Delta S, \Delta F)}{\text{Var}(\Delta F)}\\
+\text{If}\ \Delta S = \Delta F\text{, then:}\\
+\text{Cov}(\Delta S, \Delta F) = \text{Var}(\Delta F)
+\end{aligned}
+$$
+
+Therefore, $h^* = 1$.
+
+---
+
+## 12. Future prices less than the spot price for long hedges
+
+"When the futures price of an asset is less than the spot price, long hedges are
+likely to be particularly attractive." Explain this statement.
+
+---
+
+A long hedge is when you expect to buy an asset in the future and want to
+protect against price increases. You do this by buying futures contracts
+now---locking in a future purchase price.
+
+When the futures price < spot price, this situation is known as backwardation.
+This means you can lock in buying the asset in the future for less than it costs
+today. For a buyer, this looks like a discount---which makes the hedge very
+appealing.
+
+If the market stays in backwardation you lock in favorable pricing now. The
+futures you boght may gain in value as they converge upward toward the spot
+price at expiration. So, long hedgers benefit both from protection and potential
+gain.
+
+### One caveat
+
+You're still not guaranteed to come out ahead---if spot prices fall, you might
+have been better off waiting. But if your goal is risk reduction, and you can
+lock in a cheaper-than-market price, a long hedge is very attractive.
+
+---
+
+## 13. Futures hedging strategies using MVHR
+
+The standard deviation of monthly changes in the spot price of live cattle is
+(in cents per pound) 1.2. The standard deviation of monthly changes in the
+futures price of live cattle for the closest contract is 1.4. The correlation
+between the futures price changes and the spot price changes is 0.7. It is now
+October 15. A beef producer is committed to purchasing 200,000 pounds of live
+cattle on November 15. The producer wants to use the December live cattle
+futures contracts to hedge its risk. Each contract is for the delivery of 40,000
+pounds of cattle. What strategy should the beef producer follow?
+
+---
+
+To hedge the price risk of purchasing 200,000 pounds of live cattle in one month
+(November 15), the beef producer can use December live cattle futures.
+
+### Step 1. User the minimum variance hedge ratio
+
+$$
+h^* = \rho \times \frac{\sigma_S}{\sigma_F}
+$$
+
+Where:
+
+* $h^*$: hedge ratio (optimal number of futures per unit of spot).
+* $\rho$: 0.7 (correlation between spot and futures price changes)
+* $\sigma_S$: 1.2 (standard deviation of spot price changes)
+* $\sigma_F$: 1.4 (standard deviation of futures price changes)
+
+$$
+h^* = 0.7 \times \frac{1.2}{1.4} = 0.7 \times 0.8571 \approx 0.6
+$$
+
+### Step 2. Determine the number of contracts to hedge
+
+* Each futures contract = 40,000 pounds
+* Total quantity to hedge = 200,000 pounds
+
+#### Number of contracts
+
+$$
+\begin{aligned}
+\text{Contracts} &= h^* \times \frac{\text{quantity to hedge}}
+  {\text{contract size}}\\
+  &= 0.6 \times \frac{200,000}{40,000}\\
+  &= 0.6 \times 5\\
+  &= 3\ \text{contracts}
+\end{aligned}
+$$
+
+### Recommended strategy
+
+The beef producer should take a long position in 3 December futures contracts on
+October 15. This position should be closed on or around November 15 when the
+cattle are purchased.
+
+### Why a long hedge?
+
+The producer is going to buy cattle, so they are exposed to the risk that prices
+might rise. A long futures position offsets that risk by locking in a price (or
+at least mitigating variance due to price changes).
+
+---
+
+## 14. Price risk versus production risk
+
+A corn farmer argues "I do not use futures contracts for hedging. My real risk
+is not the price of corn. It is that my whole crop gets wiped out by the
+weather." Discuss this viewpoint. Should the farmer estimate his or her expected
+production of corn and hedge to try to lock in a price for expected production?
+
+---
+
+This farmer is essentially saying that: If a natural disaster or drought
+destroys the crop, there's nothing to sell, so the price becomes irrelevant.
+Hedging the price would lock in a sale, but if there's no corn, the farmer would
+still owe on the hedge (especially in a futures contract).
+
+If the farmer hedges using futures contracts and cannot deliver due to crop
+loss: They must close the futures position, possibly at a loss.
+
+### Should the farmer hedge?
+
+Yes, but strategically
+
+#### Estimate expected production
+
+Even if the total crop might be lost, total loss is rare. The farmer can: Use
+historical yield data and weather forecasts to make an expected production
+estimate. Hedge a portion of that expected yield---say 50-70\%, depending on
+confidence in the crop.
+
+#### Use flexible hedging instruments
+
+Options (like buying a put) can lock in a floor price without obligating
+delivery. If the crop is wiped out, the option simply expires---no obligation to
+deliver, and only the premium is lost.
+
+### Key ideas to sell to the farmer
+
+1. Price risk is still real---even if production is uncertain.
+2. A partial hedge can protect income from normal yields, without
+   overcommitting.
+3. Options can provide downside protection without delivery risk.
+4. Crop insurance can be paired with hedging for broader risk management.
+
+
+### Conclusion
+
+The farmer is right to be cautious, but completely ignoring price risk is risky
+too. A balanced approach---hedging part of the expected crop and/or using
+options---offers the best of both worlds.
+
+---
+
+## 15. Heging market risk of a stock portfolio using beta hedging
+
+On July 1, an investor holds 50,000 shares of a certain stock. The market price
+is \$30 per share. The investor is interested in hedging against movements in
+the market over the next month and decides to use an index futures contract. The
+index futures price is currently 1,500 and one contract is for delivery of \$50
+times the index. The beta of the stock is 1.3. What strategy should the investor
+follow? Under what circumstances will it be profitable?
+
+---
+
+### Given
+
+* 50,000 shares
+* Stock price: \$30
+* Value of stock $50,000\ \text{shares} \times \$30 = \$1,500,000$
+* Use index futures contracts for hedging price movements
+* Index futures price: 1,500
+* \$50 times the index
+* Value of futures contract: $1,500 \times \$50 = \$75,000$
+* $\beta$: 1.3
+
+### Step 1: Determine the hedge ratio (number of contracts)
+
+$$
+\begin{aligned}
+\text{hedge ratio} &= \frac{\beta \times \text{value of portfolio}}
+  {\text{value of one futures contract}}\\
+  &= \frac{1.3 \times 1,500,000}{75,000}\\
+  &= 26\ \text{contracts}
+\end{aligned}
+$$
+
+Sell 26 index futures contracts to hedge. This is a short hedge, because the
+investor is protecting against downside market risk.
+
+### Under what circumstances will it be profitable?
+
+This hedge is not designed to be profitable per se, but rather reduce risk.
+However, the hedge is effective when:
+
+* The market falls, causing the index futures to decline in value.
+* Losses in the stock portfolio are offset by gains on the short futures
+  position.
+
+The hedge will underperform when:
+
+* The market rises and the stock follows.
+* The investor misses out on some (or all) upside gains due to losses on the
+  futures.
+
+---
+
+## 16. Over-hedging
+
+Suppose that in Table 3.5, the company decides to use a hedge ratio of
+1.5. How does this affect the way the hedge is implemented and the result?
+
+```{r problem 16: table 3.5, echo=F}
+apr.2021 <- c(48.20, NA, NA, 49.00)
+sept.2021 <- c(47.40, 47.00, NA, NA)
+feb.2022 <- c(NA, 46.50, 46.30, NA)
+june.2022 <- c(NA, NA, 45.90, 46.00)
+
+df <- data.frame(apr.2021, sept.2021, feb.2022, june.2022)
+rownames(df) <- c("Oct. 2021 futures price", "Mar. 2022 futures price",
+                  "July 2022 futures price", "Spot price")
+
+knitr::kable(df, caption = "Data for rolling oil hedge forward.")
+```
+
+---
+
+By using a hedge ratio of 1.5 (instead of 1.0) means the company is
+over-hedging: it is taking a futures position larger than the expected spot
+transaction.
+
+### Step 1: What does a 1.5 hedge ratio mean?
+
+The company will short 150 contracts (instead of 100), because:
+
+$$
+\text{Hedge ratio} = \frac{\text{futures position}}
+  {\text{spot exposure}} = 1.5
+$$
+
+* Each contract = 1,000 barrels
+* Exposure = 100,000 barrels $\rightarrow$ 150 contracts = 150,000 barrels
+
+So the hedge volume is larger than the actual oil to be sold.
+
+### Step 2: Futures trading timeline
+
+The company:
+
+* Shorts 150 October 2021 contracts in April 2021 at \$48.20
+* Closes them in September 2021 at \$47.40
+* Shorts 150 March 2022 contracts in September 2021 at \$47.00
+* Closes them in February 2022 at \$46.50
+* Shorts 150 July 2022 contracts in February 2022 at \$46.30
+* Closes them in June 2022 at \$45.90
+
+### Step 3: Calculate gains from futures
+
+Each round-trip futures trade gives a gain or loss per barrel:
+
+1. April-Sept (Oct contract):
+
+$$
+48.20 - 47.40 = +\$0.80\ \text{per barrel}
+$$
+
+2. Sept-Feb (Mar contract):
+
+$$
+47.00 - 46.50 = +\$0.50
+$$
+
+3. Feb-June (July contract):
+
+$$
+46.30 - 45.90 = +\$0.40
+$$
+
+Total gain per barrel = 0.80 + 0.50 + 0.40 = \$1.70
+
+but now the company is short 150,000 barrels in futures contracts, while it only
+sells 100,000 barrels in the spot market
+
+Total gain from futures:
+
+$$
+1.70 \times 150,000 = \$255,000
+$$
+
+## Step 4: Spot sale price
+
+In June 2022, the spot price is \$46.00. So revenue from selling 100,000 barrels
+is:
+
+$$
+100,000 \times 46.00 = \$4,600,000
+$$
+
+## Step 5: Total effective revenue
+
+Add the gain from futures to the spot revenue:
+
+$$
+4,600,000 + 255,000 = \$4,855,000
+$$
+
+So, effective price per barrel = $\frac{4,855,000}{100,000} = \$48.55$
+
+### Summary: How does a 1.5 hedge ratio change things?
+
+#### Implementation changes
+
+More contracts are traded at each stage: 150 vs. 100. The company is exposed to
+basis risk on extra 50,000 barrels (over-hedged volume)
+
+#### Result changes
+
+Higher total gain from futures. Effective selling price increases, but at the
+cost of over-hedging risk.
+
+If prices moved against the futures position (i.e., prices rose), the over-hedge
+would have amplified the loss.
+
+---
+
+## 17. Purpose of hedging using futures
+
+An airline executive has argued: "There is no point in our using oil futures.
+There is just as much chance that the price of oil in the future will be less
+than the futures price as there is that it will be greater than this price."
+Discuss the executive's viewpoint.
+
+---
+
+The problem with the executives position is that it treats the use of futures
+contracts as a form of speculation, assuming the purpose is to "guess" future
+prices correctly. But that is not what hedging is about.
+
+### What hedging actually does
+
+Hedging is not about making a profit---it's about reducing uncertainty. An
+airline's primary concern is fuel cost volatility, since oil is a major input.
+Using oil futures allows the airline to lock in a price for fuel in the future,
+providing predictability in budgeting and financial planning.
+
+If prices rise, the airline gains on the futures contract, offsetting higher
+fuel costs. If prices fall, the airline loses on the futures contract, but pays
+less for actual fuel--again, the net effect is stable.
+
+The real value is reducing risk.
+
+### Why hedging makes sense for airlines
+
+Fuel is one of the largest and most volatile costs for airlines. Airlines
+operate on thin profit margins and make forward-looing pricing decisions (e.g.
+ticket sales months ahead). Locking in prices through futures helps stabilize
+operating costs.
+
+---
+
+## 18. Calculating the forward price of a hedge
+
+Suppose that the 1-year gold lease rate is 1.5\% and the 1-year risk-free rate
+is 5.0\%. Both rates are compounded annually. Use the discussion in Business
+Snapshot 3.1 to calculate the maximum 1-year gold forward price Goldman Sachs
+should quote to the gold-mining company when the spot price is \$1,200.
+
+---
+
+The solution given in the business snapshot states that Goldman Sachs should
+borrow the gold from a central bank, sell it immediately, and invest the
+proceeds at the risk-free rate. At the end of the year, you buy the gold from
+the gold mining company and use it to repay the central bank. The fixed forward
+price you set for the gold reflects the risk-free rate you can earn and the
+lease rate you pay the central bank for borrowing the gold.
+
+### Given:
+
+* Gold lease rate: .015
+* Risk free-rate: .05
+* Comounding: Annual
+* Time: 1 year
+* Spot price: \$1,200
+
+### Strategy
+
+1. Borrow from the central bank at .015 lease rate
+2. Sell the gold immediately at the spot price \$1,200
+3. Invest the proceeds at the risk-free rate (5.0\%)
+4. At maturity, buy the gold from the mining company at the forward price $F$
+   and use the gold to repay the loan
+
+$$
+\text{Future value} = 1,200 \times (1 + 0.05) = 1,260
+$$
+
+To break even, the cost of buying 1.015 oz of gold must be no more than \$1,260.
+
+$$
+\begin{aligned}
+F \times 1.015 &= 1,260\\
+F &= \frac{1,260}{1.015}\\
+  &= 1,241.57
+\end{aligned}
+$$
+
+The maximum 1-year forward price Goldman Sachs should quote is \$1,251,57 per
+ounce.
+
+---
+
+## 19. Capital Asset Pricing Model (CAPM)
+
+The expected return on the S&P 500 is 12\% and the risk-free rate is 5\%. What
+is the expected return on an investment with a beta of (a) 0.2, (b) 0.5, and (c)
+1.4?
+
+---
+
+We use the Capital Asset Pricing Model.
+
+$$
+\text{Expected return} = r_m + \beta (r_m - r_f)\\
+$$
+
+### For $\beta = 0.2$
+
+$$
+R = 5 + .2 (12 - 5) = 6.4\%
+$$
+
+### For $\beta = 0.5$
+
+$$
+R = 5 + .5 (12 - 5) = 8.5\%
+$$
+
+### For $\beta = 1.4$
+
+$$
+R = 5 + 1.4 (12 - 5) = 14.8
+$$
+
+---
+
+## 20. Hedging futures contract strategies
+
+It is now June. A company knows that it will sell 5,000 barrels of crude oil in
+September. It uses the October CME Group futures contract to hedge the price it
+will receive. Each contract is on 1,000 barrels of "light sweet crude." What
+position should it take? What price risks is it still exposed to after taking
+the position?
+
+---
+
+The company should short futures contracts and buy 5 contracts (1,000 barrels
+per contract, 5,000 barrels total). This locks in a future selling price close
+to the futures price today, reducing the risk of a price drop before September.
+
+Even with the hedge, the company is still exposed to basis risk---this is the
+risk that the spot price and the futures price don't move in perfect alignment.
+
+### Reasons for basis risk:
+
+#### Mismatch in timing
+
+The hedge uses an October contract, but the oil is being sold in September,
+before the contract matures. This means the company must close out the hedge in
+September, and if the basis (spot price - futures price) behaves unexpectedly,
+the hedge may not fully offset losses or gains in the spot price.
+
+#### Quality/location mismatch
+
+The hedge assumes the company's oil is similar to "light sweet crude" as
+specified in the futures contract. If there are differences in grade or delivery
+location, the hedge may not be perfect.
+
+---
+
+## 21. Basis risk and hedging position (short/long)
+
+Sixty futures contracts are used to hedge an exposure to the price of silver.
+Each futures contract is on 5,000 ounces of silver. At the time the hedge is
+closed out, the basis is \$0.20 per ounce. What is the effect of the basis on
+the hedger's financial position if (a) the trader is hedging the purchase of
+silver and (b) the trader is hedging the sale of silver?
+
+---
+
+### A. Purchase of silver
+
+When you are buying silver, you're worried the price may rise, so you go long
+futures.
+
+If the basis is positive (spot price > futures price), then you pay more in the
+spot market than the price you lock in via futures and your futures gain offsets
+part of the increased spot cost, but not all of it.
+
+This would be a loss for the hedger due to the basis being positive at close
+out.
+
+$$
+\text{Loss} = 6 \times 5,000 \times \$0.2 = \$60,000
+$$
+
+### B. Sale of silver
+
+When you are selling silver, you're worried the price may fall, so you go short
+futures.
+
+If the basis is positive (spot price > futures price), then you sell in the spot
+market at a higher price than the futures. You lose some value on your futures
+position, but gain more in the spot sale.
+
+This would be a gain for the hedger.
+
+$$
+\text{Gain} = 6 \times 5,000 \times \$0.2 = \$60,000
+$$
+
+---
+
+## 22. Minimum variance hedge ratio and the number of contracts
+
+A trader owns 55,000 units of a particular asset and decides to hedge the value
+of her position with futures contracts on another related asset. Each futures
+contract is on 5,000 units. The spot price of the asset that is owned is \$28
+and the standard deviation of the change in this price over the life of the
+hedge is estimated to be \$0.43. The futures price of the related asset is \$27
+and the standard deviation of the change in this over the life of the hedge is
+\$0.40. The coefficient of correlation between the spot price change and futures
+price change is 0.95.
+
+(a) What is the minimum variance hedge ratio?
+(b) Should the hedger take a long or short position?
+(c) What is the optimal number of futures contracts when adjustments for daily
+settlement are not considered?
+(d) How can the daily settlement of futures contracts be taken into account?
+
+---
+
+### Minimum variance hedge ratio
+
+$$
+\begin{aligned}
+h^* &= \rho \frac{\sigma_S}{\sigma_F}\\
+  &= 0.95 \frac{.43}{.40}\\
+  &= 1.02125
+\end{aligned}
+$$
+
+### Should the hedger take a long or short position?
+
+The trader owns the asset and would like to hedge the value of the position. The
+trader should take a short position. This way, if the value of the position
+drops, the trader will benefit from the short position.
+
+### What is the optimal number of futures contracts (no daily settlements)
+
+The size of the position is
+
+$$
+Q_A = 55,000 \times 5,000 = 275,000
+$$
+
+$$
+\begin{aligned}
+N^* &= \frac{h^* Q_A}{Q_F}\\
+  &= \frac{1.02125 \cdot 55,000}{5,000}
+  &= 11.23 \approx 11\ \text{contracts}
+\end{aligned}
+$$
+
+### How can the daily settlement of futures contracts be taken into account?
+
+Daily settlemen (also called marking to market) affects the hedge because gains
+or losses from the futures position are realized daily and can be withdrawn or
+require margin top-up. This introduces the following considerations:
+
+* __Cash flow timing risk:__ Since futures are settled daily but the spot aset
+  may not be sold or realized until later, there may be a mismatch in cash
+  flows.
+* __Reinvestment risk:__ Gains from futures may need to be reinvested at
+  uncertain rates.
+* __Margin calls:__ Adverse futures movements may require posting additional
+  collateral before the hedge matures.
+
+To account for this:
+
+* Firms may track and manage margin balances and consider them in cash
+  budgeting.
+* Some may use futures with lower volatility or options if cash flow stability
+  is critial.
+
+---
+
+## 23. Cross hedging
+
+A company wishes to hedge its exposure to a new fuel whose price changes have a
+0.6 correlation with gasoline futures price changes. The company will lose \$1
+million for each 1 cent increase in the price per gallon of the new fuel over
+the next three months. The new fuel's price changes have a standard deviation
+that is 50\% greater than price changes in gasoline futures prices. If gasoline
+futures are used to hedge the exposure, what should the hedge ratio be? What is
+the company's exposure measured in gallons of the new fuel? What position,
+measured in gallons, should the company take in gasoline futures? How many
+gasoline futures contracts should be traded? Each contract is on 42,000 gallons.
+
+---
+
+### Given:
+
+* Asset correlation: 0.6
+* \$1,000,000 per 1 cent change in price of new fuel
+* SD of new fuel 50% greater than gasoline SD.
+
+### Hedge ratio
+
+$$
+h^* = .6 \frac{1.5}{1} = .9
+$$
+
+### Company's exposure
+
+The company loses \$1,000,000 for each 1 cent increase per gallon in the price
+of the new fuel. A 1 cent increase per gallon isn \$0.01 per gallon. 
+
+$$
+Q = \frac{1,000,000}{0.01} = 100,000,000\ \text{gallons}
+$$
+
+The company's exposure is 100 million gallons of new fuel.
+
+### Determine the effective position using gasoline futures
+
+The hedge ratio of 0.9 means that for every gallon of new fuel exposure, the
+hedging instrument (gasoline futures) should cover 0.9 gallons of exposure. So,
+the hedge should cover:
+
+$$
+\text{Hedged exposure} = 0.9 \times 100,000,000 = 90,000,000\ \text{gallons}
+$$
+
+### Calculate the number of gasoline futures contracts needed
+
+Each gasoline futures contract is on 42,000 gallons. Therefore, the number of
+contracts required is:
+
+$$
+\begin{aligned}
+\text{Number of contracts} &= \frac{\text{hedged exposure}}
+  {\text{contract size}}\\
+  &= \frac{90,000,000}{42,000}\\
+  &\approx 2,142.86
+\end{aligned}
+$$
+
+### Summary of results
+
+* Hedge ratio: $h^* = 0.9$
+* Total exposure: 100,000,000 of new fuel
+* Futures position in gallons: The hedge should cover 90,000,000 gallons
+* Number of gasoline futures contracts 2,143
+
+### Interpretation
+
+#### Hedge ratio of 0.9
+
+Because the new fuel's price volatility is 50\% higher than that of gasoline
+futures and the corelation between the two is 0.6, the optimal hedge is for 90\%
+of the exposure.
+
+#### Overall position
+
+The company should take a short position in approximately 2,143 gasoline futures
+contracts (each covering 42,000 gallons) to hedge its price risk on the new fuel
+exposure.
+
+This position will offset most, though not all, of the loss incurred from
+adverse price movements in the new fuel, given the imperfect correlation and
+different volatilities.
+
+---
+
+## 24. Capital Asset Pricing Model and portfolio performance
+
+A portfolio manager has maintained an actively managed portfolio with a beta of
+0.2. During the last year, the risk-free rate was 5\% and equities performed
+very badly providing a return of -30\%. The portfolio manager produced a return
+of -10\% and claims that in the circumstances it was a good performance. Discuss
+this claim.
+
+---
+
+To evaluate the portfolio manager's claim, we need to assess performance
+relative to risk, which is typically done using the Capital Asset Pricing Model
+(CAPM).
+
+### Expected return under CAPM
+
+The CAPM equation:
+
+$$
+\text{Expected return} = R_f + \beta (R_m - R_f)
+$$
+
+Where:
+
+* $R_f = 5\%$
+* $\beta = 0.2$
+* $R_m = -30\%$
+
+The expected return is: $5 + 0.2 \times ( -30\% - 5\%) = -2\%$.
+
+### Actual return vs. expected return
+
+The actual return is -10\%. The expected return is -2\%. This means that the
+manager underperformed the risk-adjusted expectation by
+$-10\% - (-2\%) = -8\%$.
+
+### Interpretation
+
+Even though the portfolio performed better than the market (-10\% vs. -30\%),
+the portfolio took on very little market risk ($\beta = 0.2$). Given that low
+risk, it was expected to lose less---only 2\%. But it lost much more than that.
+
+This suggests that the active management strategy failed to deliver on a
+risk-adjusted basis. The claim of "good performance" does not hold up under CAPM
+analysis and, in fact, the manager's alpha (value added) is negative:
+
+$$
+\alpha = \text{Actual return} - \text{expected return} = -8\%
+$$
+
+### Conclusion
+
+The manager did better than the market in absolute terms, but much worse than
+expected in risk-adjusted terms. Since the whole point of active management is
+to outperform after adjusting for risk, the performance was poor, not good.
+
+---
+
+## 25. Futures contracts and a portfolio beta
+
+It is July 16. A company has a portfolio of stocks worth \$100 million. The beta
+of the portfolio is 1.2. The company would like to use the December futures
+contract on a stock index to change the beta of the portfolio to 0.5 during the
+period July 16 to November 16. The index futures price is currently 2,000 and
+each contract is on \$250 times the index.
+
+(a) What position should the company take?
+(b) Suppose that the company changes its mind and decides to increase the beta
+of the portfolio from 1.2 to 1.5. What position in futures contracts should it
+take?
+
+---
+
+To solve this, we'll use the formula for adjusting the beta of a portfolio using
+index futures
+
+$$
+\text{Number of contracts} = \frac{(\beta_T - \beta_P) \times V_P}{V_F}
+$$
+
+Where:
+
+* $\beta_T$: Target beta
+* $\beta_P$: Current beta
+* $V_P$: value of the portfolio
+* $V_F$: Value of one futures contract = futures price $\times$ contract
+  multiplier
+
+### Given:
+
+* $V_P$: \$100 million
+* Futures price: 2,000
+* Contract size: \$250 $\times$ index = $\$250 \times 2,000 = \$500,000$
+* $V_F$: \$500,000
+
+### A. Reduce the beta from 1.2 to 0.5
+
+$$
+\begin{aligned}
+\text{Number of contracts} &= \frac{0.5 - 1.2) \times 100,000,000}{500,000}\\
+  &= -140
+\end{aligned}
+$$
+
+The company should short 140 contracts.
+
+### B. Increase the beta from 1.2 to 1.5
+
+
+$$
+\begin{aligned}
+\text{Number of contracts} &= \frac{1.5 - 1.2) \times 100,000,000}{500,000}\\
+  &= 60
+\end{aligned}
+$$
+
+The company should go long 60 contracts.
+
+---
+
+# Appendix - Capital asset pricing model
+
+The capital asset pricing model (CAPM) is a model that can be used to relate the
+expected return from an asset to the risk of the return. The risk in the return
+from an asset is divided into two parts. _Systematic risk_ is the risk related
+to the return from the market as a whole and cannot be diversified away.
+_Nonsystematic risk_ is risk that is unique to the asset and can be diversified
+away by choosing a large portfolio of different assets. CAPM argues that the
+return should depend only on systematic risk.
+
+$$
+\text{Epected return on asset} = R_F + \beta (R_M - R_F)
+$$

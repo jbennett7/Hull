@@ -1,0 +1,149 @@
+---
+title: Options
+output: pdf_document
+---
+
+# Options trading
+
+## Selling a call option (Short call)
+
+* You are selling someone the right to buy a stock from you at a specific price
+  (strike price) before a certain date (expiration date).
+
+* You collect a premium upfront.
+
+* Outcomes:
+
+  1. If out of the money you collect the premium.
+
+  2. If in the money, you collect premium and sell the stock at the strike
+     price. If the stock sells higher than the stock price you miss out on the
+     stock's gain.
+
+Example:
+
+  * Strike price: \$10
+  * Premium: \$1
+
+```{r sell call option, echo = F}
+strike <- 10
+premium <- 1
+S_T <- seq(0, 20, by = 1)
+profit <- premium - pmax(0, S_T - strike)
+plot(S_T, profit, type = "l", col = "blue", lwd = 1,
+     ylab = "Profit", xlab = "Stick price at expiration",
+     main = "Profit from selling a call option")
+abline(h = 0, lty = 2)
+text(1, .5,  "premium")
+text(8, .5,  "strike price")
+text(13.5, - .5,  "break even")
+```
+
+## Buying a call option (Long call)
+
+* You are buying the right to buy a stock from someone at a specific price
+  (strike price) before a certain date (expiration date).
+
+* You pay a premium upfront for the option.
+
+* Outcomes:
+
+  1. If in the money you have the right to buy the stock at the discounted
+     strike price but you pay a premium. Your payout is based on the stock price
+     minus the premium you paid.
+
+  2. If out of money the option expires worthless. You lose just the premium.
+
+Example:
+
+* Strike price: \$10
+* Premium: \$1
+
+```{r buy call option, echo = F}
+strike <- 10
+premium <- 1
+S_T <- seq(0, 20, by = 1)
+
+profit <- pmax(0, S_T - strike) - premium
+
+plot(S_T, profit, type = "l", col = "blue",
+     ylab = "Profit", xlab = "Stock price at expiration",
+     main = "Buying a call option")
+abline(h = 0, lty = 2)
+text(1,-.5, "premium")
+text(8, -.5, "strike price")
+text(14, .5, "break even")
+```
+
+## Selling a put option (Short put)
+
+* You are selling someone the right to sell a stock to you for a specific price
+  (strike price) before a certain date (expiration date).
+
+* You collect a premium upfront.
+
+* Outcomes:
+
+  1. If out of the money you collect the premium.
+
+  2. If in the money, you collect the premium and buy the stock at the strike
+     price. If the stock sells lower than the stock price you are paying more
+     for the stock than what its worth.
+
+Example:
+
+* Strike price: \$10
+* Premium: \$1
+
+```{r sell put option, echo = F}
+strike <- 10
+premium <- 1
+S_T <- seq(0, 20, by = 1)
+
+profit <- premium - pmax(0, strike - S_T)
+
+plot(S_T, profit, type = "l", col = "blue",
+     ylab = "Profit", xlab = "Stock price at expiration",
+     main = "Selling a put option")
+abline(h = 0, lty = 2)
+text(19, .5, "premium")
+text(12, .5, "strike price")
+text(6, -.5, "break even")
+```
+
+## Buying a put option
+
+* You are buying the right to sell someone a stock at a specific price (strike
+  price) before a certain date (expiration date).
+
+* You pay a premium upfront.
+
+* Outcomes:
+
+  1. If out of the money you pay the premium and the option expires worthless.
+
+  2. If in the money you can sell the stock at the strike price. Your profit is
+     the strike price minus the current price minus the premium.
+
+Example:
+
+* Strike price: \$10
+
+* Premium: \$1
+
+```{r buy put option, echo = F}
+strike <- 10
+premium <- 1
+S_T <- seq(0, 20, by = 1)
+
+profit <- pmax(0, strike - S_T) - premium
+
+plot(S_T, profit, type = "l", col = "blue",
+     ylab = "Profit", xlab = "Stock price at expiration",
+     main = "Buying a put option")
+abline(h = 0, lty = 2)
+text(19, -.5, "premium")
+text(12, -.5, "strike price")
+text(6, .5, "break even")
+```
+

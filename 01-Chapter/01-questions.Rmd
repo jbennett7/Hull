@@ -1,0 +1,2198 @@
+---
+title: "Introduction"
+subtitle: "Practice Questions"
+author: "John C. Hull"
+#date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+require(latex2exp)
+require(dplyr)
+require(kableExtra)
+options(scipen = 999)
+knitr::opts_chunk$set(echo = TRUE)
+yen_symbol <- "&#xA5;"
+pretty <- function(x) format(x, bigmark=",")
+prettyd <- function(x) format(x, "%B %d, %Y")
+text <- new.env()
+```
+
+# 1. Bearish Option strategies
+
+Explain carefully the difference between selling a call option and buying a put
+option.
+
+---
+
+### Selling a call option (short call)
+
+#### Description
+
+You sell someone the right to buy a stock from you at a specific price (strike
+price) before a certain date (expiration). You collect a premium up front.
+
+#### Your outlook
+
+You're bearish or neutral---you think the stock won't rise above the strike
+price.
+
+#### Profit and loss
+
+Your maximum profit is the premium you receive (if the stock stays at or below
+the strike price). Your maximum loss is unlimited (if the stock goes way up, you
+may have to sell it at the strike price, which could be much lower than market
+value.
+
+$$
+-\text{max}(S_T - K, 0) = \text{min}(K - S_T, 0)
+$$
+
+```{r problem 1: selling a call option, echo = F}
+strike <- 10
+premium <- 1
+S_T <- seq(0, 20, by = 1)
+profit <- premium - pmax(0, S_T - strike)
+plot(S_T, profit, type = "l", col = "blue", lwd = 1,
+     ylab = "Profit", xlab = "Stick price at expiration",
+     main = "Profit from selling a call option")
+abline(h = 0, lty = 2)
+text(1, .5,  "premium")
+text(8, .5,  "strike price")
+text(13.5, - .5,  "break even")
+```
+
+### Buying a put option (long put)
+
+#### Description
+
+You buy the right to sell a stock at a specific price (strike price) before a
+certain date. You pay a premium for this right.
+
+#### Your outlook
+
+You're bearish---you think the stock will fall below the stike price.
+
+#### Profit and loss
+
+Your maximum profit is the strike price - premium (if the stock goes to \$0).
+Your maximum loss is the premium youpaid (if the stock stays above the strike
+price).
+
+$$
+\text{max}(K - S_T, 0)
+$$
+
+```{r problem 1: buying a put, echo = F}
+strike <- 10
+premium <- 1
+S_T <- seq(0, 20, by = 1)
+
+profit <- pmax(0, strike - S_T) - premium
+
+plot(S_T, profit, type = "l", col = "blue",
+     ylab = "Profit", xlab = "Stock price at expiration",
+     main = "Buying a put option")
+abline(h = 0, lty = 2)
+text(19, -.5, "premium")
+text(12, -.5, "strike price")
+text(6, .5, "break even")
+```
+
+### Conclusion
+
+In both cases, the potential payoff is $K - S_T$. When you write a call option,
+the payoff is negative or zero. (This is because the counterparty chooses
+whether to exercise.) When you buy a put option, the payoff is zero or positive.
+(This is because you choose whether to exercise.)
+
+---
+
+# 2. Short forward contract for foreign exchanges
+
+An investor enters into a short forward contract to sell 100,000 British pounds
+for U.S. dollars at an exchange rate of 1.3000 USD per pound. How much does the
+investor gain or  lose if the exchange rate at the end of the contract is (a)
+1.2900 and (b) 1.3200?
+
+---
+
+To determine the gain or loss from a short forward contract, we look at the
+difference between the forward price (the agreed price) and the spot price (the
+actual price at maturity), multiplied by the contract size.
+
+A short forward contract will be selling GBP. The investor benefits if the spot
+rate is lower than the forward rate.
+
+### Given:
+
+* Contract type: Short forward (selling GBP)
+* Contract size: 100,000 GBP
+* Forward rate: 1.3000 USD/GBP
+* Spot rate at maturity:
+  
+  a. 1.2900 USD/GBP
+  b. 1.32000 USD/GBP
+
+### Formula for a short forward
+
+$$
+\begin{aligned}
+\text{Gain/Loss} &= (\text{Forward rate} - \text{Spot rate})
+  \times \text{Contract size}\\
+  &= (K - S_T) \times C\\\\
+\end{aligned}
+$$
+
+Where:
+
+* $S_T$ is the spot price.
+* $K$ is the delivery price.
+* $C$ is the contract size.
+
+$$
+\begin{aligned}
+\text{for spot price 1.2900 USD/GBP:}\\
+\text{Gain/Loss} &= (1.3000 - 1.2900) \times 100,000\\
+  &= \$1,000\\
+\text{for spot price 1.3200 USD/GBP:}\\
+\text{Gain/Loss} &= (1.3000 - 1.3200) \times 100,000\\
+  &= (\$2,000)
+\end{aligned}
+$$
+
+```{r problem 2: graph forward contracts, echo=F}
+K <- 1.3000
+S_T <- seq(1.25, 1.35, by = .01)
+payoff.short <- K - S_T
+payoff.long <- S_T - K
+
+plot(S_T, payoff.short,
+     ylab="Payoff", xlab="Spot price", type = "l", col="blue",
+     main="Payoff for short forward contract")
+abline(h = 0, lwd=.5)
+text(1.30, -.005, "K")
+text(1.35, -.005, TeX("$S_T$"))
+
+plot(S_T, payoff.long,
+     ylab="Payoff", xlab="Spot price", type = "l", col="red",
+     main="Payoff for long forward contract")
+abline(h = 0, lwd=.5)
+text(1.30, -.005, "K")
+text(1.35, -.005, TeX("$S_T$"))
+```
+
+---
+
+# 3. Short futures contracts for commodities
+
+A trader enters into a short cotton futures contract when the futures price is
+50 cents per pound. The contract is for the delivery of 50,000 pounds. How much
+does the trader gain or lose if the cotton price at the end of the contract is
+(a) 48.20 cents per pound and (b) 51.30 cents per pound?
+
+---
+
+A trader that enters into a short futures contract gains when the price of the
+underlying asset drops and loses when the pice rises.
+
+### Given:
+
+* Short (selling) position in cotton futures
+* Initial futures price: 50.00 cents/pound
+* Contract size: 50,000 pounds
+* Spot price at maturity:
+
+  a. 48.20 cents per pound
+  b. 51.30 cents per pound
+
+### Short Futures Formula:
+
+$$
+\begin{aligned}
+\text{Gain/Loss} &= (\text{Initial futures price} - \text{Spot price at maturity})
+  \times \text{Contract size}\\
+  &= (K - S_T) \times C\\\\
+\end{aligned}
+$$
+
+Where:
+
+* $K$ Futures price
+* $S_T$ Spot price at maturity
+* $C$ Contract size
+
+$$
+\begin{aligned}
+\text{for spot price 48.20:}\\
+\text{Gain/Loss} &= (50 - 48.20) \times 50,000\\
+  &= \$900\\
+\text{for spot price 51.30:}\\
+\text{Gain/Loss} &= (50 - 51.30) \times 50,000\\
+  &= (\$650)
+\end{aligned}
+$$
+
+---
+
+# 4. Short put option analysis
+
+Suppose that you write a put contract with a strike price of \$40 and an
+expiration date in 3 months. The current stock price is \$41 and the contract is
+on 100 shares. What have you committed yourself to? How much could you gain or
+lose?
+
+---
+
+When you write (i.e., sell) a put option, you are giving the buyer the right,
+but not the obligation, to sell you the stock at the strike price.
+
+### Given:
+
+* Position: you wrote a put (short put)
+* Strike price: \$40
+* Current stock price: \$41
+* Shares per contract: 100
+* Time to expiration: 3 months
+
+### What writing a put means
+
+You've committed to buying 100 shares at \$40 each if the option buyer chooses
+to exercise the put. This happens only if the stock price drops below \$40,
+because the buyer can then sell shares to you for more than market value.
+
+### What is the maximum gain/loss
+
+The maximum gain is the premium you received for selling the put. This occurs if
+the option expires and the stock price is above the strike price of \$40.
+
+The maximum loss happens if the stock price goes to \$0. You still have to buy
+the stock at \$40 and the loss is
+
+$$
+\begin{aligned}
+\text{Max loss} &= (\text{Strike price} - 0) \times 100\\
+  &= 40 \times 100\\
+  &= (\$4,000)
+\end{aligned}
+$$
+
+```{r problem 4: writing a call option contract, echo = F}
+strike <- 40
+current <- 41
+premium <- 2.40
+S_T <- seq(0, 50, by=2)
+
+profit <- premium - pmax(0, strike - S_T)
+
+plot(S_T, profit, type = "l", col = "blue",
+     ylab = "Profit", xlab = "Stock price at expiration",
+     main = "Selling a put option")
+abline(h = 0, lwd=.8)
+text(50, 1, "premium", cex = .6)
+text(42, 1, "strike price", cex = .6)
+text(38, -2, "break even", cex = .6)
+```
+
+---
+
+# 5. Buying stocks versus long options
+
+You would like to speculate on a rise in the price of a certain stock. The
+current stock price is \$29 and a 3-month call with a strike price of \$30 costs
+\$2.90. You have \$5,800 to invest. Identify two alternative investment
+strategies, one in the stock and the other in an option on the stock. What are
+the potential gains and losses from each?
+
+---
+
+You are comparing direct stock investment vs. using options for leverage.
+
+### Given:
+
+* Current stock price: \$29
+* Call option (3-month, strike \$30): Costs \$2.90
+* Your capital: \$5,800
+* Each option covers 100 shares
+
+### Strategy 1: Buy the stock
+
+$$
+\begin{aligned}
+\text{Shares bought} &= \frac{\$5,800}{\$29}\\
+  &= 200\ \text{shares}
+\end{aligned}
+$$
+
+In this scenario, you gain or lose \$1 per share for every \$1 move in the stock
+price.
+
+```{r problem 5: chart buying the stock, echo = F}
+stock_price <- 29
+capital <- 5800
+shares_bought <- capital/stock_price
+S_T <- seq(0, 50, by = 2)
+payout <- (S_T - stock_price) * shares_bought
+
+plot(S_T, payout, type = "l", col = "blue",
+     xlab = "Price", ylab = "Payout",
+     main = "Buy stock strategy")
+abline(h = 0, lwd = .8)
+text(31.5, -200, "break even", cex=.6)
+```
+
+### Strategy 2: Buy a call option for the stock
+
+$$
+\begin{aligned}
+\text{Contracts} &= \frac{\$5,800}{\$290}\\
+  &\approx 20\ \text{call contracts (each for 100 shares)}
+\end{aligned}
+$$
+
+```{r problem 5: chart buying a call option of the stock, echo = F}
+stock_price <- 29
+capital <- 5800
+strike_price <- 30
+premium <- 2.90
+S_T <- seq(0, 50, by = 2)
+C <- round(5800 / 290) * 100
+
+payout <- (pmax(0, S_T - strike_price) - premium) * C
+
+plot(S_T, payout, type = "l", col = "blue",
+     xlab = "Price", ylab = "Payout",
+     main = "Buy call option strategy")
+abline(h = 0, lwd = .8)
+text(3, -4000, "premium")
+text(26, -4000, "strike price")
+text(38, 1200, "break even", cex = .8)
+```
+
+#### Break-even stock price
+
+Strike + Premium = $\$30 + \$2.90 = \$32.90$.
+
+You lose all you investment if the stock is at or below \$30 at expiration.
+However, your gains are potentially unlimited on the up side.
+
+#### NOTE
+
+You have to sell the options before expiration.
+
+### Conclusion
+
+Buying stock gives steady exposure---less risky but lower potential upside.
+Buying calls gives explosive potential gains but a real chance of losing
+everything.
+
+---
+
+# 6. Long put options for hedging stock positions
+
+Suppose that you own 5,000 shares worth \$25 each. How can put options be used
+to provide you with insurance against a decline in the value of your holding
+over the next 4 months?
+
+---
+
+This is a protective put strategy---a method of hedging a stock position against
+downside risk.
+
+### Given:
+
+* You own 5,000 shares
+* Current stock price: \$25
+* Total value: \$125,000
+* You're worried the price might drop in the next 4 months
+
+### Using put options as insurance (hedge)
+
+To protect yourself, you can buy put options with a strike price around \$25 and
+an expiration 4 months out. Each put option covers 100 shares.
+
+A put gives you the right to sell the stock at the strike price---no matter how
+low the market price falls.
+
+```{r problem 6: buy put option, echo = F}
+strike <- 23
+premium <- 1
+S_T <- seq(0, 40, by = 1)
+
+profit <- pmax(0, strike - S_T) - premium
+
+plot(S_T, profit, type = "l", col = "blue",
+     ylab = "Profit", xlab = "Stock price at expiration",
+     main = "Selling a put option")
+abline(h = 0, lty = 2)
+```
+
+
+### How many puts to buy?
+
+If you own 5,000 shares, each put contract you buy is for 100 shares. Therefore,
+you need 50 put contracts to fully protect your position.
+
+---
+
+# 7. Stock options in relation to the firm
+
+When first issued, a stock provides funds for a company. Is the same true of a
+stock option? Discuss.
+
+---
+
+#### When a company issues stock (primary market)
+
+The company receives funds directly from the sale. This money can be used for
+operations, expansion, paying debt, etc.
+
+#### When a stock option is created (a call or put on an exchange)
+
+Stock options are usually created and traded on options exchanges like the CBOE.
+These are contracts between investors---not between investors and the company.
+So if you buy a call option, the company receives nothing.
+
+#### Exceptions: Employee stock options
+
+There's is one exception: Employee stock options (ESOs) are granted by companies
+to employees. When exercised, employees pay the exercise price to the company
+$\rightarrow$ company receives funds and issues new shares. But this happens
+only when/if the option is exercised.
+
+### Conclusion
+
+So in most cases, stock options do not raise funds for a company---only stock
+issuance does, and employee options may if exercised.
+
+---
+
+# 8. Speculating and hedging uses for futures contracts
+
+Explain why a futures contract can be used for either speculation or hedging.
+
+---
+
+Futures contracts are powerful tools because they serve two very different
+purposes depending on who's using them: speculation or hedging.
+
+### What is a futures contract?
+
+A futures contract is an agreement to buy or sell an asset at a fixed price on a
+future date. This could be for commodities, currencies, stock indices, interest
+ratest, etc.
+
+### Speculation: Making a bet on price movement
+
+A speculator uses futures to try to profit from price changes, without owning
+the underlying asset. For example, if you believe oil prices will rise, so you
+go long (buy) an oil futures contract at \$75/barrel. If oil rises to
+\$80/barrel your profit is \$5. If oil falls to \$70/barrel your loss is \$5.
+
+### Hedging: Reducing risk of price fluctuations
+
+A hedger uses futures to protect against adverse price movements in something
+they already own or plan to buy/sell. For example, if your a wheat farmer and
+you're worried wheat prices might fall before harvest. You could sell wheat
+futures now to lock in the price. If the price falls, you will lose money on the
+crop, but you gain on the future. If the price rises, you earn money on the
+crop, but lose on the future.
+
+### Final thought
+
+Futures are zero-sum---one party's gain is another's loss. Speculators add
+liquidity, while hedgers seek stability.
+
+---
+
+# 9. Call options analysis
+
+Suppose that a March call option to buy a share for \$50 costs \$2.50 and is
+held until March. Under what circumstances will the holder of the option make a
+profit? Under what circumstances will the option be exercised? Draw a diagram
+illustrating how the profit from a long position in the option depends on the
+stock price at maturity of the option.
+
+---
+
+The holder of the option will exercise and make a profit, after expiration date,
+if the price increases above \$52.50.
+
+### Given:
+
+* Option type: Call
+* Strike price: \$50
+* Premium: \$2.50
+* Expires: March
+
+### Profit formula for a long call at expiration
+
+$$
+\begin{aligned}
+\text{Profit} = \left\{ \begin{array}{rcl}
+  S - \text{strike} - \text{premium}, & \text{if} & S > 50\\
+  -\text{premium}, & \text{if} & S \le 50
+  \end{array} \right .
+\end{aligned}
+$$
+
+Plugging in the numbers we get:
+
+$$
+\begin{aligned}
+\text{Profit} = \left\{ \begin{array}{rcl}
+  S - 52.50, & \text{if} & S > 50\\
+  -2.50, & \text{if} & S \le 50
+  \end{array} \right .
+\end{aligned}
+$$
+
+```{r call option diagram, echo=F}
+# Parameters
+strike_price <- 50
+premium <- 2.50
+
+# Range of stock prices at expiration
+stock_prices <- seq(40, 70, by = 0.5)
+
+# Calculate profit for long call
+profit <- ifelse(stock_prices > strike_price,
+                 stock_prices - strike_price - premium,
+                 -premium)
+
+# Plot
+plot(stock_prices, profit, type = "l", lwd = 2, col = "blue",
+     xlab = "Stock Price at Expiration",
+     ylab = "Profit",
+     main = "Profit of a Long Call Option",
+     ylim = c(min(profit) - 1, max(profit) + 1))
+
+abline(h = 0, lty = 2, col = "gray")      # breakeven line
+abline(v = strike_price, lty = 2, col = "red")  # strike price line
+abline(v = strike_price + premium, lty = 2, col = "green")  # breakeven point
+
+legend("topleft", legend = c("Profit", "Strike Price", "Break-even"),
+       col = c("blue", "red", "green"), lty = 1, bty = "n")
+```
+
+---
+
+# 10. Put options analysis
+
+Suppose that a June put option to sell a share for \$60 costs \$4 and is held
+until June. Under what circumstances will the seller of the option (i.e., the
+party with the short position) make a profit? Under what circumstances will the
+option be exercised? Draw a diagram illustrating how the profit from a short
+position in the option depends on the stock price at maturity of the option.
+
+---
+
+### Given:
+
+* Option type: Put
+* Strike price: \$60
+* Premium: \$4
+* Expiration: June
+
+This is the short side of a put option.
+
+The buyer of the put will exercise the option if the stock price at expiration
+date is less than \$60. You will collect \$4 no matter what, but if the stock
+price drops below \$56 ($60 - 4$), then you will lose on the sale.
+
+```{r put option diagram, echo=F}
+# Parameters
+strike_price <- 60
+premium <- 4
+
+# Stock price range at expiration
+stock_prices <- seq(40, 80, by = 0.5)
+
+# Profit for short put
+profit <- ifelse(stock_prices < strike_price,
+                 premium - (strike_price - stock_prices),
+                 premium)
+
+# Plot
+plot(stock_prices, profit, type = "l", lwd = 2, col = "darkorange",
+     xlab = "Stock Price at Expiration",
+     ylab = "Profit",
+     main = "Profit of a Short Put Option",
+     ylim = c(min(profit) - 2, max(profit) + 2))
+
+abline(h = 0, lty = 2, col = "gray")              # zero profit line
+abline(v = strike_price, lty = 2, col = "red")    # strike price
+abline(v = strike_price - premium, lty = 2, col = "green")  # break-even
+
+legend("bottomright", legend = c("Profit", "Strike Price", "Break-even"),
+       col = c("darkorange", "red", "green"), lty = 1, bty = "n")
+```
+
+---
+
+# 11. Call option cash flows
+
+It is May and a trader writes a September call option with a strike price of
+\$20. The stock price is \$18 and the option price is \$2. Describe the trader's
+cash flows if the option is held until September and the stock price is \$25 at
+that time.
+
+---
+
+### Given:
+
+* Current month: May
+* Option type: call option (short position---the trader wrote the option)
+* Strike price: \$20
+* Option price (premium): \$2 (received by the trader)
+* Stock price at expiration (September): \$25
+
+### What happens at expiration?
+
+Since the stock price at expiration (\$25) is above the strike price (\$20), the
+call option will be exercised. That means the option buyer will buy the stock
+for \$20, and the trader must deliver the stock at that price.
+
+### Trader's cash flows:
+
+#### Initial cash inflow (in May):
+
+The trader receives \$2 per option from selling (writing) the call.
+
+####  At expiration (in September):
+
+The trader is obligated to sell a share at \$20, while the market price is \$25.
+This results in a \$5 loss per share (they miss out on the extra \$5).
+
+####  Net cash flow (profit/loss):
+
+$$
+\text{Total} = \$2 - \$5 = -\$3
+$$
+
+### Final answer
+
+The trader receives \$2 when the option is sold in May, but loses \$5 when the
+option is exercised in September. Therefore the net loss is \$3 per share.
+
+---
+
+# 12. Put option analysis
+
+A trader writes a December put option with a strike price of \$30. The price of
+the option is \$4. Under what circumstances does the trader make a gain?
+
+---
+
+### Given:
+
+* Option type: Put option (short position---the trader wrote the option)
+* Strike price: \$30
+* Option price (premium): \$4 (received by the trader)
+* Expiration: December
+
+### When does the trader make a gain?
+
+The trader profits when the put option is not exercised (because the trader is
+the one who sold the option). The put option gives the buyer the right to sell
+the stock at \$30. If the stock price at expiration is above \$30, the option
+will not be exercised because the buyer can sell the stock at a higher market
+price. So, the trader will make a gain if the stock price at expiration is
+$> \$30$ (because the option will expire worthless, and the trader keeps the \$4
+premium).
+
+### Break-even point
+
+The break-even is the point where the trader's profit from the option premium is
+exactly offset by any losses from having to buy the stock at the strike price.
+
+$$
+\text{Break-even} = \text{Strike price} - \text{Premium received}
+  = 30 - 4 = \$26
+$$
+
+### When does the trader lose?
+
+If the stock price falls below \$30, the buyer of the option may exercise the
+option, and the trader will have to buy the stock at \$30---even though it's
+worth less in the market. The trader will lose money if the stock price at
+expiration is below \$26.
+
+### Conclusion
+
+The trader makes a gain when the stock price at expiration is above \$30 because
+the put option will not be exercised, and the trader keeps the full premium
+(\$4).
+
+```{r problem 12: sell put option, echo = F}
+strike <- 30
+premium <- 4
+S_T <- seq(0, 40, by = 1)
+
+profit <- premium - pmax(0, strike - S_T)
+
+plot(S_T, profit, type = "l", col = "blue",
+     ylab = "Profit", xlab = "Stock price at expiration",
+     main = "Selling a put option")
+abline(h = 0, lty = 2)
+abline(v = strike, col = "gold")
+abline(v = strike - premium, col = "red")
+legend("bottomright", legend = c("Profit", "Strike price", "Break-even"),
+       col = c("blue", "gold", "red"), lty = 1, bty = "n", cex = .8)
+```
+
+---
+
+# 13. Foreign currency option hedging strategies
+
+A company knows that it is due to receive a certain amount of a foreign currency
+in 4 months. What type of option contract is appropriate for hedging?
+
+---
+
+When a company is due to receive a foreign currency in the future (in this case,
+in 4 months), it faces the risk of currency fluctuations that could affect the
+value of the payment it will receive. To hedge against the risk of the foreign
+currency depreciating (i.e., the value of the currency dropping relative to the
+company's domestic currency), the company can use a foreign currency option.
+
+The appropriate option contract for this scenario is a long put option on the
+foreign currency (for hedging receivables). The company is expecting to receive
+a foreign currency payment in the future. If the foreign currency depreciates
+against the domestic currency by the time the company receives it, the value of
+the payment will be lower in domestic currency terms. A put option gives the
+company the right (but not the obligation) to sell the foreign currency at a
+predetermined strike price. This ensures that the company can lock in a minimum
+exchange rate, protecting itself from a fall in the value of the foreign
+currency. In simple terms, a put option on the foreign currency allows the
+company to sell the foreign currency at the strike price (if the spot rate is
+less favorable) when it receives the payment in 4 months. This provides a hedge
+if the foreign currency depreciates.
+
+### Key details of the hedging strategy
+
+* __Strike price:__ The agreed-upon exchange rate at which the company can sell
+  the foreign currency in 4 months.
+
+* __Premium:__ The cost of purchasing the put option. This cost must be weighted
+  against the potential savings from hedging.
+
+* __Expiry:__ The option expires when the foreign currency payment is due (in 4
+  months), giving the company the right to sell the foreign currency at the
+  agreed strike price.
+
+```{r problem 13: hedging, echo = F}
+strike <- 10
+premium <- 1
+S_T <- seq(0, 20, by = 1)
+
+profit <- pmax(0, strike - S_T) - premium
+
+plot(S_T, profit, type = "l", col = "blue",
+     ylab = "Profit", xlab = "Stock price at expiration",
+     main = "Buying a put option")
+abline(h = 0, lty = 2)
+abline(v = strike, col = "gold")
+abline(v = strike - premium, col = "red")
+legend("topright", legend = c("Profit", "Strike price", "Break-even"),
+       col = c("blue", "gold", "red"), lty = 1, bty = "n", cex = .8)
+```
+
+### Alternative hedging options
+
+#### Forward contracts
+
+Instead of using options, the company could enter into a forward contract to
+lock in the exchange rate. However, forwards are obligatory and less flexible
+than options (they don't allow for profit if the market moves in your favor).
+
+### Conclusion
+
+A put option on the foreign currency is the appropriate tool to hedge
+receivables in a foreign currency, as it gives the company the flexibility to
+protect itself from depreciation while still allowing it to benefit if the
+foreign currency appreciates.
+
+---
+
+# 14. Foreign currency forward contract and option hedging strategies
+
+A U.S. company expects to have to pay 1 million Canadian dollars in 6 months.
+Explain how the exchange rate risk can be hedged using (a) a forward contract
+and (b) an option.
+
+---
+
+When a U.S.company expects to pay in a foreign currency in the future, it faces
+the risk that the CAD could appreciate relative to the U.S. dollar (USD), which
+would increase the cost of the payment. To mitigate this risk, the company can
+use two common hedging strategies: forward contracts and options.
+
+### Given:
+
+* Amount to be paid: 1,000,000 CAD
+* Time horizon: 6 months
+* The company is concerned that the CAD might appreciate, making the payment
+  more expensive in USD terms.
+
+### Hedging using a forward contract
+
+#### How it works:
+
+A forward contract allows the U.S. company to lock in the exchange rate at which
+it will convert USD to CAD in the future. The company enters into a forward
+contract with a bank or financial institution to buy 1 million CAD at a specific
+exchange rate, to be settled in 6 months. The forward contract guarantees that
+the company will pay a fixed rate for the CAD, regardless of how the spot
+exchange rate fluctuates.
+
+#### Steps:
+
+  1. __Agreement:__ The company agrees to buy (long) 1 million CAD at a
+     predetermined forward rate (e.g., 1 USD = 1.30 CAD) for delivery in 6
+     months.
+
+  2. __At maturity:__ In 6 months, the company will pay USD to get 1 million CAD
+     at the agreed-upon exchange rate of 1.30 CAD/USD (assuming the rate is
+     1.30).
+
+  3. __Risk mitigation:__ This hedging strategy eliminates exchange rate risk,
+     as the company knows exactly how much USD it will need to pay for the CAD,
+     even if the spot rate has changed.
+
+#### Pros:
+
+  * __Certainty:__ The company knows exactly how much USD it will need to pay in
+    6 months.
+
+  * __No cost:__ Typically there are no upfront premium for a forward contract,
+    but there may be fees or spread differences.
+
+#### Cons:
+
+  * __No flexibility:__ If the exchange rate moves favorably, in the company's
+    benefit, it is still bound by the forward rate.
+
+```{r problem 14: long forward contract, echo=F}
+K <- 1.3000
+S_T <- seq(1.25, 1.35, by = .01)
+payoff <- S_T - K
+
+plot(S_T, payoff,
+     ylab="Payoff", xlab="Spot price", type = "l", col="red",
+     main="Payoff for long forward contract")
+abline(h = 0, lwd=.5)
+text(1.30, -.005, "K")
+text(1.35, -.005, TeX("$S_T$"))
+```
+
+### Hedging using an option
+
+#### How it works:
+
+A call option gives the company the right, but not the obligation, to buy 1
+million CAD at a specific strike price in 6 months. The company buys a call
+option on CAD, which gives the company the right to buy CAD at the strike price.
+The company can decide whether to exercise the option depending on the spot
+exchange rate at the time of expiration.
+
+### Steps:
+
+  1. __Agreement:__ The company buys a call option to purchase 1 million CAD at
+     a specified strike price (e.g., 1 USD = 1.30 CAD).
+
+  2. __At maturity:__ If the spot rate is below the strike price, the company
+     will not exercise the option and will simply convert its USD at the lower
+     spot rate. If the spot rate is above the strike price, the company will
+     exercise the option and purchase CAD at the strike price.
+
+  3. __Risk mitigation:__ The option gives the company the flexibility to
+     benefit from favorable exchange rate movements while still protecting
+     against unfavorable movements.
+
+#### Pros:
+
+  * __Flexibility:__ The company can choose not to exercise the option if the
+    exchange rate moves in its favor.
+
+  * __Limited downside:__ The maximum loss is the premium paid for the option
+    (e.g., \$30,000), whereas the potential gain is theoretically unlimited if
+    the currency appreciates significantly.
+
+#### Cons:
+    
+  * __Premium cost:__ The company must pay an upfront premium to purchase the
+    option, which is a cost even if the option is not exercised.
+
+  * __Uncertainty in cost:__ The exact amount of USD to be spent will depend
+    on the final exchange rate and the premium paid.
+
+```{r problem 14: buy call option, echo = F}
+strike <- 1.300
+premium <- strike * .05
+S_T <- seq(1.2, 1.4, by = .01)
+
+profit <- pmax(0, S_T - strike) - premium
+
+plot(S_T, profit, type = "l", col = "blue",
+     ylab = "Profit", xlab = "Price at expiration",
+     main = "Buying a call option")
+abline(h = 0, lty = 2)
+abline(v = strike, col = "gold")
+abline(v = strike + premium, col = "red")
+legend("left", legend = c("Profit", "Strike price", "Break-even"),
+       col = c("blue", "gold", "red"), lty = 1, bty = "n", cex = .8)
+```
+
+
+### Conclusion
+
+  * __Forward contract:__ Ideal if the company wants certainty and wants to
+    completely lock in the exchange rate for the future transaction. It
+    eliminates the risk but does not allow the company to benefit from favorable
+    exchange rate movements.
+
+  * __Option:__ Ideal if the company wants flexibility and is willing to pay an
+    upfront premium for the right to exercise only if the exchange rate moves
+    unfavorably. The option provides protection while also allowing the company
+    to benefit from favorable currency movements.
+
+---
+
+# 15. Foreign currency short forward contracts
+
+A trader enters into a short forward contract on 100 million yen. The forward
+exchange rate is \$0.0090 per yen. How much does the trader gain or lose if the
+exchange rate at the end of the contract is (a) \$0.0084 per yen and (b)
+\$0.0101 per yen?
+
+---
+
+In a short forward contract, the trader is agreeing to sell a foreign currency
+(in this case, 100 million yen) at a predetermined forward exchange rate. If the
+spot exchange rate at the end of the contract is lower than the forward exchange
+rate, the trader will gain, as they can buy the yen at a lower price in the open
+market and still sell it at the agreed higher price. Conversely, if the spot
+exchange rate is higher than the forward exchange rate, the trader will lose.
+
+Given:
+
+* Contract amount: 100 million yen
+* Forward exchange rate: \$0.0090 per yen
+* Scenarios:
+
+  a. Spot exchange rate: \$0.0084 per yen
+  b. Spot exchange rate: \$0.0101 per yen
+
+### Scenario A: Spot exchange rate \@ \$0.0084 Yen
+
+Here the trader selling (shorting) a forward contract will make a profit.
+
+$$
+\begin{aligned}
+\text{Profit per yen} &= \text{Forward rate} - \text{Spot rate}\\
+  &= 0.0090 - 0.0084\\
+  &= 0.0006\\
+\text{Profit} &= \text{Profit per yen}
+  \times \text{Contract amount}\\
+  &= 0.0006 \times 100,000,000\\
+  &= \$60,000
+\end{aligned}
+$$
+
+### Scenario B: Spot exchange rate \@ \$0.0101 Yen
+
+In this scenario the trader will take a loss.
+
+$$
+\begin{aligned}
+\text{Loss per yen} &= \text{Forward rate} - \text{Spot rate}\\
+  &= 0.0090 - 0.0101\\
+  &= (0.0011)\\
+\text{Loss} &= \text{Loss per yen} \times \text{Contract amount}\\
+  &= -0.0011 \times 100,000,000\\
+  &= (\$110,000)
+\end{aligned}
+$$
+
+---
+
+# 16. Derivative trader types
+
+The CME Group offers a futures contract on long-term Treasury bonds.
+Characterize the traders likely to use this contract?
+
+---
+
+The CME Group's long-term Treasury bond futures contract is a financial
+instrument designed to allow traders to hedge, speculate, or manage interest
+rate risk. This contract is typically based on U.S. Treasury bonds with a
+notional value of \$100,000 and a maturity of 15 years or more. The contract is
+primarily used by various types of traders, each with different objectives.
+
+### Hedgers
+
+#### Institutional investors (e.g., insurance companies, pension funds, mutual funds):
+
+These traders use the futures contracts to hedge against interest rate
+fluctuations that could affect the value of their long-term bond holdings.
+
+For example, if a pension fund holds long-term Treasury bonds, it may use futures to
+protect the portfolio from potential interest rate hikes, which would lower bond
+prices. By selling futures, the fund can offset losses in the bond portfolio
+with gains from the short futures position if rates rise.
+
+#### Banks and financial institutions
+
+Banks may use these futures contracts to manage the risk related to their bond
+portfolios, especially if they hold significant amounts of long-term debt
+securities. They might hedge the exposure to interest rate changes that can
+affect the value of their portfolios.
+
+#### Corporations with long-term debt
+
+Companies that have issued long-term bonds or are exposed to future interest
+rate movements might use these futures contracts to lock in favorable rates,
+thereby reducing the risk associated with fluctuating borrowing costs.
+
+### Speculators
+
+#### Hedge funds and proprietary trading firms
+
+Speculators who believe that interest rates are going to move in a particular
+direction may use these futures contracts to profit from changes in the value of
+long-term Treasury bonds. If a speculator expects rates to fall (and bond prices
+to rise), they would buy futures contracts. Conversely, if they expect rates to
+rise (and bond prices to fall), they would sell futures contracts.
+
+#### Individual traders
+
+Some individual traders might speculate on interest rate changes using these
+contracts as a lower-cost alternative to trading physical Treasury bonds. This
+allows them to gain exposure to U.S. government debt without having to trade the
+bonds directly, which can involve higher capital requirements and liquidity
+concerns.
+
+### Arbitrageurs
+
+#### Arbitrage traders
+
+These traders attempt to take advantage of pricing inefficiencies between the
+futures and the underlying Treasury bonds or related instruments. They might
+trade Treasury bond futures alongside cash Treasury bonds or other related
+futures contracts to profit from small price discrepancies between the futures
+market and the cash market.
+
+### Central banks and sovereign wealth funds
+
+Central banks, espeically those holding large amounts of Treasury securities,
+may use these futures contracts for portfolio management or to hedge their
+foreign exchange reserves. Sovereign wealth funds, with large investments in
+U.S. Treasuries, might also use these futures for risk management and to control
+the interest rate exposure of their portfolios.
+
+---
+
+# 17. Nature of options and futures
+
+"Options and futures are zero-sum games." What do you think is meant by this?
+
+---
+
+The phrase "Options and futures are zero-sum games" means that, in these
+markets, the total profits and losses for all participants balance out to zero.
+This is a key characteristic of derivative markets like options and futures.
+
+---
+
+# 18. Option strategy: long forward / long European put
+
+Describe the profit from the following portfolio: a long forward contract on an
+asset and a long European put option on the asset with the same maturity as the
+forward contract and a strike price that is equal to the forward price of the
+asset at the time the portfolio is set up.
+
+---
+
+This is a classic combination of a long forward contract and a long European put
+option on the same underlying asset with the same maturity and a strike price of
+the put equal to the forward price at initiation.
+
+### Key definitions:
+
+* $F_0$: forward price of the asset at initiation
+* $S_T$: spot price of the asset at maturity
+* $K = F_0$: strike price of the put option (same as forward price)
+* The put option is European, so it can only be exercised at maturity
+* We ignore transaction costs and assume no arbitrage
+
+Payoffs at Maturity:
+
+$$
+\begin{aligned}
+\text{Long Forward Contract:}\\
+\text{Profit} &= S_T - F_0\\
+\text{Long Put Option with strike}\ K = F_0\text{:}\\
+\text{Profit} &= \text{max}(F_0 - S_T, 0)
+\end{aligned}
+$$
+
+The total profit from the portfolio:
+
+$$
+\text{Total profit} = (S_T - F_0) + \text{max}(F_0 - S_T, 0)
+$$
+
+### Case 1: $S_T \ge F_0$
+
+* The forward contract gains: $S_T - F_0$
+* The put expires worthless: $\text{max}(F_0 - S_T, 0) = 0$
+* Total profit: $S_T - F_0$
+
+### Case 2: $S_T < F_0$
+
+* The forward loses: $S_T - F_0$ (negative)
+* The put gains: $F_0 - S_T$
+* Total profit: $(S_T - F_0) + (F_0 - S_T) = 0$
+
+### Conclusion
+
+* If $S_T \ge F_0$, profit = $S_T - F0$
+* If $S_T < F_0$, profit = 0
+
+### Interpretation
+
+This combination of a long forward and a long put is synthetically equivalent to
+a long call option with strike price equal to the forward price. This is a
+useful arbitrage-free result known as put-call parity in derivative pricing.
+
+---
+
+# 19. Index Currency Option Note (ICON)
+
+In the 1980s, Bankers Trust developed _index currency option notes_ (ICONs).
+These were bonds in which the amount received by the holder at maturity varied
+with a foreign exchange rate. One example was its trade with the Long Term
+Credit Bank of Japan. The ICON specified that if the yen/USD exchange rate,
+$S_T$, is greater than 169 yen per dollar at maturity (in 1995), the holder of
+the bond receives \$1,000. If it is less than 169 yen per dollar, the amount
+received by the holder of the bond is:
+
+$$
+\begin{aligned}
+1,000 - \text{max}\left[ 0, 1,000 \left( \frac{169}{S_T} - 1 \right) \right]
+\end{aligned}
+$$
+
+When the exchange rate is below 84.5, nothing is received by the holder at
+maturity. Show that this ICON is a combination of a regular bond and two
+options.
+
+---
+
+We will show how the Index Currency Option Note (ICON) can be replicated using a
+combination of a straight bond and two options.
+
+### ICON Payoff Structure
+
+At maturity:
+
+* If $S_T > 169$ yen/USD, the holder receives \$1,000
+
+* If $S_T \le 169$ Holder receives:
+
+$$
+1,000 - \text{max} \left[ 0, 1,000 \left( \frac{169}{S_T} - 1 \right) \right]
+$$
+
+This simplifies to:
+
+$$
+\begin{aligned}
+\text{Payoff} = \text{min}
+\left[ 1,000, 1,000 \left( \frac{S_T}{169} \right) \right]
+\end{aligned}
+$$
+
+Because:
+
+$$
+\begin{aligned}
+1,000 - 1,000 \left( \frac{169}{S_T} - 1 \right)
+  &= 1,000 \left( 2 - \frac{169}{S_T} \right)\\
+  &= \text{Only valid when} \frac{169}{S_T} > 1 \Rightarrow S_T < 169\\
+\end{aligned}
+$$
+
+Or more directly, the ICON payoff is:
+
+$$
+\begin{aligned}
+\text{Payoff} = \left\{ \begin{array}{rcl}
+  1,000, & \text{if}\ S_T \ge 169\\
+  1,000 \cdot \frac{S_T}{169}, & \mbox{if}\ S_T < 169
+  \end{array} \right .
+\end{aligned}
+$$
+
+
+### Step 1: Interpret the payoff
+
+This looks like a bond that is worth \$1,000 minus an amount that increases as
+the exchange rate falls below 169.
+
+So the loss due to unfavorable exchange rate movements is:
+
+$$
+- \text{max} \left[ 0, 1,000 \left( \frac{169}{S_T} - 1 \right) \right]
+$$
+
+```{r problem 19: ICON, echo = F}
+S_T <- seq(84.5, 169, by = 4)
+#profit <- 1000 - pmax(0, 1000*(169/S_T - 1))
+profit <- - pmax(0, 1000*(169/S_T - 1))
+plot(S_T, profit, type = "l", col = "blue",
+     ylab = "Loss", xlab = "Price at expiration",
+     main = "ICON payoff structure")
+abline(h = 0)
+abline(v = 169)
+```
+
+Let's isolate this component and interpret it.
+
+### Step 2: Define the loss component
+
+Let:
+
+$$
+L(S_T) = 1,000 \left( \frac{169}{S_T} - 1 \right)
+  = 1,000 \cdot \left( \frac{169 - S_T}{S_T} \right)
+$$
+
+This is positive when $S_T < 169$, and zero otherwise.
+
+This form suggests exposure to an inverse relationship with the exchange
+rate---similar to a put option payoff structure.
+
+But it's a bit more complex because of the inverse $\frac{1}{S_T}$ term.
+
+### Step 3: Show it as a Bond + Options
+
+Let's construct the ICON payoff using:
+
+* A straight zero-coupon bond paying \$1,000
+
+* A long position in a digital option or binary option (to truncate the loss)
+
+* A short position in a put option on the exchange rate
+
+But a cleaner replication is:
+
+$$
+\text{ICON} = \text{Straight bond} - \text{Put option on}\ \frac{1}{S_T}
+$$
+
+Let's use financial engineering to express it more precisely.
+
+### Step 4: Final decomposition
+
+The ICON is equivalent to:
+
+1. A \$1,000 zero-coupon bond (pays full amount if exchange rate is favorable)
+
+2. Short a put option on the foreign exchange rate with:
+
+   * Strike price: 169 yen/USD
+   * Underlying: the exchange rate $S_T$
+   * Notional amount: scaled  such that the option payout when $S_T < 169$ is:
+
+$$
+1,000 \left( \frac{169}{S_T} - 1 \right)
+$$
+
+3. Long a digital put option (binary put) with strike at 84.5 yen/USD:
+
+   * Ensures that if the exchange rate falls below 84.5, the ICON pays nothing
+   * This truncates losses and acts as a floor
+
+### Conclusion: The ICON is a combination of:
+
+* A straight \$1,000 bond
+* Short a put option on the YEN/USD exchange rate with strike 169
+* Long a digital put option (or structured floor) to ensure minimum payoff is
+  \$0 when exchange rate falls too far.
+
+This structure allows Bankers Trust to reduce coupon payments based on exchange
+rate movements, effectively embedding currency risk into a bond payoff using
+options.
+
+---
+
+# 20. Forward spread trade
+
+On July 1, 2021, a company enters into a forward contract to buy 10 million
+Japanese yen on January 1, 2022. On September 1, 2021, it enters into a forward
+contract to sell 10 million Japanese yen on January 1, 2022.  Describe the
+payoff from this strategy.
+
+---
+
+This strategy involves entering into two offsetting forward contracts:
+
+* July 1, 2021: Enter long forward to buy 10 million Yen on January 1, 2022.
+* September 1, 2021: Enter short forward to sell 10 million Yen on January 1,
+  2022.
+
+Both contracts settle on January 1, 2022.
+
+### Key observations:
+
+* The company has no net exposure to yen on January 1, 2022, because it will buy
+  and sell the same amount (`r yen_symbol`10 million) on the same day.
+* However, the forward rates locked in on July 1 and September 1 are likely
+  different.
+* This creates a spread in the forward prices, which gives rise to a certain
+  (riskless) profit or loss, depending on the direction of the spread.
+
+### Let's define
+
+* $F_1$: Forward rate to buy yen on July 1 (i.e., cost in USD per
+  `r yen_symbol`1)
+* $F_2$: Forward rate to sell yen on September 1 (i.e., revenue in USD per
+  `r yen_symbol`1)
+
+Then the payoff per yen on January 1, 2022 is:
+
+$$
+\text{Payoff per yen} = F_2 - F_1
+$$
+
+So, the total payoff is:
+
+$$
+\text{Payoff} = 10,000,000 \times (F_2 - F_1)
+$$
+
+### Interpretation:
+
+* If $F_2 > F_1$: You make a profit---sell the yen at a higher price than you
+  agreed to buy.
+* If $F_2 < F_1$: You incur a loss---you buy yen at a higher price than you can
+  sell them for.
+
+### Economic Meaning
+
+This is effectively a speculative position on the change in forward rates
+between July 1 and September 1. It's a forward spread trade.
+
+* You are locking in a forward rate arbitrage, betting on how forward rates move
+  over time.
+* You are not exposed to future spot rate changes---only the change in forward
+  pricing between the two dates.
+
+---
+
+# 21. Foregin exchange arbitrage opportunities
+
+Suppose the USD/sterling spot and forward exchange rates are as follows:
+
+```{r problem 21, echo=F}
+m <- matrix(c(1.2580, 1.2556, 1.2518), ncol=1)
+rownames(m) <- c("Spot", "90-day forward", "180-day forward")
+knitr::kable(m)
+```
+
+What opportunities are open to an arbitrageur in the following situations?
+
+a. A 180-day European call option to buy 1 pound for \$1.22 costs 2 cents.
+b. A 90-day European put option to sell 1 pound for \$1.29 costs 2 cents.
+
+---
+
+### 180-day European call option to buy 1 GBP for \$1.22, costing \$0.02
+
+* Strike price: \$1.22
+* Cost of option: \$0.02
+* Forward rate (180-day): \$1.2518
+
+This call option gives the right to buy GBP at \$1.22, but in 180 days GBP is
+expected to cost \$1.2518 (forward rate). That means:
+
+  * If you buy the call for \$0.02 now and exercise it in 180 days, you could
+    immediately sell the pound for \$1.2518 in the forward market.
+
+  * Profit = \$1.2518 - \$1.22 - \$0.02 = \$0.0318 per pound
+
+This option is underpriced relative to the forward rate.
+
+### 90-day European put option to sell 1 GBP for \$1.29, costing \$0.02
+
+* Strike price: \$1.29
+* Cost of option: \$0.02
+* Forward Rate (90-day): \$1.2556
+
+This put gives the right to sell GBP for \$1.29, while the expected market value
+is only \$1.2556 in 90 days.
+
+  * Buy GBP forward for \$1.2556
+  * Use the put to sell it at \$1.29
+  * Profit = \$1.29 - \$1.2556 - \$0.02 = \$0.0144 per pound
+
+This option is underpriced compared ot the forward rate.
+
+---
+
+# 22. Exercising options
+
+A trader buys a call option with a strike price of \$30 for \$3. Does the trader
+ever exercise the option and lose money on the trade? Explain your answer.
+
+---
+
+A call option is only exercised when the stock price is above the strike price.
+However, a trader can exercise the option and lose money if they wanted to if
+the stock is less than the strike price minus the premium. Here that would be
+a stock price that is below \$33.
+
+---
+
+# 23. Put option analysis
+
+A trader sells a put option with a strike price of \$40 for \$5. What is the
+trader's maximum gain and maximum loss? How does your answer change if it is a
+call option? Graph each using R.
+
+---
+
+### Put option (sold by trader)
+
+* Strike price: \$40
+* Premium received: \$5
+* Short put: Trader must buy the asset at \$40 if the buyer exercises
+
+#### Maximum gain:
+
+The buyer will only exercise if the stock price is below \$40. But if the stock
+price stays above or equal to \$40, the option expires worthless, and the seller
+keeps the \$5 premium.
+
+#### Maximum loss:
+
+Occurs if the stock price falls to zero. The trader buys at \$40, asset is worth
+\$0, the loss is \$40, but received \$5 premium so net loss is \$35.
+
+For a put option the profit to strike price graph is as follows:
+
+```{r problem 23: put, echo=F}
+library(ggplot2)
+
+# Define stock prices
+S <- seq(0, 80, by = 1)
+
+# Short put
+strike_put <- 40
+premium_put <- 5
+payoff_short_put <- ifelse(S < strike_put,
+                           -(strike_put - S) + premium_put,
+                           premium_put)
+
+ggplot(data.frame(StockPrice = S, Profit = payoff_short_put),
+       aes(x = StockPrice, y = Profit)) +
+  geom_line(size = 1.2, colour="Blue") +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(
+    title = "Payoff for Short Put",
+    x = "Stock Price at Expiration",
+    y = "Profit"
+  ) +
+  theme_minimal()
+```
+
+## Call option (sold by trader)
+
+* Strike price: \$40
+* Premium received: \$5
+* Short call: Trader must sell the asset at \$40 if the buyer exercises
+
+#### Maximum gain:
+
+If the stock price $\le \$40$ the option expires worthless. The maximum gain is
+\$5.
+
+#### Max loss:
+
+There's unlimited downside since the stock can rise infinitely. If the stock
+hits \$100, the trader sells at \$40, takes a \$60 loss minus the \$5 premium.
+net loss is \$55.
+
+```{r problem 23: call, echo=F}
+library(ggplot2)
+
+# Define stock prices
+S <- seq(0, 80, by = 1)
+
+# Short Call
+strike_call <- 40
+premium_call <- 5
+payoff_short_call <- ifelse(S > strike_call, - (S - strike_call) + premium_call, premium_call)
+
+# Plot
+ggplot(data.frame(StockPrice = S, Profit = payoff_short_call),
+       aes(x = StockPrice, y = Profit)) +
+  geom_line(size = 1.2, colour="Red") +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(
+    title = "Payoff for Short Call",
+    x = "Stock Price at Expiration",
+    y = "Profit"
+  ) +
+  theme_minimal()
+```
+
+---
+
+# 24. Nature of options
+
+"Buying a put option on a stock when the stock is owned is a form of insurance."
+Explain this statement.
+
+---
+
+When a trader buys a put option on a stock, they are buying the right to sell a
+stock at the strike price. This means that, if the stock falls below the strike
+price, the trader's loss on the stock is capped by the difference between what
+he bought the stock for and the strike price plus the premium he paid for the
+option.
+
+---
+
+# 25. Buying stock versus buying call options
+
+On May 21, 2020, the spot ask price of Apple stock is \$316.50 and the ask price
+of a call option with a strike price of \$320 and a maturity date of September
+is \$21.70. A trader is considering two alternatives: buy 100 shares of the
+stock and buy 100 September call options. For each alternative, what is (a) the
+upfront cost, (b) the total gain if the stock price in September is \$400, and
+(c) the total loss if the stock price in September is \$300. Assume that the
+option is not exercised before September and positions are unwound at option
+maturity.
+
+---
+
+### Given:
+
+* Spot price of Apple (AAPL): \$316.50
+* Call option strike price: \$320
+* Call option premium (ask): \$21.70
+* Maturity: September
+* Trader considers buying either:
+
+1. 100 shares of stock
+2. 100 call options (each option = 1 share)
+
+* Scenarios for AAPL in September:
+
+i.  Price = \$400
+ii. Price = \$300
+
+### Strategy 1: Buy 100 Shares of Stock
+
+* Upfront cost: $100 \times 316.50 = \$31,650$
+* Gain if stock price = \$400: $(400 - 316.40) \times 100 = \$8,350$
+* Loss if stock price = \$300: $(300 - 316.50) \times 100 = - \$1,650$
+
+### Strategy 2: Buy 100 Call options (strike = \$320, premium = \$21.70)
+
+Remember that call options give you the right to buy at \$320. If the stock
+ends below \$320, option is worthless.
+
+* Upfront cost: $100 \times 21.70 = \$2,170$
+* Gain if stock price = \$400:
+
+  * Intrinsic value of option = \$400 - \$320 = \$80
+  * Total value of 100 options = \$8,000
+  * Profit = \$8,000 - \$2,170 = \$5830
+
+* Loss if stock price = \$300:
+
+  * Option expires worthless
+  * Loss = Premium paid = -\$2,170
+
+---
+
+# 26. Nature of arbitrage
+
+What is arbitrage? Explain the arbitrage opportunity when the price of a dually
+listed mining company stock is \$50 (USD) on the New York Stock Exchange and
+\$60 (CAD) on the Toronto Stock Exchange. Assume that the exchange rate is such
+that 1 U.S. dollar equals 1.21 Canadian dollars.  Explain what is likely to
+happen to prices as traders take advantage of this opportunity.
+
+---
+
+Arbitrage is the practice of simultaneously buying and selling the same (or
+equivalent) asset in different markets to profit from a price
+discrepancy---without taking any risk. It's a key concept in finance because it
+helps ensure market efficiency.
+
+### Scenario summary
+
+* Stock price: \$50 USD on NYSE - \$60 CAD on the TSX
+* Exchange rate: 1 USD = 1.21 CAD
+
+Converting the NYSE price to CAD: $\$50 USD \times 1.21 = \$60.50 CAD$
+
+This means that the TSX listing is slightly cheaper.
+
+### Arbitrage opportunity
+
+1. Buy the stock on the TSX at \$60 CAD
+2. Sell it simultaneously on the NYSE at \$50 USD
+3. Convert the proceeds: \$50 USD $\times$ 1.21 = \$60.50 CAD
+
+### What happens next (Market reaction)
+
+As arbitrageurs take advantage of this price difference, you will get a
+convergence of the prices.
+
+---
+
+# 27. Forward contracts versus options
+
+Trader A enters into a forward contract to buy an asset for \$1,000 in one year.
+Trader B buys a call option to buy the asset for \$1,000 in one year.  The cost
+of the option is \$100. What is the difference between the positions of the
+traders? Show the profit as a function of the price of the asset in one year for
+the two traders.
+
+---
+
+### Trader A: Forward contract
+
+* Trader A agrees to buy the asset in one year for \$1,000.
+* No upfront cost
+* Profit at maturity is: $\text{Profit}_A = S_T - 100$.
+
+### Trader B: Call option
+
+* Trader B buys a call option to buy the asset at \$1,000, paying \$100
+  upfront.
+
+* The profit at maturity is:
+  $\text{Profit}_B = \text{max}(S_T - 1,000, 0) - 100$
+
+A forward contract is a contract to buy the asset in a future date. An
+option gives the buyer an option, but not the obligation, to buy the asset
+at a future date. The option has a premium (\$100) because of this
+benefit.
+
+```{r problem 27: visualizing profits, echo=F}
+# Asset prices at maturity
+S_T <- seq(800, 1600, by = 10)
+
+# Trader A: Forward contract
+profit_forward <- S_T - 1000
+
+# Trader B: Call option (strike = 1000, premium = 100)
+profit_call <- pmax(S_T - 1000, 0) - 100
+
+# Plot
+plot(S_T, profit_forward, type = "l", col = "blue", lwd = 2,
+     ylab = "Profit", xlab = "Asset Price at Maturity",
+     main = "Profit Profiles: Forward vs Call Option")
+lines(S_T, profit_call, col = "red", lwd = 2)
+abline(h = 0, lty = 2)
+legend("topleft", legend = c("Trader A: Forward", "Trader B: Call Option"),
+       col = c("blue", "red"), lwd = 2)
+```
+
+---
+
+# 28. Short put option analysis
+
+In March, a U.S. investor instructs a broker to sell one July put option
+contract on a stock. The stock is \$42 and the strike price is \$40. The option
+price is \$3. Explain what the investor has agreed to. Under what circumstances
+will the trade prove to be profitable? What are the risks?
+
+---
+
+The investor is shorting (selling) a put option for \$3. The investor is
+agreeing to buy if the stock price drops to \$40 or below. The maximum profit
+the investor can realize is the \$3 premium he is asking for. The risk is, if
+the price does fall below \$40, the investor will begin to have losses. The
+maximum loss is (\$4,000).
+
+```{r problem 28, echo=F}
+S_T <- seq(0, 44, by = 2)
+premium <- 300
+strike <- 40
+
+profit <- premium - pmax(0, (strike - S_T) * 100)
+
+plot(S_T, profit, type = "l", col = "blue", lwd = 2,
+     ylab = "Profit", xlab = "Stock price at expiration",
+     main = "Put Option profit")
+abline(h = 0, lty = 2)
+```
+
+---
+
+# 29. Forward contracts versus options
+
+A U.S. company knows it will have to pay 3 million euros in three months.  The
+current exchange rate is 1.1500 dollars per euro. Discuss how forward and
+options contracts can be used by the company to hedge its exposure.
+
+---
+
+If a U.S. company knows it will need to pay 3 million euros in three months, it
+faces foreign exchange risk: if the euor strengthens against the dollar, it will
+cost more USD to meet the obligation. The company can use forward contracts or
+options to hedge this risk.
+
+### Forward contract hedge (Fixed hedge)
+
+A forward contract locks in an exchange rate today for a transaction that will
+happen in the future. If the company enters into a forward contrat for 1.1520
+USD/EUR, the company agrees to pay:
+
+$$
+3,000,000 \times 1.520 = \$3,456,000
+$$
+
+* If the euro appreciates to 1.20 then the company avoids a loss.
+
+* If the euro depreciates to 1.10 then the company misses out on cheaper
+  conversion.
+
+The advantage of forward contracts is that they eliminate uncertainty and lock
+in prices. The disadvantage is that you cannot benefit on favorable exchange
+rate changes.
+
+### Options contract hedge (Flexible hedge)
+
+A call option on euros gives the right (but not obligation) to buy euros at a
+fixed rate (strike price) in 3 months. To purchase a call option the company
+will have to pay a premium. Suppose the premium is \$0.02 per euro.
+
+$$
+3,000,000 \times 0.02 = \$60,000
+$$
+
+* If EUR/USD > 1.15 then the option is exercised and losses are limited.
+* IF EUR/USD < 1.15 then you let the option expire, and buy euros at the
+  cheaper spot rate.
+
+The advantage of options over forward contracts is that you get to take
+advantage of exchange rate changes, but you must pay a premium for that benefit.
+
+---
+
+# 30. Bull call spread option strategy
+
+A stock price is \$29. A trader buys one call option contract on the stock with
+a strike price of \$30 and sells a call option contract on the stock with a
+strike price of \$32.50. The market prices of the options are \$2.75 and \$1.50,
+respectively. The options have the same maturity date. Describe the trader's
+position.
+
+---
+
+This strategy is called a bull call spread.
+
+The trader buys 1 call option with a strike price of \$30 for \$2.75 and sells 1
+call option with a strike price of \$32.50 for \$1.50. Both options are on the
+same stock and have the same expiration date.
+
+$$
+\text{Net premium paid} = 2.75 - 1.50 = \$1.25\ \text{per share}
+$$
+
+Each option contract typically controls 100 shares, so the total cost is:
+
+$$
+\$1.25 \times 100 = \$125
+$$
+
+### Payoff profile at expiration
+
+Let $S_T$ be the stock price at expiration.
+
+1. If $S_T \le 30$:
+
+   * Both options expire worthless.
+
+   * Net loss = \$1.25 per share
+
+2. If $30 < S_T < 32.50$:
+
+   * The \$30 call is in the money
+
+   * The \$32.50 call is still out of the money
+
+   * Profit increases linearly from -\$1.25 to a max:
+
+     $$
+     \text{Profit} = S_T - 30 - 1.25
+     $$
+
+3. If $S_T \ge 32.50$:
+
+   * Both calls are exercised
+
+   * Profit is capped because the trader loses on the short call beyond
+     \$32.50
+
+   $$
+   \text{Max profit} = (32.50 - 30) - 1.25 = \$1.25\ \text{per share}
+   $$
+
+
+### Summary
+
+| Stock price at expiry | Net profit per share |
+|:---|:---|
+| $\le \$30$ | -\$1.25 |
+| \$31 | -\$0.25 |
+| \$32 | +\$0.75 |
+| $\ge \$32.50$ | +\$1.25 (max profit) |
+
+### Why use this strategy?
+
+The trader is moderately bullish---they expect the stock to rise, but not
+drastically. The bull call spread lowers the cost compared to just buying a
+single call but limits the upside.
+
+---
+
+# 31. Forward contract arbitrage
+
+The price of gold is currently \$1,200 per ounce. The forward price for delivery
+in 1 year is \$1,300 per ounce. An arbitrageur can borrow money at 3\% per
+annum. What should the arbitrageur do? Assume that the cost of storing gold is
+zero and that gold provides no income.
+
+### Given:
+
+* Spot price of gold: \$1,200/oz
+* Forward price (1-year) = \$1,300/oz
+* Risk-free borrowing rate = 3\% per annum
+* Storage cost = \$0
+* Gold provides no income
+
+### Theoretical forward price formula:
+
+$$
+F = S \times e^{rT}
+$$
+
+Where:
+
+* F = forward price
+* S = spot price (\$1,200)
+* r = risk-free rate (0.03)
+* T = time = 1 year
+
+$$
+\begin{aligned}
+F_{\text{theoretical}} &= 1200 \times e^{0.03}\\
+  &\approx 1200 \times 1.03045\\
+  &\approx \$1,236.54
+\end{aligned}
+$$
+
+The forward price is \$1,300 > \$1,236.54. The forward is overpriced, which
+means you should sell the forward and buy the spot to lock in arbitrage.
+
+### Arbitrage strategy
+
+1. Borrow \$1,200 at 3\% interest
+2. Buy 1 oz of gold at \$1,200
+3. Enter a forward contract to sell 1 oz of gold in 1 year at \$1,300
+4. Wait 1 year:
+
+   * Deliver the gold under the forward contract and receive \$1,300
+
+   * Repay loan: $1200 \times e^{0.03} \approx \$1,236.54$
+
+### Profit
+
+$$
+1300 - 1236.54 = \$63.46
+$$
+
+### Conclusion
+
+An arbitrageur can lock in a risk-free profit of \$63.46 per ounce by:
+
+* Buying gold now
+* Locking in a future sale via forward
+* Financing the purchase at 3\%
+
+---
+
+# 32. Buying a put option versus placing a stop-loss order
+
+On May 21, 2020, an investor owns 100 Apple shares. The share price is about
+\$316 and a December put option with a strike price of \$290 costs \$21.30.  The
+investor is comparing two alternatives to limit downside risk. The first
+involves buying one December put option contract with a strike price of \$290.
+The second involves instructing a broker to sell the 100 shares as soon as
+Apple's price reaches \$290. Discuss the advantages and disadvantages of the two
+strategies.
+
+---
+
+This involves two popular risk managment strategies: buying a put option (a
+type of portfolio insurance) vs. placing a stop-loss order.
+
+### Scenario Recap
+
+* Stock owned: 100 Apple shares
+* Current price: \$316
+* Goal: Limit downside risk
+* Option: Buy a December put option (strike = \$290, premium = \$21.30)
+* Alternative: Place a stop-loss sell order at \$290
+
+### Strategy 1: Buy a December Put Option (strike \$290)
+
+#### How it works
+
+* You pay \$21.30 per share (\$2,130 total) for the right (not obligation)
+  to sell at \$290 until expiration in December.
+
+* If Apple's price falls below \$290, you can still sell at \$290.
+
+* If the price rises, you keep your shares and let the put expire.
+
+#### Advantages
+
+* __Guaranteed minimum price:__ You can always sell at \$290 no matter how
+  low the market goes.
+
+* __Upside potential retained:__ If Apple rises above \$316, you keep the
+  gains.
+
+* __Works in volatile or gapping markets:__ Protects even if the price gaps
+  down past \$290 overnight.
+
+#### Disadvantages
+
+* __Upfront cost:__ You lose the \$2,130 premium if Apple stays above \$290.
+
+* __Time decay:__ Option loses value as it approaches expiry.
+
+* __No trigger for automatic sale:__ You must exercise or sell the option
+  actively.
+
+### Strategy 2: Stop-Loss Order at \$290
+
+#### How it works
+
+* You tell your borker to sell your 100 shares if Apple drops to \$290 or
+  below.
+
+#### Advantages
+
+* __No cost to set up:__ Unlike a put, you don't pay a premium.
+
+* __Simple and automatic:__ If price hist \$290, your shares are sold
+  without further action.
+
+#### Disadvantages
+
+* __Not guaranteed execution price:__ If the price gaps below \$290, you may
+  sell at a much lower price (e.g., \$280).
+
+* __No protection below stop price:__ It's a trigger to market sell, not a
+  fixed sale price.
+
+* __No flexibility:__ If the price briefly drops to \$290 and then rebounds,
+  you're out of the market.
+
+### Final Thoughts
+
+* If you want full protection and are willing to pay for it, go with the put
+  option.
+
+* If you want free protection and are okay with the risk of selling below
+  \$290, go with the stop-loss.
+
+---
+
+# 33. Structured bond / Contingent payment bond
+
+A bond issued by Standard Oil some time ago worked as follows. The holder
+received no interest. At the bond's maturity the company promised to pay \$1,000
+plus an additional amount based on the price of oil at that time.  The
+additional amount was equal to the product of 170 and the excess (if any) of the
+price of a barrel of oil at maturity over \$25. The maximum additional amount
+paid was \$2,550 (which corresponds to a price of \$40 per barrel). Show that
+the bond is a combination of a regular bond, a long position in call options on
+oil with a strike price of \$25, and a short position in call options on oil
+with a strike price of \$40.
+
+---
+
+This type of bond issued by Standard Oil is an example of a structured bond
+or contingent payment bond---essentially a zero-coupon bond with an embedded
+option feature tied to the price of oil.
+
+### Bond terms recap
+
+* No interest payments (i.e., zero-coupon bond)
+* At maturity, the holder receives:
+
+  - \$1,000 base amount (guaranteed)
+  - Plus: an additional amount =
+    $170 \times \text{max}(0, P_{\text{oil}} - 25)$
+    
+    * Capped when oit hits \$40
+
+    * So, the maximum extra payout =
+      $170 \times (40 - 25) = 170 \times 15 = 2,550$
+
+### Step-by-step decomposition
+
+We want to show that the bond is made up of:
+
+1. A regular bond paying \$1,000 at maturity
+
+2. A long call option on oil with:
+
+   * Strike price: \$25
+
+   * Quantity: 170 barrels
+
+3. A short call option on oil with:
+
+   * Strike price: \$40
+
+   * Quantity: 170 barrels
+
+### Regular bond component
+
+This is simple---the investor receives \$1,000 at maturity, regardless of
+the oil price. This is equivalent to holding a zero-coupon bond with a face
+value of \$1,000.
+
+### Long call option @ \$25
+
+The formula
+
+$$
+170 \times \text{max}(0, P_{\text{oil}} - 25)
+$$
+
+is exactly the payoff of 170 call options on oil with a strike price of
+\$25.
+
+* If the oil price is above \$25, the call options are in the money.
+
+* Each call gives: $\text{max}(0, P_{\text{oil}} - 25)$
+
+* Multiply that by 170 and that's the total extra payment.
+
+So, the investor is effectively long 170 call options at \$25.
+
+### Short call option @ \$40
+
+The total payment is capped at \$2,550---which happens only if oil hits or
+exceeds \$40.
+
+* That's equivalent to saying: the bondholder doesn't get any more upside
+  beyond \$40.
+
+* To cap the payoff, the issuer is essentially shorting a call with a strike
+  at \$40.
+
+* That offests any gains above \$40.
+
+Mathematically, this is the same as:
+
+$$
+170 \times [ \text{max}(0, P_{\text{oil}} - 25)
+  - max(0, P_{\text{oil}} - 40)]
+$$
+
+Which simplifies to:
+
+$$
+170 \times \text{Payoff of a bull call spread from 25 to 40}
+$$
+
+---
+
+# 34. Structured protection option strategy
+
+Suppose that in the situation of the following table, a corporate treasurer
+said: "I will have 1 million pounds to sell in 6 months. If the exchange rate is
+less than 1.19, I want you to give me 1.19. If it is greater than 1.25, I will
+accept 1.25. If the exchange reate is between 1.19 and 1.25, I will sell the
+sterling for the exchange rate." How could you use options to satisfy the
+treasurer?
+
+```{r problem 34: table, echo=F}
+spot <- c("Spot", "1-month forward", "3-month forward", "6-month forward")
+bid <- c(1.2217, 1.2218, 1.2220, 1.2224)
+ask <- c(1.2220, 1.2222, 1.2225, 1.2230)
+knitr::kable(data.frame(Spot = spot, Bid = bid, Ask = ask),
+             caption=paste0("Spot and forward quotes for the exchange rate",
+                            "between USD and GBP on May 21, 2020"))
+```
+
+---
+
+To meet the corporate treasurer's request---a structured protection where:
+
+* They get at least 1.19 USD/GBP if the exchange reate drops.
+* They get no more than 1.25 USD/GBP if the exchange rate rises.
+* But they can benefit from any rate between 1.19 and 1.25
+
+You can use a collar strategy in the foreign exchange options market.
+
+### Goal recap
+
+|If USD/GBP in 5 months is...|Treasurer wants:|
+|:---|:---|
+| < 1.19 | To sell at 1.19 (protection) |
+| Between 1.19 and 1.25 | To sell at market rate |
+| > 1.25 | To sell at 1.35 (cap gains) |
+
+### Solution: Use a collar (options strategy)
+
+1. Buy a 6-month put option on GBP with a strike price of 1.19. This
+   guarantees a minimum sale price of 1.19 (downside protection).
+
+2. Sell a 6-month call option on GBP with a strike price of 1.25. This gives
+   up upside beyond 1.25, but the premium from selling the call can offset
+   the cost of the put.
+
+### How the collar works
+
+|Spot rate in 6 months | Net results |
+|:---|:---|
+| < 1.19 | Use the put to sell at 1.19 |
+| 1.19 to 1.25 | Let the options expire and sell at spot rate |
+| > 1.25 | Called away at 1.25 (via short call) |
+
+So, the treasurer effectively locks in a range of outcomes: min = 1.19,
+max = 1.25, and benefits from spot rates in between.
+
+### Implementation notes
+
+* Contract size should be 1 million GBP.
+
+* Use 6-month GBP/USD options
+
+* Verify that the put premium $\approx$ call premium to make the strategy
+  zero-cost, or low-cost.
+
+* The available spot and forward rates in the table don't affect this options
+  structure directly, but you would use forward rates as teh base case if not
+  hedgin with options.
+
+---

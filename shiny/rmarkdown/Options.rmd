@@ -1,0 +1,81 @@
+---
+output: html_document
+runtime: shiny
+---
+
+```{r setup, echo=F, message=F}
+require(ggplot2)
+require(quantmod)
+require(DT)
+```
+
+```{r echo=F}
+textInput("symbol", "Symbol", value = "T")
+radioButtons("otype", "Call / Put",
+             choices = list("Call" = 1, "Put" = 2),
+             inline=T)
+sliderInput("orows", "Strikes", min=2, max=24, step=2, value=4)
+textInput("strike", "Strike Price")
+textInput("premium", "Premium")
+DTOutput("dt")
+```
+
+```{r echo=F}
+options <- reactive({
+    req(input$symbol)
+    opts <- getOptionChain(input$symbol)
+    opts <- lapply(opts, function(df) {
+      #Fix a yahoo source type misspelling
+      names(df)[names(df) == "ConractSize"] <- "ContractSize"
+      #Fix date and time
+      df$Expiration <- as.character(df$Expiration)
+      df$LastTradeTime <- as.character(df$LastTradeTime)
+      #Change field's sigdig is 2
+      df$Chg <- round(df$Chg, 2)
+      #Align data four ITM / four OTM
+      w <- (input$orows)/2
+      idx <- which(diff(df$ITM) != 0)
+      df <- df[ (idx-(w-1)):(idx + w),
+               c("Bid", "Ask", "Last", "Chg", "Vol", "OI", "ITM", "Strike")]
+      return(df)})
+    ifelse(input$otype == "1", return(opts$calls), return(opts$puts))
+})
+
+output$dt <- renderDT({
+    df <- options()
+    datatable(df, options = list(
+      dom = 't',
+      ordering = F,
+      columnDefs = list(
+        list(visible = F, targets = which(names(df) == "ITM")),
+        list(visible = F, targets = 0)
+      ),
+      rownames = F
+    )) %>%
+       formatStyle(
+         'ITM',
+         target = 'row',
+         backgroundColor = styleEqual(T, 'lightblue')
+       )
+})
+
+#renderPlot({
+#  req(input$strike, input$premium)
+#  S <- seq(0, 80, by = 1)
+#  strike <- as.numeric(input$strike)
+#  premium <- as.numeric(input$premium)
+#  payoff <- ifelse(S > strike, - (S - strike) +
+#    premium, premium)
+#
+#  ggplot(data.frame(StockPrice = S, Profit = payoff),
+#         aes(x = StockPrice, y = Profit)) +
+#    geom_line(size = 1.2) +
+#    geom_hline(yintercept = 0, linetype = "dashed") +
+#    labs(
+#      title = "Payoff",
+#      x = "Stock Price at Expiration",
+#      y = "Profit"
+#    ) +
+#    theme_minimal()
+#})
+```

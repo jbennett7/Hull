@@ -1,0 +1,1338 @@
+---
+title: "Interest Rate Futures"
+author: "John C. Hull"
+output:
+  pdf_document:
+    toc: true
+---
+
+```{r setup, echo=F, message=F}
+knitr::opts_chunk$set(echo = TRUE)
+require(tidyverse)
+require(kableExtra)
+options(scipen = 999)
+pretty <- function(x, y=2) format(round(x, y), big.mark=",")
+```
+
+# Chapter highlights
+
+## Day count and quotation conventions
+
+### Day counts
+
+* Day counts define how interest accrues over time.
+
+* The day count convention is usually expressed as $X/Y$
+
+$$
+\frac{\text{Number of days between dates}}
+  {\text{Number of days in reference period}} \times
+  \text{Interest earned in reference period}
+$$
+
+#### Common US day count conventions:
+
+##### Actual/actual (in period)
+
+Used for Treasury bonds in the US.
+
+Suppose that we wish to calculate the interest earned between March 1 and
+July 3. The reference period is from March 1 to September 1. There are 184
+(actual) days in the reference period, and interest of \$4 is earned during
+the period. There are 124 (actual) days between March 1 and July 3. The
+interest earned between March 1 and July 3 is therefore
+
+$$
+\frac{124}{184} \times 4 = 2.6957
+$$
+
+##### 30/360
+
+Used for corporate and municipal bonds in the US.
+
+Using 30/360, the total number of days between March 1 and September 1 is 180.
+The total number of days between March 1 and July 3 is $(4 \times 30) + 2 = 122$.
+In a corporate bond with the same terms as the Treasury bond just considered,
+the interest earned between March 1 and July 3 would therefore be
+
+$$
+\frac{122}{180} \times 4 = 2.7111
+$$
+
+##### Actual/360 
+
+Used for money market instruments in the US.
+
+The interest earned during part of a year is calculated by dividing the actual
+number of elapsed days by 360 and multiplying by the rate. The interest earned
+in 90 days is therefore exactly one-fourth of the quoted rate, and the interest
+earned in a whole year of 365 days is 365/360 times the quoted rate.
+
+### Price quotations of U.S. Treasury bills
+
+The prices of money market instruments are sometimes quoted using a
+_discount rate_. This is the interest earned as a percentage of the final value
+rather than as a percentage of the initial price paid for the instrument.
+
+#### Example
+
+If the price of a 91-day Treasury bill is quoted as 8, this means that the rate
+of interest earned is 8\%. of the face value per 360 days. Suppose the face
+value is \$100. Interest of \$2.0222($=\$100 \times 0.08 \times 91 / 360$) is
+earned over the 91-day life. This corresponds to a true rate of interest of
+$2.0222/(100 - 2.0222) = 2.064\%$ for the 91-day period.
+
+The relationship between the cash price ($Y$) per \$100 of face value and the
+quoted price ($P$) of a Treasury bill in the United States is
+
+$$
+P = \frac{360}{n}(100 - Y)
+$$
+
+where $n$ is the remaining life of the Treasury bill measured in calendar days.
+
+#### From the glossary, page 848:
+
+* __U.S. Treasury bill__ A short-term non-coupon-bearing instrument issued by
+  the government to finance its debt.
+
+### Price quotations of U.S. Treasury bonds
+
+Treasury bond prices in the United States are quoted in dollars and
+thirty-seconds of a dollar. The quoted price is for a bond with a face value of
+\$100. Thus, a quote of $120-05$ or $120\frac{5}{32}$ indicates that the quoted
+price for a bond with a face value of \$100,000 is \$125,156.25.
+
+The quoted price (_clean price_) is not the same as the cash price paid by the
+purchaser of the bond (_dirty price_).
+
+$$
+\text{Cash price} = \text{Quoted price}
+  + \text{Accrued interest since last coupon date}
+$$
+
+#### Example
+
+On March 5, 2018, an 11\% coupon bond maturing on July 10, 2038, has a quoted
+price of $155-16$ or \$155.50. Because coupons ar paid semiannually on
+government bonds (and the final coupoin is at maturity), the most recent coupon
+date is January 10, 2018, and the next coupon date is July 10, 2018. The
+(actual) number of days between January 10, 2018, and March 5, 2018, is 54,
+whereas the (actual) number of days between January 10, 2018, and July 10, 2018,
+is 181. On a bond with \$100 face value, the coupon payment is \$5.50 on January
+10 and July 10. The accrued interest on March 5, 2018, is the share of the July
+10 coupon accruing to the bondholder on March 5, 2018, is the share of the July
+10 coupon accruing to the bondholder on March 5, 2018. Because actual/actual in
+period is used for Treasury bonds in the United States, this is
+
+$$
+\frac{54}{181} \times \$5.50 = \$1.64
+$$
+
+The cash price per \$100 face value for the bond is therefore
+
+$$
+\$155.50 + \$1.64 = \$157.14
+$$
+
+Thus, the cash price of a \$100,000 bond is \$157,140.
+
+#### From the glossary, page 848:
+
+* __U.S. Treasury bond__ A long-term coupon-bearing instrument issued by the
+  government to finance its debt.
+
+* __U.S. Treasury note__ Same as a U.S. Treasury bond. Treasury notes have
+  maturities less than 10 years but more than 1 year.
+
+## Treasury bond futures
+
+Futures quotes for Treasury bond futures are given by the CME Group.
+
+#### Ultra T-bond futures
+
+Trading started in 2010. Any government bond with a maturity over 25 years can
+be delivered by the party with the short position under the terms of this
+contract.
+
+#### T-bond futures
+
+Any government bond with a maturity between 15 and 25 years.
+
+#### Treasury notes
+
+A treasury bond with a maturity between one and ten years. Futures trading for
+these types of bonds are done for 10-year, 5-year, and 2-year Treasury note
+futures contracts. In the 10-year Treasury note futures contract, any note with
+a maturity between $6\frac{1}{2}$ and 10 years can be delivered.
+
+#### 30-day Fed Funds Rate
+
+Has a settlement price equal to 100 minus the arithmetic average of the federal
+funds rate during the contract month.
+
+### Quotes
+
+#### Ultra T-bond futures
+
+Quoted in dollars and thirty-seconds of a dollar per \$100 face value.
+
+#### 10-year Treasury note futures
+
+Quoted to the nearest half of a thirty-second.
+
+#### 2-year and 5-year Treasury note futures
+
+Quoted even more precisely: To the nearest quarter of a thirty-second.
+
+#### 30-day Fed Funds Rate
+
+Quoted in decimal.
+
+### Conversion factors
+
+When a particular bond is delivered in a CME group bond futures contract, a
+parameter known as its _conversion factor_ defines the price received for the
+bond by the party with the short position. The applicable quoted price for the
+bond delivered is the product of the conversion factor and the most recent
+settlement price for the futures contract.
+
+Taking accrued interest into account, the cash received for each \$100 face
+value of the bond delivered is
+
+$$
+\text{Most recent settlement price} \times \text{Conversion factor})
+  + \text{Accrued interest}
+$$
+
+Each contract is for the delivery of \$100,000 face value of bonds.
+
+#### Example
+
+Suppose that the most recent settlement priceis $120-00$, the conversion factor
+for the bond delivered is $1.3800$, and the accrued interest on this bond at the
+time of delivery is \$3 per \$100 face value. The cash received by the party
+with the short position (and paid by the party with the long position) is then
+
+$$
+(1.3800 \times 120.00) + 3.00 = \$168.60
+$$
+
+per \$100 face value. A party with the short position in one contract would
+deliver bonds with a face value of \$100,000 and receive \$168,600.
+
+The conversion factor for a bond is set equal to the quoted price the bond would
+have per dollar of principal on the first day of the delivery month on the
+assumption that the interest rate for all maturities equals 6\% per annum (with
+semiannual compounding).
+
+#### Example
+
+Consider a 10\% coupon bond with 20 years and 2 months to maturity that is
+deliverable in the T-bond futures contract. For the pruposes of calculating the
+conversion factor, the bond is assumed to have exactly 20 years to maturity. The
+first coupon payment is assumed to be made after 6 months. Coupon payments are
+then assumed to be made at 6-month intervals until the end of the 20 years when
+the principal payment is made. Assume that the face value is \$100. WHne the
+discount rate is 6\% per annum with semiannual compounding (3% per 6 months),
+the value of the bond is
+
+$$
+\sum^{40}_{i=1}{\frac{5}{1.03^i}} + \frac{100}{1.03^{40}} = \$146.23
+$$
+
+Dividing by the face value gives a conversion factor of 1.4623.
+
+In the case of the 2-year and 5-year note futures contract, a similar
+calculation is used to determine the conversion factor except that the time to
+maturity is rounded to the nearest month.
+
+### Cheapest-to-deliver bond
+
+At any given time during the delivery month, there are many bonds that can be
+delivered in bond futures contracts. These vary widely as far as coupon and
+maturity are concerned. The party with the short position can choose which of
+the available bonds is "cheapest" to deliver. Because the party with the short
+position receives
+
+$$
+(\text{Most recent settlement price} \times \text{Conversion factor})
+  + \text{Accrued interest}
+$$
+
+and the cost of purchasing a bond is
+
+$$
+\text{Quoted bond price} + \text{Accrued interest}
+$$
+
+the cheapest-to-deliver bond is the one for which
+
+$$
+\text{Quoted bond price} - (\text{most recent settlement price}
+  \times \text{Conversion factor})
+$$
+
+is least. Once the party with the short position has decided to deliver, it can
+determine the cheapest-to-deleiver bond by examining each of the deliverable
+bonds in turn.
+
+#### Example 6.1
+
+The party with the short position has decided to deliver and is trying to choose
+between the three bonds in the table below. Assume the most recent settlement
+price is 93-08, or 93.25.
+
+```{r example 6.1; page 158, echo=F}
+e6.1 <- new.env()
+e6.1$df <- tibble(
+    bond = c(1, 2, 3),
+    quote = c(99.50, 143.50, 119.75),
+    cf = c(1.0382, 1.5188, 1.2615)
+)
+
+e6.1$rownames <- c(
+  "Bond",
+  "Quoted bond price ($)",
+  "Conversion factor"
+)
+
+knitr::kable(e6.1$df, col.names=e6.1$rownames, align='ccc')
+```
+
+The cost of delivering each of the bonds is as follows:
+
+* __Bond 1:__ $99.50 - (93.25 \times 1.0382) = \$2.69$
+
+* __Bond 2:__ $143.50 - (93.25 \times 1.5188) = \$1.87$
+
+* __Bond 3:__ $119.75 - (93.25 \times 1.2615) = \$2.12$
+
+The cheapest-to-deliver bond is Bond 2.
+
+A number of factors determine the cheapest-to-deliver bond. When bond yields are
+in excess of 6\%, the conversion factor system tends to favor the delivery of
+low-coupon long-maturity bonds. When yields are less than 6\%, the system tends
+to favor the delivery of high-coupon short-maturity bonds. Also, when the yield
+curve is upward-sloping, there is a tendency for bonds with a ling time to
+maturity to be favored, whereas when it is downward-sloping, there is a tendency
+for bonds with a short time to maturity to be delivered.
+
+### Determining the futures price
+
+If we assume that both the cheapest-to-deliver bond and the delivery date are
+known, the Treasury bond futures contract is a futures contract on a traded
+security (the bond) that provides the holder with known income. The futures
+price, $F_0$, is related to the spot price, $S_0$, by
+
+$$
+F_0 = (S_0 - I)e^{rT}
+$$
+
+where $I$ is the present value of the coupons during the life of the futures
+contract, $T$ is the time until the futures contract matures, and $r$ is the
+risk-free interest rate applicable to a time period of length $T$.
+
+#### Example 6.2
+
+Suppose that, in a Treasury bond futures contract, it is known that the
+cheapest-to-deliver bond will be a 12\% coupon bond with a conversion factor of
+1.6000. Suppose also that it is known that delivery will take place in 270 days.
+Coupons are payable semiannually on the bond. As illustrated in the figure
+below, the last coupon date was 60 days ago, the next coupon date is in 122
+days, and the coupon date thereafter is in 305 days. The term structure is flat,
+and the rate of interest (with continuous compounding) is 10\% per annum. Assume
+that the current quoted bond price is \$115. The cash price of the bond is
+obtained by adding to this quoted price the proportion of the next coupon
+payment that accrues to the holder. The cash price is therefore
+
+$$
+115 + \frac{60}{60 + 122} \times 6 = 116.978
+$$
+
+A coupon of \$6 will be received after 122 days ($= 0.3342$ years). The present
+value of this is
+
+$$
+6 e^{-0.1 \times 0.3342} = 5.803
+$$
+
+The futures contract lasts for 270 days ($= 0.7397$ years). The cash futures
+price, if the contract were written on the 12\% bond, would therefore be
+
+$$
+(116.978 - 5.803) e^{0.1 \times 0.7397} = 119.711
+$$
+
+At delivery, there are 148 days of accrued interest. The quoted futures price,
+if the contract were written on the 12\% bond, is calculated by subtracting the
+accrued interest
+
+$$
+119.711 - 6 \times \frac{148}{148 + 35} = 114.859
+$$
+
+From the definition of the conversion factor, 1.6000 standard bonds are
+considered equivalent to each 12\% bond. The quoted futures price should
+therefore be
+
+$$
+\frac{114.859}{1.6000} = 71.79
+$$
+
+## Eurodollar and SOFR futures
+
+A very popular interest rate futures contract in the United States has
+historically been the three-month Eurodollar futures contract traded by the CME
+group. THe underlying interest rate is three-month (90-day) U.S. dollar LIBOR
+and the maturities offered by the CME for this contract extend ten years into
+the future.
+
+The expectation is that Eurodollar futures will over time be replaced by SOFR
+futures.
+
+### Eurodollar futures
+
+ 
+
+---
+
+## Example 6.3
+
+Suppose that on May 21, 2020, an investor has agreed to pay the three-month SOFR
+rate plus 200 basis points on \$100 million of borrowing for three months
+beginning on December 16, 2021. The December 2021 three-month SOFR futures
+is 99.990. The futures markets are therefore indicating a DOFR rate of
+only 0.01\% (one basis point) for the period of the borrowings. The investor
+thinks that rates may increase and so would like to use futures to lock in a
+borrowing rate of 2.01\%. The investor can do this by shorting 100 December
+contracts. If rates increase, the futures quote will decline and there will be a
+gain to compensate for the extra interest paid; if rates decrease, the quote
+will increase and there will be a loss on the futures, but this will be
+compensated for by less interest being paid.
+
+For example, suppose that the final settlement proves to be 99.200, which
+corresponds to a rate of 0.8\% per annum. The rate paid on the loan would then
+be 2.8\% per annum and the total interest would be
+$0.25 \times \$100,000,000 \times 0.028 = \$700,000$. However, the futures
+contract had declined by 79 basis points (from 99.990 to 99.200). The gain is
+\$25 per basis point or $100 \times \$25 \times 79 = \$197,500$ on 100
+contracts. When this is taken into account, the amount paid is
+$\$700,000 - \$197,000 = \$502,500$, which corresponds to a rate of 2.01\% (that
+is, $\$502,500 = 0.25 \times \$100,000,000 \times 0.0201$).
+
+On May 21, 2020, negative SOFR rates were considered a possibility. (The Federal
+Reserve Board was taking steps to stimulate the economy by reducing interest
+rates following the Covid-19 crisis and the interst rates in some other
+countries were negative.) Suppose that the final settlement is 100.400. The SOFR
+rate aplicable to the borrowings is then -0.4\% and the investor will
+pay 2\% - 0.4\% = 1.6\%. The interest payment will be
+$0.25 \times \$100,000,000 \times 0.016 = \$400,000$. However, the futures
+contract has increased by 41 basis points, leading to a loss of
+$100 \times \$25 \times 41 = \$102,250$ and bringing the total payment
+to \$502,250, as before.
+
+---
+
+## Example 6.4
+
+A 300-day LIBOR zero rate has been calculated (using interpolation between
+6-month and 12-month rate) as 2.80\% with continuous compounding. From
+Eurodollar futures quotes, it has been calculated that (a) the forward rate for
+a 90-day period beginning in 300 days is 3.30\% with continuous compounding, (b)
+the forward rate for a 90-day period beginning in 391 days in 3.50\% with
+continuous compounding, and (c) the forward rate for the 90-day period beginning
+in 489 days is 3.60\% with continuous compounding. We can use equation (6.2) to
+obtain the 391 rate as
+
+$$
+\frac{0.033 \times 91 + 0.028 \times 300}{391} = 0.02916
+$$
+
+or 2.916\%. Similarly we can use the second forward rate to determine the
+489-day rate as
+
+$$
+\frac{0.035 \times 98 + 0.02916 \times 391}{489} = 0.03033
+$$
+
+or 3.0033\%. The next forward rate would be used to extend the zero curve for a
+further three months, and so on. Note that even though the rate underlying the
+Eurodollar futures contract is a 90-day rate, it is assumed to apply to the 91
+or 98 days between contract maturities to facilitate the bootstrapping.
+
+---
+
+## Example 6.5
+
+It is October and the current three-month SOFR futures contract has two months
+until the December delivery date. Suppose further that compounding the overnight
+rates (already observed) for the first month of the contract gives a rate of 2\%
+per year and that the futures quote gives a rate for the whole three-month
+period of 2.5\% per year. If all rates are expressed with continuous
+compounding, the implied zero rate, $R$, for the next two months is given by
+solving
+
+$$
+0.02 \times (1/12) + R \times (2/12) = 0.025 \times (3/12)
+$$
+
+It is 0.0275, or 2.75\%. The forward rate calculated from the contract covering
+the December to March period can be used in conjunction with this estimate and
+equation (6.2) to obtain the 5-month zero rate as in Example 6.4. The contract
+covering the March to June period can similarly determine the 8-month zero rate,
+and so on.
+
+---
+
+## Example 6.6
+
+It is August 2 and a fund manager with \$10 million invested in government bonds
+is concerned that interest rates are expected to be highly volatile over the
+next 3 months. The fund manager decides to use the December T-bond futures
+contract to hedge the value of the portfolio. The current futures price is
+93-02, or 93.0625. Because each contract is for the delivery of \$100,000 face
+value of bonds, the futures contract price is \$93,062.50.
+
+Suppose that the duration of the bond portfolio is 3 months will be 6.80 years.
+The cheapest-to-deliver bond in the T-bond contract is expected to be a 20-year
+12\% per annum coupon bond. The yield on this bond is currently 8.80\% per
+annum, and the duration will be 9.20 years at maturity of the futures contract.
+
+---
+
+# Practice questions
+
+## 1. Day counts
+
+```{r problem 1; setup, echo=F}
+p1 <- new.env()
+```
+
+A U.S. Treasury bond pays a 7\% coupon on January 7 and July 7. How much
+interest accrues per \$100 of principal to the bondholder between July 7, 2017,
+and August 8, 2017? How would you answer be different if it were a corporate
+bond?
+
+---
+
+```{r problem 1; work, echo=F}
+p1$days.between.coupons <- as.numeric(as.Date("2018-01-07") -
+                                      as.Date("2017-07-07"))
+p1$accrued.days <- as.numeric(as.Date("2017-08-08") -
+                              as.Date("2017-07-07"))
+```
+
+
+U.S. Treasury bonds uses the Actual/actual (in period) day count convention. The
+number of days from July 7, 2017 to January 7, 2018 is
+`r p1$days.between.coupons`. The number of days
+from July 7, 2017 to August 8, 2017 is `r p1$accrued.days` days.
+
+$$
+\frac{`r p1$accrued.days`}{`r p1$days.between.coupons`}
+  = `r (p1$accruement <- p1$accrued.days / p1$days.between.coupons)`
+$$
+
+The 7\% per annum coupon is paid semiannually meaning that \$3.50 are paid on
+each date. To calculate the interest earned:
+
+$$
+\frac{32}{184} \times 3.5 \approx 0.6087
+$$
+
+### Corporate bonds
+
+For a corporate bond of the same coupon payment the difference is in the day
+count convention which uses the 30/360 day convention. This means that we assume
+there are 30 days a month and 360 days a year. Using this convention the number
+of days between July 7, 2017 to January 7, 2018 are 180. The number of days
+between July 7, 2017 and August 8, 2017 is 30 + 1 = 31
+
+$$
+\frac{31}{180} \times 3.5 \approx 0.6028
+$$
+
+```{r problem 1; cleanup, echo=F}
+rm(p1)
+```
+
+---
+
+## 2. Cash price of a bond
+
+```{r problem 2; setup, echo=F}
+p2 <- new.env()
+```
+
+It is January 9, 2018. The price of a Treasury bond with a 6\% coupon that
+matures on October 12, 2030, is quoted as 102-07. What is the cash price?
+
+---
+
+```{r problem 2; given, echo=F}
+p2$current.date <- as.Date("2018-01-09")
+p2$coupon <- .06
+p2$maturity.date <- as.Date("2030-10-12")
+p2$quote.price <- 102+7/32
+p2$accrued.days <- as.numeric(p2$current.date - as.Date("2017-10-12"))
+p2$oct12.april12 <- as.numeric(as.Date("2019-04-12") - as.Date("2018-10-12"))
+```
+
+The quoted price, which traders refer to as teh _clean price_, is not the same
+as the cash price paid by the purchaser of the bond, which is referred to by
+traders as the _dirty price_. The cash price can be calculated:
+
+$$
+\text{Cash price} = \text{quoted price}
++ \text{accrued interest since last coupon date}
+$$
+
+The quoted price:
+
+$$
+102 + \frac{7}{32} = `r p2$quote.price`
+$$
+
+The accrued days are: `r p2$oct12.april12`.
+
+The cash price is:
+
+$$
+`r p2$quote.price` + \frac{`r p2$accrued.days`}{`r p2$oct12.april12`}
+  \times \$`r p2$coupon/2*100`
+  \approx `r round(p2$quote.price + p2$accrued.days/p2$oct12.april12 *
+                   p2$coupon/2 * 100, 2)`
+$$
+
+```{r problem 2; cleanup, echo=F}
+rm(p2)
+```
+
+---
+
+## 3. SOFR Futures
+
+A three-month SOFR futures price changes from 96.76 to 96.82. What is the gain
+or loss to a trader who is long two contracts?
+
+---
+
+The change in futures price is $96.82 - 96.76 = 0.06$ or 6 basis points. A
+contract offered by the CME is designed to hedge a \$1 million position. When
+the quote changes by one basis point, the gain or loss per contract is \$25. A
+trader long two contracts will have gained
+$6\ \text{bps} \times \$25 \times 2\ \text{contracts} = \$300$.
+
+---
+
+## 4. Calculating zero curves
+
+```{r problem 4; setup, echo=F}
+p4 <- new.env()
+```
+
+The 350-day LIBOR rate is 3\% with continuous compounding and the forward rate
+calculated from a Eurodollar futures contract that matures in 350 days is 3.2\%
+with continuous compounding. Estimate the 440-day zero rate.
+
+---
+
+```{r problem 4; given, echo=F}
+p4$libor.rate <- .03
+p4$libor.duration <- 350
+p4$eurodollar.rate <- .032
+p4$eurodollar.duration <- 400
+```
+
+Futures contracts (with the convexity adjustments) can be used to provide
+estimates of forward interest rates. These can then be used to determine zero
+rates. From equation (4.5) the forward rate applicable to the period between
+times $T_1$ and $T_2$ is
+
+$$
+R_F = \frac{R_2 T_2 - R_1 T_1}{T_2 - T_1}
+$$
+
+where $R_1$ and $R_2$ are the zero rates for maturities $T_1$ and $T_2$,
+respectively. Therefore,
+
+$$
+R_2 = \frac{R_F(T_2 - T_1) + R_1 T_1}{T_2}\tag{6.2}
+$$
+
+Given:
+
+* $R_1$: 3\% per annum LIBOR (350-day zero rate)
+* $R_F$: 3.2\% per annum (forward rate from day 350 to 440)
+* $T_1$: $\frac{350}{365} \approx 0.9589$ years
+* $T_2$: $\frac{440}{365} \approx 1.2055$ years
+
+$$
+\begin{aligned}
+R_2 &= \frac{.03 \times .9589 + .032 \times (1.2055 - 0.9589)}{1.2055}\\
+  &= 0.030409
+\end{aligned}
+$$
+
+The estimated 440-day zero rate is approximately 3.04\% per annum (with
+continuous compounding).
+
+```{r problem 4; cleanup, echo=F}
+rm(p4)
+```
+
+---
+
+## 5. Hedging interest rate risk
+
+It is January 30. You are managing a bond portfolio worth \$6 million. The
+duration of the portfolio in 6 months will be 8.2 years. The September Treasury
+bond futures price is currently 108-15, and the cheapest-to-deliver bond will
+have a duration of 7.6 years in September. How should you hedge against changes
+in interest rates over the next 6 months?
+
+---
+
+To hedge your bond portfolio against interest rate risk over the next 6 months
+using Treasury bond futures, you can use the duration-based hedge ratio. This
+approach estimates how many futures contracts you need to short or long to
+immunize your portfolio's value against interest rate movements.
+
+### Given:
+
+* Portfolio value ($P$): \$6,000,000
+* Portfolio duration in 6 months ($D_P$): 8.2 years
+* Futures price = 108-15 = 108 + 15/32 = 108.46875
+* CTD bond duration ($D_C$): 7.6 years
+* Futures contract size: \$100,000
+* Assume conversion factor $\approx 1$ (unless specified, it's reasonable for
+  estimation)
+
+### Step 1: Calculate the hedge ratio
+
+The hedge ratio ($\text{HR}$) is given by:
+
+$$
+HR = \frac{P \cdot D_P}{F \cdot D_C}
+$$
+
+Where:
+
+* $F$ is the futures contract value = \$100,000 $\times$ futues price / 100
+  = $100,000 \times 108.46875 / 100 = \$108,468.75$
+
+$$
+\text{HR} = \frac{6,000,000 \cdot 8.2}{108,468.75 \cdot 7.6}
+  = \frac{49,200,000}{823,362.5} \approx 59.75
+$$
+
+So you need approximately 60 futures contracts.
+
+### Step 2: Direction of the hedge
+
+Because you're worried about interest rate increases, which cause bond prices to
+fall, you want to short Treasury bond futures.
+
+### Answer:
+
+To hedge against interest rate risk over the next 6 months, you should short 60
+September Treasury bond futures contracts.
+
+---
+
+## 6. Calculating continuously compounded returns on Treasury bills
+
+The price of a 90-day Treasury bill is quoted as 10.00. What continuously
+compounded return (on an actual/365 basis) does an investor earn on the Treasury
+bill for the 90-day period?
+
+---
+
+To find the continuously compounded return on a 90-day Treasury bill (T-bill)
+quoted at a discount yield of 10.00, we need to follow these steps:
+
+### Step 1: Interpret the quote
+
+The quoted discount yield (10.00) on a T-bill refers to the Bank Discount Yield
+(BDY) which is calculated:
+
+$$
+\text{BDY} = \frac{100 - P}{100} \times \frac{360}{T}
+$$
+
+Where:
+
+* P = purchase price of the T-bill
+* T = 90 days to maturity
+* BDY = 10.00\% (10 basis points)
+
+We can use `R` to solve for $P$:
+
+```{r problem 6}
+T <- 90
+BDY <- .1
+
+f <- function(P) (100 - P)/100 * 360/T - BDY
+(purchase.price <- uniroot(f, upper=1000, lower=1, tol=1e-2)$root)
+```
+
+So the investor pays \$`r purchase.price` and receives \$100 at maturity.
+
+### Step 2: Direction of the hedge
+
+Because you're worried about interest rate increases, which cause bond prices to
+fall, you want to short Treasury bond futures.
+
+### Answer
+
+To hedge against interest rate risk over the next 6 months, you should short 60
+September Treasury bond futures contracts.
+
+---
+
+## 7. Quoted versus Cash price
+
+It is May 5, 2021. The quoted price of a government bond with a 12\% coupon that
+matures on July 27, 2034, is 110-17. What is the cash price?
+
+---
+
+```{r problem 7: givens, echo=F}
+face.value <- 100
+n <- as.numeric(as.Date("2021-05-05") - as.Date("2021-01-27"))
+n.ref <- as.numeric(as.Date("2021-07-27") - as.Date("2021-01-27"))
+coupon.6m <- .12/2*face.value
+quote <- 110+17/32
+```
+
+Coupons on U.S. Treasury bonds (government bonds) are paid on a semiannual
+basis. Today is May 5, 2021 and the previous coupon payment was
+January 27, 2021. The number of days since this coupon payment is `r n`. The
+reference period has `r n.ref`. The accrued interest from last coupon is:
+
+$$
+\frac{`r n`}{`r n.ref`} \times `r coupon.6m`
+  = `r (accrued.interest <- (n/n.ref)*coupon.6m)`
+$$
+
+The cash price is calculated as:
+
+$$
+\begin{aligned}
+\text{Cash price} &= \text{Quoted price} + \text{Accrued interest}\\
+  &= `r quote` + `r round(accrued.interest, 5)`\\
+  &= `r round(quote + accrued.interest, 4)`
+\end{aligned}
+$$
+
+---
+
+## 8. Delivery cost of bonds
+
+```{r problem 8; setup, echo=F}
+p8 <- new.env()
+```
+
+Suppose that the Treasury bond futures price is 101-12. Which of the following four bonds is cheapest to deliver?
+
+```{r problem 8; table, echo=F}
+p8$futures.price <- 101+12/32
+p8$bond <- c(1, 2, 3, 4)
+p8$price.pretty <- c("125-05", "142-15", "115-31", "144-02")
+p8$conversion.factor <- c(1.2131, 1.3792, 1.1149, 1.4026)
+p8$price <- c(125+5/32, 142+15/32, 115+31/32, 144+2/32)
+
+knitr::kable(data.frame(Bond=p8$bond, Price=p8$price.pretty, Conversion.Factor=p8$conversion.factor))
+```
+
+---
+
+```{r problem 8; work, echo=F}
+p8$delivery.price <- p8$price - (p8$futures.price * p8$conversion.factor)
+```
+
+To determine the cheapest-to-deliver (CTD) bond when given a Treasury bond
+futures price and a list of deliverable bonds, we use the formula for the
+implied repo rate or simply compare the adjusted invoice prices:
+
+### Step 1: Convert the futures price
+
+The futures price is __101-12__, which means:
+
+$$
+101 + \frac{12}{32} = `r p8$futures.price`
+$$
+
+### Step 2: Compute the adjusted invoice price for each bond
+
+$$
+\text{Adjusted Invoice Price} = \text{Futures Price}
+  \times \text{Conversion Factor}
+$$
+
+### Step 3: Compare Market Price - Adjusted Invoice Price
+
+The bond with the lowest difference (or cost) is the cheapest to deliver.
+
+```{r problem 8; adjusted invoice price, echo=F}
+knitr::kable(p8$df <- data.frame(Bond=p8$bond, Delivery.Price=p8$delivery.price))
+```
+
+The cheapest bond is: `r p8$df[p8$df$Delivery.Price ==
+  min(p8$df$Delivery.Price), "Bond"]`
+
+```{r problem 8; cleanup, echo=F}
+rm(p8)
+```
+
+---
+
+## 9. Delivery cost of bonds
+
+```{r problem 9; setup, echo=F}
+p9 <- new.env()
+```
+
+It is July 30, 2021. The cheapest-to-deliver bond in a September 2021 Treasury
+bond futures contract is a 13\% coupon bond, and delivery is expected to be made
+on September 30, 2021. Coupon payments on the bond are made on February 4 and
+August 4 each year. The term structure is flat, and the rate of interest with
+semiannual compounding is 12\% per annum. The conversion factor for the bond
+is 1.5. The current quoted bond price is \$110. Calculate the quoted futures
+price for the contract.
+
+---
+
+```{r problem 9; given, echo=F}
+p9$current.date <- as.Date("2021-07-30")
+p9$bond.delivery.date <- as.Date("2021-09-30")
+p9$coupon.payment.dates <- c(as.Date("2021-02-04"), as.Date("2021-08-04"))
+p9$ctd.bond.coupon <- .13
+p9$semi.annual.payments <- 100*p9$ctd.bond.coupon/2
+p9$current.price <- 110
+p9$conversion.factor <- 1.5
+```
+
+### Step 1: Compute accrued interest on the bond as of July 30
+
+* Last coupon: `r p9$coupon.payment.dates[1]`
+
+* Next coupon: `r p9$coupon.payment.dates[2]`
+
+* Days between Feb 4 and Aug 4: 
+  `r (p9$coupon.interval <- as.numeric(diff(p9$coupon.payment.dates)))` days.
+  (standard for Treasury calculation)
+
+* Days accrued as of July 30:
+
+$$
+\text{Accrued Interest} =
+  \frac{`r (p9$accrued.days <- p9$current.date - p9$coupon.payment.dates[1])`}
+      {`r p9$coupon.interval`} \times  `r p9$semi.annual.payments`
+  = `r (p9$accrued.interest <- round((p9$accrued.days / p9$coupon.interval) *
+       p9$semi.annual.payments, 2))`
+$$
+
+### Step 2: Full (invoice) price of the bond
+
+$$
+\begin{aligned}
+\text{Full Price} &= \text{Quoted Price} + \text{Accrued Interest}\\
+  &= `r p9$current.price` + `r p9$accrued.interest`\\
+  &= `r (p9$full.price <- p9$current.price + p9$accrued.interest)`
+\end{aligned}
+$$
+
+### Step 3: Future value of bond on delivery date (September 30)
+
+The rate of interest with continuous compounding
+is $2 \ln 1.06  = `r (p9$roi <- round(2*log(1.06),4))`$ or
+`r p9$roi*100`\% per annum. A coupon of 6.5 will be received in 5 days or
+`r (p9$next.coupon <- round(5/365, 5))` years time. The present value of the
+coupon is
+
+$$
+`r p9$semi.annual.payments` e^{- `r p9$next.coupon` \times `r p9$roi`}
+  = `r (p9$pv <- round(p9$semi.annual.payments *
+                       exp(-p9$next.coupon * p9$roi), 3))`
+$$
+
+The futures contract lasts for 62 days or
+`r (p9$futures.contract.duration <- round(62/365,4))` years. The cash futures
+price if the contract were written on the 13\% bond would be
+
+$$
+(`r p9$full.price` - `r p9$pv`)
+  e^{`r p9$futures.contract.duration` \times `r p9$roi`}
+  = `r (p9$cash.futures.price <- round((p9$full.price - p9$pv) *
+       exp(p9$futures.contract.duration * p9$roi), 2))`
+$$
+
+At delivery, there are `r (p9$days.accrued.interest <- 57)` days of accrued
+interest. The quoted futures price if the contract were written on the 13\% bond
+would therefore be:
+
+$$
+`r p9$cash.futures.price` - `r p9$semi.annual.payments`
+  \times \frac{`r p9$days.accrued.interest`}{`r p9$coupon.interval`}
+  = `r (p9$quoted.futures.price.13pct <- 
+     round(p9$cash.futures.price - p9$semi.annual.payments *
+     (p9$days.accrued.interest/p9$coupon.interval),2))`
+$$
+
+> __Note__: the denominator in the answers is 184)
+
+Taking the conversion factor into account, the quoted futures price should be:
+
+$$
+\frac{`r p9$quoted.futures.price.13pct`}{`r p9$conversion.factor`}
+  = `r (p9$quoted.futures.price <-
+     round(p9$quoted.futures.price.13pct/p9$conversion.factor,2))`
+$$
+
+```{r problem 9; cleanup, echo=F}
+rm(p9)
+```
+
+---
+
+## 10. Treasury bond arbitrage
+
+A trader is looking for arbitrage opportunities in the Treasury bond futures
+market. What complications are created by the fact that the party with a short
+position can choose to deliver any bond with a maturity between 15 and 25 years?
+
+---
+
+The ability of the party with a short position in Treasury bond futures to
+choose any bond with a maturity between 15 and 25 years for delivery introduces
+several complications for a trader seeking arbitrage opportunities. In a typical
+arbitrage strategy, a trader exploits price discrepancies between identical or
+closely related assets. However, in this case, the deliverable bonds vary in
+maturity, coupon rates, and other characteristics, making direct comparisons and
+arbitrage more complex.
+
+### Key complications
+
+#### 1. Cheapest-to-deliver (CTD) bond uncertainty
+
+* The short position will typically deliver the bond that is least expensive for
+  them, known as the cheapest-to-deliver (CTD) bond. This bond can change over
+  time due to shifts in interest rates or market conditions.
+
+* For a trader, this uncertainty complicates predicting which bond will be
+  delivered, making it difficult to lock in a risk-free profit.
+
+#### 2. Conversion factors
+
+* Treasury bond futures use conversion factors to adjust for differences among
+  deliverable bonds, aiming to standardize their value relative to the futures
+  contract. However, these factors may not fully account for all variations,
+  especially if interest rates change.
+
+* Imprefections in these adjustments can create apparent mispricing, but
+  exploiting it requires precise calculations and ongoing market analysis.
+
+#### 3. Delivery timing flexibility
+
+* The short position can decide when to deliver the bond during the delivery
+  month, adding another layer of uncertainty. THe optimal delivery timing may
+  depend on interest rate movements, which are hard to predict.
+
+* This flexibilty affects the futures price and the trader's ability to design a
+  reliable arbitrage strategy, as they must account for potential early or late
+  delivery.
+
+#### 4. Interest rate risk
+
+* Bonds with maturities ranging from 15 to 25 years have different sensitivities
+  to interest rate changes (known as duration risk). Even if a trader hedges
+  their position, differences in duration between the futures contract and the
+  delivered bond can leave them exposed to interest rate fluctuations.
+
+* This risk undermines the possibility of a perfectly hedged, risk-free
+  arbitrage position.
+
+#### 5. Liquidity concerns
+
+* Some bonds within the delivarable set may be less liquid, meaning buying or
+  selling them in larige quantitites could move their prices. This can reduce
+  potential arbitrage profits or make executing the strategy impractical.
+
+* Liquidity issues add a practical challenge to what might otherwise seem like a
+  theoretical arbitrage opporutnity.
+
+### Impact on arbitrage opportunities
+
+#### Difficulty in identifying mispricing:
+
+The variability in deliverable bonds, combined with the factors above, makes it
+harder to determine whether the futures price is misaligned with the CTD bond's
+value.
+
+#### Increased risk:
+
+Even if an opportunity appears, changes in the CTD bond, interest rate
+movements, or liquidity constraints can introduce risks, turning a potential
+arbitrage into a speculative trade.
+
+#### Need for constant monitoring:
+
+Successfully pursuing arbitrage here requires continuous reassessment of the CTD
+bond, conversion factors, and market conditions, which is both complex and
+resource-intensive.
+
+### Conclusion
+
+While arbitrage opportunities in Treasury bond futures may theoretically exist,
+the short positions' abiltiy to choose from a range of deliverable bonds
+significantly complicates the process. Traders face uncertainties related to the
+CTD bond, conversion factor imperfections, delivery timing, interest rate risk,
+and liquidity challenges. As a result, what might seem like an arbitrage
+opportunity often carries hidden risks, requiring careful analysis and vigilance
+to avoid losses.
+
+---
+
+## 11.
+
+```{r problem 10; setup, echo=F}
+p11 <- new.env()
+```
+
+Suppose that the 9-month SOFR interest rate is 8\% per annum and the 6-month
+SOFR interest rate is 7.5\% per annum (both with actual/365 and continuous
+compounding). Estimate the 3-month SOFR futures price quote for a contract
+maturing in 6 months.
+
+---
+
+The forward interest rate for the time period between months 6 and 9 is 9% per
+annum with continuous compounding. This is because 9% per annum for three months
+when combined with $7 \frac{1}{2}$\% per annum for six months gives an average
+interest rate of 8% per annum for the nine-month period.  With quarterly
+compounding, the forward interest rate is
+
+$$
+4(e^{0.09/4} - 1) = 0.09102
+$$
+
+or 9.102%. This assumes that the day count is actual/365. With a day count of
+actual/360, the rate is $9.102 \times 23360/365 = 8.977$ . The three-month SOFR
+quote for a contract maturing in six months is therefore
+
+$$
+100 - 8.977 = 91.02
+$$
+
+---
+
+```{r problem 11; solution, echo=F}
+p11$sofr.rate.6m <- .075
+p11$sofr.rate.9m <- .08
+p11$T1 <- 
+p11$T2 <- .75
+p11$forward.period <- p11$T2 - p11$T1
+p11$Rf <- (p11$sofr.rate.6m * p11$T2 - p11$sofr.rate.9m * p11$T1) /
+          (p11$T2 - p11$T1)
+```
+
+To estimate the 3-month SOFR futures price quote for a contract maturing in 6
+months, we need to determine the expected 3-month SOFR rate starting in 6
+months, given the 6-month SOFR interst rate of 7.5\% per annum and the 9-month
+SOFR interest rate of 8\% per annum, both with actual/365 day count and
+continuous compounding. The futures price quote is typically calculated as 100
+minus this annualized rate.
+
+### Step 1: Understand the problem
+
+The 3-month SOFR futures contract maturing in 6 months is based on the 3-month
+SOFR rate spanning from 6 months to 9 months from now. We are given:
+
+* 6-month SOFR rate: `r p11$sofr.rate.6m*100`\%
+* 9-month SOFR rate: `r p11$sofr.rate.9m*100`\%
+
+The "actual/365" convention suggests time should be measured as the number of
+days divided by 365, but without specific dates, we use the standard
+approximation:
+
+* $T_1 = `r p11$T1`$ years (6 months)
+* $T_2 = `r p11$T2`$ years (9 months)
+* The forward period from 6 to 9 months is `r p11$forward.period` years
+  (3 months)
+
+### Step 3: Calculate the forward rate with continuous compounding
+
+For continuous compounded rates, the forward rate $R_F$ from time $T_1$ to $T_2$
+can be derived from the spot rates $R_1$ (for 6 months) and $R_2$ (for 9 months)
+using the relationship between discount factors:
+
+```{r problem 11; step 3, echo=F}
+p11$Rf <- (p11$sofr.rate.9m * p11$T2 - p11$sofr.rate.6m * p11$T1) /
+          (p11$T2 - p11$T1)
+```
+
+$$
+\begin{aligned}
+R_F &= \frac{R_2 T_2 - R_1 T_2}{T_2 - T_1}\\
+    &= \frac{`r p11$sofr.rate.9m` \cdot `r p11$T2`
+    -  `r p11$sofr.rate.6m` \cdot `r p11$T1`}
+       {`r p11$T2` - `r p11$T1`}\\
+    &= `r p11$Rf`
+\end{aligned}
+$$
+
+### Step 4: Interpret the forward rate for the futures contract
+
+The forward rate of 9\% per annum represents the annualized, continuously
+compounded rate for the 3-month period from 6 to 9 months. In a frictionless
+market with no arbitrage, the futures rate is often assumed to equal the forward
+rate for short-term contracts, especially when convexity adjustments are
+negligible (as they typically are for short maturities like 3 months).
+
+For 3-month SOFR futures (e.g., CME contracts), the price quote is:
+
+$$
+\text{Futures Price Quote} = 100 - \text{Annulaized Futures Rate}
+$$
+
+Here, the annulaized futures rate is approximated by the forward rate, which is
+9\%. While SOFR futures are based on the compounded daily SOFR rate over the
+reference period, and the given rates are continuously compounded term rates,
+the forward rate serves as a reasonable estimate for the expected annualized
+rate in this context.
+
+### Step 5: Compute the futures price quote
+
+Using the forward rate as the estimated futures rate:
+
+$$
+\text{Futures Price Quote} = 100 - 9 = 91
+$$
+
+### Step 6: Verify the result
+
+Let's confirm using discount factors
+
+* 6-month discount factor:
+  $e^{-R_1 \cdot T_1} = e^{-0.075 \cdot 0.5} = e^{-0.0375}$
+
+* 9-month discount factor:
+  $e^{-R_2 \cdot T_2} = e^{-0.08 \cdot 0.75} = e^{-0.06}$
+
+* Forward discount factor from 6 to 9 months:
+
+$$
+\frac{e^{-0.06}}{e^{-0.0375}} = e^{-0.06+0.0375} = e^{-0.0225}
+$$
+
+* For a 3-month period (0.25 years), the forward rate $R_F$ satisfies:
+
+$$
+e^{-f \cdot 0.25} = e^{-0.0225}
+\Longrightarrow R_F = \frac{0.0225}{0.25} = 0.09
+$$
+
+This matches our calculation, confirming $R_F = 9\%$ per annum. The futures
+price quote of 91 aligns with the convention of 100 minus the annualized rate.
+
+---
+
+The difference between the two solutions
+
+To address your query, I'll compare the solution you provided with my own
+approach to calculating the 3-month SOFR futures price quote for a contract
+maturing in six months. Let’s break it down step by step to identify the
+differences clearly.
+
+### My Solution
+
+In my approach:
+
+- I calculated the forward interest rate for the period from 6 to 9 months as 9%
+  per annum with continuous compounding, based on the given 6-month and 9-month
+  SOFR rates.
+- I assumed this forward rate directly represents the futures rate without
+  further adjustments.  I computed the futures price quote as:
+  \[ 100 - 9 = 91 \]
+- This method treats the continuously compounded forward rate as the annualized
+  rate applicable to the futures contract, with no adjustments for compounding
+  frequency or day count conventions.
+
+### The Other Solution (Yours)
+
+The solution you provided takes a more detailed approach:
+
+- **Forward Rate Calculation**: It starts with the same forward interest rate of
+  9% per annum with continuous compounding for the 3-month period (months 6 to
+  9). This is consistent with my calculation and is derived from the fact that
+  combining 7.5% per annum for the first 6 months with 9% per annum for the next
+  3 months yields an average of 8% per annum over 9 months.
+- **Compounding Adjustment**: It converts this continuously compounded rate to a
+  quarterly compounded rate using the formula:
+  \[ 4 \times (e^{0.09 / 4} - 1) \] Here, \(0.09 / 4 = 0.0225\) represents the
+  continuous rate over a quarter (3 months). Calculating this: \[ e^{0.0225} - 1
+  \approx 0.022755, \quad 4 \times 0.022755 = 0.09102 \text{ or } 9.102\% \]
+  This step adjusts the rate to reflect quarterly compounding, which aligns with
+  how SOFR futures rates are often interpreted.
+- **Day Count Adjustment**: It then adjusts the quarterly compounded rate for
+  the day count convention. Assuming an actual/365 day count initially, it
+  converts to an actual/360 day count (standard for SOFR):
+  \[ 9.102\% \times \frac{360}{365} \approx 8.977\% \]
+- **Futures Price Quote**: Finally, it calculates the futures price quote as:
+  \[ 100 - 8.977 = 91.02 \]
+
+### Key Differences
+Here’s how the two solutions diverge:
+
+1. **Compounding Frequency**
+
+   - **My Solution**: I used the 9% continuously compounded forward rate
+     directly as the futures rate, without converting it to a different
+     compounding basis.
+   - **Other Solution**: It converts the 9% continuous rate to a quarterly
+     compounded rate (9.102%), reflecting the compounding convention typically
+     relevant to SOFR futures contracts, which are based on compounded daily
+     SOFR rates over the reference period.
+
+2. **Day Count Convention**
+
+   - **My Solution**: I made no adjustment for day count, effectively assuming
+     the rate applies as is (implicitly actual/365, as might be inferred from
+     the problem’s context).
+   - **Other Solution**: It explicitly adjusts the rate from an actual/365 basis
+     to an actual/360 basis (8.977%), which is the standard day count for
+     SOFR-based instruments, including futures contracts.
+
+3. **Final Futures Price Quote**
+
+   - **My Solution**: My result is 91, based on a straightforward subtraction of
+     the unadjusted forward rate from 100.
+   - **Other Solution**: It arrives at 91.02, reflecting the adjustments for
+     compounding and day count, resulting in a slightly lower annualized rate
+     and thus a slightly higher futures price.
+
+### Why the Difference Matters
+
+- **Market Conventions**: The 3-month SOFR futures price quote (e.g., as traded
+  on the CME) is derived from the expected compounded daily SOFR rate over the
+  contract’s reference quarter, annualized using an actual/360 day count. The
+  other solution’s adjustments for quarterly compounding and the actual/360
+  convention align with these practices.
+- **Accuracy**: My approach is a simpler approximation that overlooks these
+  conventions, leading to a less precise estimate. The other solution’s result
+  (91.02) is more refined because it accounts for how the market typically
+  prices SOFR futures.
+
+### Conclusion
+
+The primary difference between my solution and the one you provided lies in the
+adjustments made to the forward rate. Your solution converts the 9% continuously
+compounded rate to a quarterly compounded rate (9.102%) and adjusts it for the
+actual/360 day count (8.977%), yielding a futures price quote of 91.02. In
+contrast, I used the unadjusted 9% rate directly, resulting in a quote of 91.
+The other solution’s approach is more accurate for SOFR futures due to its
+adherence to standard compounding and day count conventions.
+
+---

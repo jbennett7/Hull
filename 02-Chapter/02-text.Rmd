@@ -1,0 +1,1325 @@
+---
+title: Chapter 2 Futures Markets and Central Counterparties
+output:
+    pdf_document:
+        toc: true
+---
+
+# Practice Questions
+
+## 1. Margin calls on short futures contracts
+
+Suppose that you enter into a short futures contract to sell July silver for
+\$17.20 per ounce. The size of the contract is 5,000 ounces. The initial margin
+is \$4,000, and the maintenance margin is \$3,000. What change in the futures
+price will lead to a margin call? What happens if you do not meet the margin
+call?
+
+---
+
+### Given:
+
+* Contract type: Short futures (i.e., you're agreeing to sell silver in the
+  future)
+* Futures price at entry: \$17.20 per ounce
+* Contract size: 5,000 ounces
+* Initial margin: \$4,000
+* Maintenance margin: \$3,000
+
+### What triggers a margin call?
+
+A margin call occurs when your margin account balance drops below the
+maintenance margin. You start with \$4,000, and you'll get a margin call when
+your account balance falls below \$3,000 (maintenance margin)---that's a loss of
+\$1,000.
+
+### What futures price change leads to a \$1,000 loss?
+
+Since this is a short futures contract, you profit when the price falls, and
+lose when the price rises. We calculate the price change that results in a
+\$1,000 loss:
+
+$$
+\text{Loss} = \text{Change in price} \times \text{Contract size}
+$$
+
+So
+
+$$
+1,000 = \Delta P \times 5,000
+  \Rightarrow \Delta P = \frac{1,000}{5,000} = 0.20
+$$
+
+An \$0.20 increase in the futures price (from \$17.20 to \$17.40) will lead to a
+margin call.
+
+### What happens if you don't meet the margin call?
+
+If you fail to meet the margin call (i.e., you don't deposit enough to restore
+the margin to the initial level):
+
+  * Your borker will close out (liquidate) your position.
+  * This locks in your loss.
+  * You may also incur penalties or fees depending on your borkerage agreement.
+
+---
+
+## 2. Long futures contracts
+
+Suppose that in September 2021 a company takes a long position in a contract on
+May 2022 crude oil futures. It closes out its position in March 2022. The
+futures price (per barrel) is \$48.30 when it enters into the contract, \$50.50
+when it closes out its position, and \$49.10 at the end of December 2021. One
+contract is for the delivery of 1,000 barrels. What is the company's total
+profit? When is it realized? How is it taxed if it is (a) a hedger and (b) a
+speculator? Assume that the company has a December 31 year end.
+
+---
+
+### Given:
+
+* Initial position (long): September 2021 at \$48.30
+* Exit position: March 2022 at \$50.50
+* Price at year-end (Dec 31, 2021): \$49.10
+* Contract size: 1,000 barrels
+
+### Calculate total profit
+
+$$
+\begin{aligned}
+\text{Profit} &= (\text{Sell price} - \text{buy price})
+  \times \text{contract size}\\
+  &= (\$50.50 - \$48.30) \times 1,000\\
+  &= \$2.20 \times 1,000\\
+  &= \$2,200
+\end{aligned}
+$$
+
+### When is the profit realized?
+
+Futures are marked to market daily, but for accounting and tax purposes, it
+depends on whether the company is a hedger or a speculator.
+
+#### Hedger
+
+##### Profit realization
+
+Hedgers typically match the gain or loss on the futures with the loss or gain on
+the underlying exposure.
+
+##### Taxation
+
+The gain/loss is realized in the same period as the underlying item being
+hedged. If the hedge is of inventory or expected purchase/sale, the gain/loss is
+often deferred and included in the cost basis of the transaction. No taxable
+gain in 2021 if the underlying transaction is in 2022---taxed in 2022.
+
+#### Speculator
+
+##### Profit realization
+
+Speculators realize gains/loss as they occur
+
+##### Taxation
+
+60/40 Rule (U.S. Tax Code Section 1256) applies: 60\% of the gain is taxed at
+the long-term capital gains rate. 40\% is taxed at the short-term rate,
+regardless of holding period. Year-end marking to market applies:
+
+Profit recognized in 2021:
+
+$$
+(\$49.10 - \$48.30) \times 1,000 = \$800\\
+$$
+
+Remaining profit recognized in 2022:
+
+$$
+(\$50.50 - \$49.10) \times 1,000 = \$1,400
+$$
+
+### Summary
+
+| Role | Realized profit | Tax timing | Tax notes |
+|:---|:---|:---|:---|
+| Hedger | \$2,200 | Likely all in 2022 | Matched with hedged item |
+| Speculator | \$800 (2021), \$1,400 (2022) | 60/40 capital gains split each year | Mark-to-market applies |
+
+---
+
+## 3. Stop order to sell
+
+What does a stop order to sell at \$2 mean? When might it be used? What does a
+limit order to sell at \$2 mean? When might it be used?
+
+---
+
+A stop order to sell at \$2 means that an order to sell will be created when
+the price falls to \$2. This is used when you want to limit your losses if the
+price begins to fall.
+
+A limit order to sell at \$2 means that an order to sell will be created when
+the price is \$2 or better. This is used when you want to sell the underlying
+asset at the price or better.
+
+---
+
+## 4. Differences in exchange markets
+
+What differences exist in the way prices are quoted in the foreign exchange
+futures market, the foreign exchange spot market, and the foreign exchange
+forward market?
+
+---
+
+### Foreign Exchange Spot Market
+
+The spot market involves immediate (or near-immediate) delivery, typically
+within 2 business days. The prices are quoted as currency pairs (e.g.,
+`EURO/USD = 1.1100`. This means 1 euro buys 1.11 U.S. dollars.
+
+The base currency (left) is being bought/sold for the quote currency (right).
+Direct vs indirect quotes depend on the country. Bid/ask spreads are shown: e.g.
+`1.1100 / 1.1102`.
+
+### Foreign Exchange Forward Market
+
+A contract to buy or sell a currency at a specified price on a future date
+(beyond the spot date). Prices are usually quoted as a forward premium or
+discount relative to the spot rate.
+
+Spot EUR/USD = 1.1100
+3-month forward points = +0.0020
+Forward rate = 1.1120
+
+Premium/discount is often quoted in "points", which are added to or subtracted
+from the spot price. Large dealers often quote just the forward points, not the
+full forward rate.
+
+### Foreign Exchange Futures Market
+
+Standardized contracts traded on an exchange (like CME) for buying/selling a
+currency at a future date.
+
+Price quotes are usually inverted compared to spot. EUR/USD = 1.1100, a futures
+contract migh quote USD/EUR = 0.9009. Prices are quoted in terms of U.S. dollars
+per unit of foreign currency, but the quote structure is determined by the
+exchange's convention.
+
+These are quoted with standardized tick sizes and expiration dates. Margin
+requirements apply.
+
+---
+
+## 5. Options on futures contracts
+
+The party with a short position in a futures contract sometimes has options as
+to the precise asset that will be delivered, where delivery will take place,
+when delivery will take place, and so on. Do these options increase or decrease
+the futures price? Explain your reasoning.
+
+---
+
+These delivery options held by the short party in a futures contract
+generally decrease the futures price.
+
+When the short position (the seller) has flexibility in: which specific asset
+to deliver, where to deliver it, and when to deliver it; they gain valuable
+optionality---meaning they can choose the most favorable delivery conditions
+at the time of contract settlement.
+
+---
+
+## 6. Purpose of margin accounts
+
+Explain how margin accounts protect futures traders against the possiblity of
+default.
+
+---
+
+Margin accounts are a critical risk management tool in futures traading. They
+protect both traders and exchanges against default by ensuring that participants
+have enough capital to cover potential losses as the market moves.
+
+### What is a margin account?
+
+A margin account is a security deposit that both buyers and sellers must
+maintain with their broker or clearinghouse when entering a futures contract.
+It's not a down payment--it's there to guarantee performance of the contract.
+
+There are several components of the margin system:
+
+a. Initial margin, or the amount required to open a position. Typically a
+small percentage of the contract's full value.
+
+b. maintenance margin, or the minimum balance the account must maintain. If
+the margin falls below this level due to losses, a margin call is issued.
+
+c. Variation margin (mark-to-market), futures contracts are marked to
+market daily. Gains and losses are credited or debited daily to/from the
+margin account. This daily settlement limits the accumulation of large
+unpaid losses.
+
+### How margin accounts prevent defaults
+
+Margin accounts prevent default by:
+
+a. Daily Loss Coverage: Since all positions are settled daily, losses are
+realized and paid every day. This prevents large debts from building up,
+which reduces the risk that a tarader can't pay.
+
+b. Margin Calls: If losses push the account below the maintenance margin,
+the trader must immediately deposit more funds. If they don't, the broker
+can liguidate the position to prevent further losses.
+
+c. Exchange Risk Control: The exchange (or clearinghouse) manages the
+process and becomes the central counterparty to all trades. The margin
+system ensures that the clearinghouse is always protected, regardless of
+which side wins or loses.
+
+---
+
+## 7. Margin calls on futures contracts
+
+A trader buys two July futures contracts on frozen orange juice concentrate.
+Each contract is for the delivery of 15,000 pounds. The current futures price is
+160 cents per pound, the initial margin is \$6,000 per contract, and the
+maintenance margin is \$4,500 per contract. What price change would lead to a
+margin call? Under what circumstances could \$2,000 be withdrawn from the margin
+account?
+
+---
+
+### Given:
+
+* Number of contracts: 2
+* Contract size: 15,000 pounds each
+* Futures price: 160 cents/pound
+* Initial margin (per contract): \$6,000
+* Maintenance margin (per contract): \$4,500
+* Total initial margin deposited: $2 \times \$6,000 = \$12,000$
+* Total maintenance margin: $2 \times \$4,500 = \$9,000$
+
+A margin call happens when the value of your margin account falls below the
+maintenance margin level. For two contracts that is \$9,000
+
+So the maximum allowed loss before a margin call is:
+$\$12,000 - \$9,000 = \$3,000$.
+
+The price change would have to be:
+
+$$
+2 \times 15,000 = 30,000\ \text{pounds}\\
+$$
+
+Each 1 cent/pound drop in price results in:
+
+$$
+30,000 \times \$0.01 = \$300\ \text{loss}
+$$
+
+To lose \$3,000, the price must drop:
+
+$$
+\frac{\$3,000}{\$300} = 10\ \text{cents}
+$$
+
+So if the price drops from 160 cents to 150 cents, the margin account falls
+below \$9,000 and a margin call is initiated.
+
+To withdraw \$2,000, the account must have excess margin above the initial
+margin requirement of \$12,000. A gain of \$2,000 would allow this.
+
+$$
+\frac{\$2,000}{\$300} = 6.67\ \text{cents (rounded)}
+$$
+
+---
+
+## 8. Future arbitrage opportunities
+
+Show that, if the futures price of a commodity is greater than the spot price
+during the delivery period, then there is an arbitrage opportunity. Does an
+arbitrage opportunity exist if the futures price is less than the spot price?
+Explain your answer.
+
+---
+
+During the delivery period, you can deliver the actual commodity to fulfill a
+futures contract. So if the futures price is higher than the spot price,
+there's a profit opportunity:
+
+### Arbitrage Strategy
+
+1. Buy the commodity at the spot price (lower).
+2. Deliver it against the futures contract (sell at the higher futures
+   price).
+3. Lock in risk-free profit: Profit = Futures Pirce - Spot Price.
+
+This is possible because the contract is deliverable during this time, and
+the arbitrageur can directly use the spot market to fulfill the futures
+obligation.
+
+### What if the future price is less than the spot price?
+
+Let's try the reverse:
+
+1. Sell the commodity in the spot market (high price).
+2. Buy the commodity via the futures contract (low price).
+
+The problem is you can't demand delivery of the commodity via the futures
+contract. Only the short (seller) has the right to deliver. As the long as
+you can't force delivery early or during the delivery window unless the
+seller chooses to deliver. No arbitrage exists if futures < spot, because you
+can't force delviery from the futures contract to obtain the commodity and
+resell it.
+
+---
+
+## 9. Types of orders: Market-if-touched versus stop order
+
+Explain the difference between a market-if-touched order and a stop order.
+
+---
+
+A market-if-touched (MIT) order and a stop order are both conditional orders
+used to enter or exit positions, but they work in opposite directions and are
+used in different market scenarios.
+
+### Market-if-touched (MIT) order
+
+These are used to enter or exit a position when the market moves in your
+favor. They are triggerd when the market touches a more favorable price. They
+become a market order once the trigger price is touched.
+
+__EXAMPLE__: Suppose a stock is trading at \$50, and you want to buy if it
+drops to \$45. You place a buy MIT at \$45. If the price touches \$45, your
+order becomes a market buy order.
+
+### Stop order
+
+These are used to limit losses or protect gains when the market moves against
+you. They are triggered when the market reaches a less favorable price. They
+become a market order once the stop price is hit.
+
+__EXAMPLE__: You own a stock at \$50, and want to sell if it drops to \$45 to
+limit loss. You place a sell stop at \$45. If the price falls to \$45, your
+order becomes a market sell order.
+
+---
+
+## 10. Types of orders: stop-limit order
+
+Explain what a stop-limit order to sell at 20.30 with a limit of 20.10 means.
+
+---
+
+A stop-limit order is a combination of a stop order and a limit order. The
+stop price (20.30) is the trigger point. Once the stock price falls to or
+below \$20.30, the order becomes active. The limit price (20.10), once
+triggered, the order becomes a limit order to sell at no less than \$20.10.
+
+So once the stock falls to 20.30 the stop price trigger point begins selling
+the stock. If the stock falls further to 20.10, then another trigger is
+triggered and the selling stops.
+
+---
+
+## 11. Margin account: Mark-to-market for futures contracts
+
+At the end of one day a clearing house member is long 100 contracts, and the
+settlement price is \$50,000 per contract. The original margin is \$2,000 per
+contract. On the following day the member becomes responsible for clearing an
+additional 20 long contracts, entered into at a price of \$51,000 per contract.
+The settlement price at the end of this day is \$50,200. How much does the
+member have to add to its margin account with the exchange clearing house?
+
+---
+
+This is a margin and mark-to-market calculation for futures contracts.
+
+### Key Data
+
+#### Day 1 close:
+
+* Long: 100 contracts
+* Settlement price: \$50,000
+* Original margin: \$2,000/contract
+
+#### Day 2 activity:
+
+* Adds 20 more long contracts at \$51,000
+* New total: 120 contracts
+* Day 2 settlement price: \$50,200
+
+### Step 1: Day 1 margin requirement
+
+Initial margin required for the 100 contracts:
+
+$$
+100 \times 2,000 = \$200,000
+$$
+
+This already is in the margin account for Day 1.
+
+### Step 2: New contracts on day 2
+
+Member adds 20 new contracts at \$51,000
+
+Initial margin for those 20:
+
+$$
+20 \times 2,000 = \$40,000
+$$
+
+So \$40,000 must be added ot cover the initial margin for the new 20 contracts.
+
+### Step 3: Mark-to-market adjustment on day 2
+
+We now compute the daily gain or loss based on the change in the sttlement
+price.
+
+#### For the 100 original contracts
+
+* Bought effectively at \$50,000 (prior day's settlement)
+* New settlement = \$50,200 for a gain of \$200 per contract
+
+$$
+100 \times 200 = +\$20,000
+$$
+
+#### For the 20 new contracts
+
+* Bought at \$51,000
+* New settlement = \$50,200 for a loss of \$800 per contract
+
+#### Net mark-to-market
+
+$$
++20,000 - 16,000 = +\$4,000
+$$
+
+So instead of needing to add for losses, the member actually gains \$4,000,
+which is credited to their margin account.
+
+### Final answer
+
+* Initial margin required for 20 new contracts: \$40,000
+* Mark-to-market gain: \$4,000
+* Net amount to be added to the margin account:
+
+$$
+40,000 - 4,000 = \$36,000
+$$
+
+---
+
+## 12. OTC market regulations
+
+Explain why collateral requirements increased in the OTC market as a result of
+regulations introduced since the 2008 financial crisis.
+
+---
+
+Before the financial crisis, the over-the-counter (OTC) derivatives market was
+lightly regulated and dominated by large financial institutions dealing
+bilaterally. This meant that there was limited transparency in those
+transactions.
+
+The changes made were that there was now a mandaotory clearing house needed,
+This standardized margin requirements. Collateral must be highly liquid and of
+good quality.
+
+---
+
+## 13. Differences between forward and futures pricing
+
+The forward price of the Swiss franc for delivery in 45 days is quoted as
+1.1000. The futures price for a contract that will be delivered in 45 days is
+0.9000. Explain these two quotes. Which is more favorable for a trader wanting
+to sell Swiss francs?
+
+---
+
+### Given:
+
+* Forward price for CHF in 45 days: 1.1000
+* Futures price for CHF with same delivery date: 0.9000
+
+There is a difference of .2000 between the forward price and the futures price.
+
+### Why the discrepancy?
+
+Even though both contracts reference the same asset and delivery date, the
+contracts differ in important ways:
+
+1. Forward contracts are OTC contracts between two parties. There is no daily
+   settlement, margin requirements and are priced using interest rate
+   differentials.
+
+2. Futures contracts are standardized and traded on exchanges. They are
+   marked-to-market daily and they require initial and maintenance margins.
+
+The difference is due to what's called the "futures-forwards divergence", which
+is mostly influenced by:
+
+#### Interest rate volatility (Convexity bias):
+
+Futures are settled daily (mark-to-market), while forwards are settled at
+maturity. If interest rates and asset prices are correlated, this can create
+pricing differences. In this case, if USD interest rates are volatile or
+falling, the futures price migh underestimate the forward price.
+
+### Supply & Demand pressures:
+
+Market forces can push futures prices away from theoretical forward values,
+especially if traders are using on emore than the other for hedgining or
+speculation.
+
+### Which is better for a trader wanting to sell CHF?
+
+Selling CHF at 1.1000 (forward) gives you more USD per franc than selling at
+0.9000 (Futures). So the forward contract is more favorable.
+
+### Final answer
+
+The forward price is higher because it reflects spot rates plus the interest
+rate differential between USD and CHF, without the impact of daily settlement.
+The futures price is lower likely due to interest rate volatility and
+mark-to-market effects. For a trader wanting to sell Swiss francs, the forward
+contract at 1.1000 is more favorable, as it provides more USD per franc.
+
+---
+
+## 14. Mechanics of selling future contracts
+
+Suppose you call your broker and issue instructions to sell one July hogs
+contract. Describe what happens.
+
+---
+
+### 1. You place the order with your broker
+
+You instruct your broker to sell 1 July Lean Hogs futures contract. This means
+you are taking a short position and agreeing to deliver hogs (or settle the
+contract) in July at the current futures price. You don't need to own
+hogs---this can be a speculative or hedging position, and most contracts are
+cash-settled or closed before delivery.
+
+### 2. Broker sends the order to the exchange
+
+Your broker routes your order to the CME (Chicago Mercantile Exchange) where
+Lean Hogs futures are traded. The system looks for a matching buy order for July
+hogs at the price you're willing to accept. Once matched, your short position is
+established.
+
+### 3. Initial margin is posted
+
+To open the position, you must post an initial margin. This is a good faith
+deposit, not the full contract value. For hogs, it might be in the range of
+\$1,200-\$2,500, but it varies by volatility and exchange rules. The notional
+value of the contract is much larger.
+
+### 4. Mark-to-market begins
+
+At the end of each trading day: your position is marked ot market--adjusted to
+reflect the change in the contract's price. If the price goes down (favorable to
+your short), you receive a gain. If the price goes up, you must post a variation
+margin to cover the loss.
+
+### 5. Closing the position or holding to expiration
+
+You can: Offset your position later by buying one July hogs contract (closing
+your short). Or, if you do nothing, and hold it until the contract expires, the
+exchange will: Either require physical delivery (rare---only a few traders do
+this), or facilitate cash settlement or position offset depending on the
+contract rules. Most traders close out the position before the first notice day
+to avoid delivery.
+
+---
+
+## 15. Efficacy of the futures market
+
+"Speculation in futures markets is pure gambling. It is not in the public
+interest to allow speculators to trade on a futures exchange." Discuss this
+viewpoint.
+
+---
+
+Speculation is not gambling, which is a game of change. Speculation in the
+futures markets involves taking informed risk-taking based on market analysis,
+data, and trends. Speculators offer several benefits for futures exchanges:
+
+1. They provide liquidity by adding the number of buyers and sellers in the
+   market. This means that you get better price discovery and tighter bid-ask
+   spreads for everyone.
+
+2. Speculators also have the benefit of taking the other side of hedgers who
+   want to reduce their risk.
+
+3. Speculators help to provide a more efficient market.
+
+---
+
+## 16. Importance of asset quality
+
+What do you think would happen if an exchange started trading a contract in
+which the quality of the underlying asset was incompletely specified?
+
+---
+
+If the quality of the underlying asset is incompletely specified then the market
+would not effectively work.
+
+### 1. Futures contracts rely on standardization
+
+One of the defining features of a futures contract is that it's highly
+standardized: quantity, qualtiy, delivery time, location---all clearly defined.
+This ensures that everyone knows exactly what they're buying or selling.
+
+### 2. Uncertainty = basis risk and legal risk
+
+Incomplete quality specs increase basis risk---the risk that the futures price
+and the actual spot price fo what you deliver won't align. Buyers may receive
+lower-quality goods than expected. Disputes over delivery and legal challenges
+could become common.
+
+### 3. Hedgers would avoid the contract
+
+Companies that use futures to hedge their real-world price risk want precision.
+If they don't know what they'll receive/deliver, the contract is useless as a
+hedge. This causes low adoption, which kills liquidity.
+
+### 4. Speculators may take advantage---or stay away
+
+Some speculators may try to exploit the vagueness, but most will avoid markets
+with ambiguous terms. Pricing becomes erratic or disconntected from
+fundamentals. Volatility spikes, and regulators might step in.
+
+### Real-world parallel: The early days of oil futures
+
+When oil futures were introduced, the success of the contract depended on
+clearly defining grade: "light sweet crude oil" at Cushing, Oklahoma. If the
+spec was vague ("some kind of oil, maybe sweet, maybe heavy"), no one would have
+used it.
+
+### Final answer
+
+If an exchange started trading a contract with incompletely specified quality:
+
+* Trust would drop
+* Hedgers would stay away
+* Legal and delivery disputes would rise
+* Market liquidity would collapse
+* The contract would likely fail or be abandoned
+
+Standardization and clarity are non-negotiable for successful futures trading.
+
+---
+
+## 17. Open interest in futures contracts
+
+"When a futures contract is traded on the floor of the exchange, it may be the
+the case that the open interest increases by one, stays the same, or decreases
+by one." Explain this statement.
+
+---
+
+Open interest is the total number of outstanding futures contracts that are
+active and not yet closed (i.e., not offset, expired, or delivered).
+
+Every contract involves two parties: One long (buyer), and one short (seller).
+
+So open interest tracks the number of active positions, not the total trades.
+
+### How does a single trade affect open interest?
+
+Let's say one futures contract is traded on the exchange floor. There are 3
+possible scenarios, depending on whether the buyer or seller is opening or
+closing a position.
+
+#### Open interest increases by 1:
+
+Both the buyer and seller are entering new positions. For example, trader A
+opens a long position (new buyer) and trader B opens a short position (new
+seller). A brand new contract is created and open interest increases by 1.
+
+#### Open interest stays the same:
+
+One trader is opening a new position and the other is closing an existing
+position. For example, trader C opens a new long and trader D closes their
+existing short. The number of total outstanding contracts doesn't change, just
+shifts between traders. Open interest stays the same.
+
+#### Open interest decreases by 1
+
+Both the buyer and seller are closing exisitng positions. For example, trader E
+closes their long and trader F closes their short. One full contract is removed
+from the system. Open interest decreases by 1.
+
+### Final thought
+
+So, when a futures contract is traded on the floor: The change in open interest
+depends on whether traders are opening or closing positions---not just whether a
+trade occurred. That's what makes this metric so useful for analyzing market
+participation and sentiment.
+
+---
+
+## 18. Futures contracts
+
+Suppose that, on October 24, 2022, a company sells one April 2023 live cattle
+futures contract. It closes out its position on January 21, 2023. The futures
+price (per pound) is 121.20 cents when it enters into the contract, 118.30 cents
+when it closes out its position, and 118.80 cents at the end of December 2022.
+One contract is for the delivery of 40,000 pounds of cattle. What is the total
+profit? How is it taxed if the company is (a) a hedger and (b) a speculator?
+Assume that the company has a December 31 year end.
+
+---
+
+### Given:
+
+* Short 1 contract: 40,000 pounds
+* Futures price: 121.20 cents / pound
+* Closing price: 118.30 cents / pound
+* December 2022 price: 118.80 cents / pound
+
+### Total profit
+
+| Oct. 24, 2022 | Dec. 31, 2022 | Jan. 21, 2023 |
+|:---|:---|:---|
+| Open short position | Year End | Close short position |
+| \$1.212 | \$1.188 | \$1.183 |
+
+$$
+\begin{aligned}
+40,000 \times (1.212 - 1.188) = \$960\\
+40,000 \times (1.188 - 1.183) = \$200
+\end{aligned}
+$$
+
+### Hedging
+
+For hedging all profit is realized in 2023: \$1,160. The hedging gains/losses
+are taxed as normal business income. The gain or loss is matched with the
+underlying transaction. The \$1,160 gain would be reported as ordinary income.
+
+### Speculator
+
+For speculators some of the profit is realized in 2022: \$960. The rest is
+realized in 2023: \$200. Here the 60/40 rule will apply. 60\% of the
+gains/losses will be taxed as long-term capital gain/loss and 40\% will be taxed
+as short-term capital gain/loss.
+
+| Year | Gain | 60\% LTCG | 40\% STCG |
+|:---:|:---:|:---:|:---:|
+| 2022 | \$960 | \$576 | \$384 |
+| 2023 | \$200 | \$120 | \$80 |
+
+---
+
+## 19. Pros and Cons of hedging futures markets
+
+A cattle farmer expects to have 120,000 pounds of  live cattle to sell in 3
+months. The live cattle futures contract traded by the CME Group is for the
+delivery of 40,000 pounds of cattle. How can the farmer use the contract for
+hedging? From the farmer's viewpoint, what are the pros and cons of hedging?
+
+---
+
+The farmer can buy 3 futures contracts for delivery in 3 months for 40,000
+pounds of cattle to lock in the price and protect agains a falling market. The
+pros for this is that the farmer has clarity about the price he will be paying
+in three months.
+
+### Pros
+
+* Price certainty
+* Reduce risk
+* Helps with planning
+
+### Cons
+
+* Missed upside
+* margin requirements
+* Imperfect hedge
+* Complexity
+
+---
+
+## 20. Hedging futures markets
+
+It is July 2021. A mining company has just discovered a small deposit of gold.
+It will take 6 months to construct the mine. The gold will then be extracted on
+a more or less continuous basis for 1 year. Futures contracts on gold are
+available with delivery months every 2 months from August 2021 to December 2022.
+Each contract is for the delivery of 100 ounces. Discuss how the mining company
+might use futures markets for hedging.
+
+---
+
+### Given
+
+* Production of gold will begin in January 2022 and end December 2022.
+* Delivery months for 2022: February, April, June, August, October, December.
+
+### Hedge strategy
+
+* Short futures contracts for February, April, June, August, October, and
+  December.
+
+* Depending on what the company expects the production to be they can by the
+  corresponding contracts for the size (100 ounces). For example, if the company
+  expects to produce 1,200 ounces total over 2022 at a rate of 100 ounces/month.
+  Then the company can sell 1 contract per month.
+
+### Final thoughts
+
+This strategy will help the mining company lock in the price of gold for the
+entire lifetime of the mine. However, they will not be able to benefit if the
+market becomes favorable for them.
+
+---
+
+## 21. Central Counterparties
+
+Explain how CCPs work. What are the advantages to the financial system of
+requiring CCPs to be used for all standardized derivatives transactions between
+financial institutions?
+
+---
+
+### What is a CCP (Central Counterparty)?
+
+A central counterpary (CCP) is a middleman between buyers and sellers in a
+financial market---most commonly in derivatives, like futures, options, and
+swaps.
+
+When two financial institutions enter into a derivatives contract, the CCP steps
+in and becomes the counterparty to both sides. This means that the parties deal
+with the CCP instead of each other directly.
+
+### How CCPs work
+
+#### Step 1: Trade execution
+
+Two parties agree to a standardized derivative contract (e.g., interest rate
+swap, futures contract).
+
+#### Step 2: Clearing through CCP
+
+The trade is submitted to a CCP for clearing. The CCP becomes the buyer to every
+seller and the seller to every buyer.
+
+#### Step 3: Initial margin posted
+
+Both parties post initial margin to protect agains potential future losses.
+
+#### Step 4: Daily mark-to-market
+
+The CCP marks the position to market daily, and variation margin (daily
+gains/losses) is exchanged.
+
+#### Step 5: Default management
+
+If a party defaults, the CCP uses the defaulting member's margin, and possibly a
+default fund, to cover losses.
+
+### Advantage of using CCPs for standardized derivatives
+
+#### Reduces counterparty risk
+
+Without a CCP, if one party defaults, the other party suffers. With a CCP, the
+centralized risk management and margining system lowers the chance of losses
+cascading through the system.
+
+#### Transparency
+
+CCPs require trade reporting and provide public data on open positions, margin,
+etc. This helps regulators and participants monitor systemic risk.
+
+#### Standardized risk management
+
+CCPs enforce consistent margin requirements, default procedurs, and stress
+testing. No relying on bilateral credit agreements that vary by counterparty.
+
+#### Multilateral netting
+
+CCPs net positions across multiple participants, reducing the gross notional
+exposure in the market. For example, if a bank has offsetting trades with many
+parties, CCPs net them down, reducing the capital required.
+
+#### Crisis containment
+
+During times of market stress, CCPs provide a cushion of stability with
+pre-funded resources and a clear default waterfall.
+
+---
+
+## 22. Futures versus Forward contract analysis
+
+Trader A enters into futures contracts to buy 1 million euros for 1.1 million
+dollars in three months. Trader B enters in a forward contract to do the same
+thing. The exchange rate (dollars per euro) declines sharply during the first
+two months and then increases for the third month to close at 1.1300. Ignoring
+daily settlement, what is the total profit of each trader? When the impact of
+daily settlement is taken into account, which trader has done better?
+
+---
+
+### Ignoring daily settlement
+
+$$
+\begin{aligned}
+\text{profit} &= (1.1300 - 1.1000) \times 1,000,000\\
+  &= \$30,000
+\end{aligned}
+$$
+
+Both traders profit the same.
+
+### Daily settlement
+
+Futures are marked-to-market daily, while forwards are not. This makes a
+difference because of the timing of cash flows and the time value of money.
+
+#### First 2 months (down):
+
+The exchange rate declines, so futures price also drops below 1.10. Trader A
+(long futures) incurs daily losses as the euro depreciates. These losses require
+cash outflows (variation margin calls).
+
+#### Third month (up):
+
+The euro rebounds and ends at 1.1300. Trader A earns back the losses and gains
+more, but only at the end.
+
+#### Forward contracts (Trader B):
+
+No margin calls or cash flows until maturity. All of the gain is realized at
+once, at the end of 3 months.
+
+### Who did better?
+
+Total profit is the same \$30,000. However, when considering time value of cash
+flows, trader A's early losses and later gains make their profit less valuable
+in present value terms. Trader B doesn't need to post margin and gets the full
+profit at once.
+
+Therefore, trader B (forward contract) does slightly better overall when
+factoring in time value of money and opportunity cost of early margin calls.
+
+### Final thought
+
+Even though futures and forwards may look similar, daily settlement introduces
+cash flow timing differences that can affect overall profitability---especially
+in volatile markets.
+
+---
+
+## 23. Open interest
+
+Explain what is meant by open interest. Why does the open interest usually
+decline during the month preceding the delivery month? On a particular day,
+there were 2,000 trades in a particular futures contract. This means that there
+were 2,000 buyers (going long) and 2,000 sellers (going short). Of the 2,000
+buyers, 1,400 were closing out positions and 600 were entering into new
+positions. Of the 2,000 sellers, 1,200 were closing out positions and 800 were
+entering into new positions. What is the impact of the day's trading on open
+interest?
+
+---
+
+### What is open interest
+
+Open interest refers to the total number of outstanding futures contracts that
+have not been closed out or delivered. Every futures contract has two sides: a
+buyer (long) and a seller (short). When a new position is opened, open interest
+increases. When a position is closed, open interest decreases. Think of open
+interest as a count of active contracts---it grows when new contracts are
+created and shrinks when contracts are settled or offset.
+
+### Why does open interest usually decline before delivery month?
+
+As the delivery month approaches, many traders close out positions rather than
+make or take delivery of the underlying assets. This is because speculators
+don't want to deal with physical delivery, and hedgers may roll their positions
+into a later month. Also, liquidity tends to shift to the next nearby contract.
+
+### Let's analyze the trading day
+
+* 2,000 total trades: 2,000 long postions and 2,000 short positions
+* 1,400 of the 2,000 buyers were closing exisitng positions
+* 600 buyers were opening new long positions
+* 1,200 of the 2,000 sellers were closing existing positions
+* 800 sellers were opening new short positions
+
+| Buyer action | Seller Action | Effect on open interest | # of trades |
+|:---|:---|:---:|:---|
+| New | New | +1 | min(600, 800) = 600 |
+| Close | Close | -1 | min(1,400, 1,200) = 1,200 |
+| New | Close | \ 0 | 600 - 600 = 0 |
+| Close | New | \ 0 | 1,200 - 1,200 = 0 |
+
+The key is that only trades where both parties open or both close affect open
+interest.
+
+### Final answer
+
+$$
+\text{Change} = + 600 - 1,200 = - 600
+$$
+
+Open interests are the number of active contracts. Here open interest decreased
+by 600 contracts due to more closing trades than new ones.
+
+---
+
+## 24.  Sort futures margin requirements
+
+A company enters into a short futures contract to sell 5,000 bushels of wheat
+for 750 cents per bushel. The initial margin is \$3,000 and the maintenance
+margin is \$2,000. What price change would lead to a margin call? Under what
+circumstances could \$1,500 be withdrawn from the margin account?
+
+---
+
+### Given:
+
+* contract size: 5,000
+* Futures price: 750 cents / bushel
+* Initial margin: \$3,000
+* Maintenance margin: \$2,000
+
+### Calculate the incremental gain 
+
+
+$$
+0.01 \times 5,000 = \$50
+$$
+
+A 1 cent move in the futures price, will move the margin account \$50.
+
+### Price change for a margin call
+
+To lose \$1,000, the price must increase:
+
+$$
+\frac{\text{initial margin} - \text{maintenance margin}}{50} = .2
+$$
+
+If the price were to rise 20 cents to 770, a margin call would be triggered.
+
+### Withdrawal of \$1,500 from margin account
+
+To gain \$1,500 in the margin account, the price must decrease:
+
+$$
+\frac{1,500}{50} = .3
+$$
+
+If the price were to decrease 30 cents to 720, \$1,500 could be withdrawn from
+the margin account.
+
+---
+
+## 25. Futures contracts arbitrage
+
+Suppose that there are no storage costs for crude oil and the interest rate for
+borrowing or lending is 4\% per annum. How could you make money if the June and
+December futures contracts from a particular year trade at \$50 and \$56,
+respectively?
+
+---
+
+### Given:
+
+* No storage costs
+* Interest rate: .04
+* June futures: \$50
+* December futures: \$56
+* Time between June and December: 6 months or 0.5 years
+
+### Step 1: What should the December price be
+
+Using the cost-of-carry formula for a non-storable (or no-storage-cost)
+commodity:
+
+$$
+F_{\text{Dec}} = F_{\text{June}} \times e^{r T}
+$$
+
+Where:
+
+* $F_{\text{June}} = 50
+* $r = 0.04$
+* $T = 0.5$
+
+$$
+\begin{aligned}
+F_{\text{Dec}} &= 50 \times e^{0.04 \times 0.5}\\
+  &= 50 \times e^{0.02}\\
+  &\approx 50 \times 1.0202\\
+  &\approx 51.01
+\end{aligned}
+$$
+
+The fair December futures price is about \$51.01. But it's trading at \$56,
+which is too high.
+
+### Step 2: Create an arbitrage strategy
+
+1. Go long the June futures at \$50
+2. Short the December futures at \$56
+3. When June arrives store the oif for six months at \$0 cost and deliver the
+   oil into your short December futures contract at \$56.
+
+#### Profit
+
+Financing cost
+
+$$
+\begin{aligned}
+50 \times (e^{.02} - 1) \approx 50 \times 0.0202 = 1.01
+\end{aligned}
+$$
+
+Net profit
+
+$$
+\begin{aligned}
+56 - 50 - 1.01 = \$4.99\ \text{per barrel}
+\end{aligned}
+$$
+
+### Summary
+
+The December futures price is too high relative to June. To exploit this you
+long June futures and short December futures. This involves storing the asset
+for six months, but you lock in a risk-free profit.
+
+---
+
+## 26. Long forward + long put
+
+What position is equivalent to a long forward contract to buy an asset at $K$ on
+a certain date and a put option to sell it for $K$ on that date.
+
+---
+
+### Given:
+
+1. A long forward contract to buy the asset at price $K$ on date $T$.
+2. A long put option to sell the asset at price $K$ on the same date $T$.
+
+---
+
+### Step 1: Payoffs at Maturity $T$
+
+Let the spot price of the asset at maturity be $S_T$
+
+#### Long forward contract (buy at $K$):
+
+$$
+\text{Payoff} = S_T - K
+$$
+
+#### Long put option (sell at $K$):
+
+$$
+\text{Payoff} = \text{max}(K - S_T, 0)
+$$
+
+
+### Step 2: Add them together
+
+$$
+\text{Total payoff} = (S_T - K) + \text{max}(K - S_T, 0)
+$$
+
+Now consider two cases:
+
+#### Case 1: $S_T \ge K$
+
+* $\text{max}(K - S_T, 0) = 0$
+* $\text{Total payoff} = S_T - K$
+
+#### Case 2: $S_T < K$
+
+* $\text{max}(K - S_T, 0) = K - S_T$
+* $\text{Total payoff} = S_T - K + K - S_T = 0$
+
+### Analysis
+
+A long forward contract to buy at $K$ plus a long put option with strike $K$ is
+equivalent to a long European call option with strike $K$ and maturity $T$.
+
+This is a well-known put-call parity identity:
+
+$$
+\text{Call} = \text{forward} + \text{put}
+$$
+
+A visualization:
+
+```{r, problem 26}
+# Define the strike price
+K <- 100
+
+# Define a range of possible spot prices at maturity
+S_T <- seq(50, 150, by = 1)
+
+# Payoffs
+forward_payoff <- S_T - K
+put_payoff <- pmax(K - S_T, 0)
+combined_payoff <- forward_payoff + put_payoff
+call_payoff <- pmax(S_T - K, 0)
+
+# Plotting
+plot(S_T, combined_payoff, type = "l", col = "blue", lwd = 2,
+     ylim = c(-50, 50), xlab = "Spot Price at Maturity (S_T)",
+     ylab = "Payoff", main = "Long Forward + Long Put vs Long Call")
+
+lines(S_T, forward_payoff, col = "red", lwd = 2, lty = 2)
+lines(S_T, put_payoff, col = "green", lwd = 2, lty = 2)
+lines(S_T, call_payoff, col = "purple", lwd = 2, lty = 3)
+
+legend("topleft", legend = c("Long Forward + Long Put", "Long Forward", "Long Put", "Long Call"),
+       col = c("blue", "red", "green", "purple"), lty = c(1, 2, 2, 3), lwd = 2)
+```
+
+---
+
+## 27. Credit risk exposure
+
+A bank's derivatives transactions with a counterparty are worth +\$10 million
+to the bank and are cleared bilaterally. The counterparty has posted \$10
+million of cash collateral. What credit exposure does the bank have?
+
+---
+
+### Given:
+
+* The value of derivatives transactions to the bank is +\$10 million. This means
+  the counterparty owes the bank \$10 million if all trades were settled today.
+
+* Collateral posted by the counterparty: \$10 million in cash
+
+* The trades are bilaterally cleared, not through a central counterparty (CCP)
+
+### What is credit exposure?
+
+Credit exposure is the amount the bank stands to lose if the counterparty
+defaults, _net of any collateral_ held.
+
+Since the counterparty posed \$10 million collateral for the \$10 million
+derivative, the credit exposure is zero.
+
+Since the collateral is cash there is no other risks. However, if the collateral
+were something other than cash, or if the cash was not available to the bank
+immediately in case of default, then there may be operational risk or maket
+risk. These risks include time to liquidate the collateral or if market changes
+affect the value of the collateral.
+
+---

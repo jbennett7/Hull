@@ -1,0 +1,1945 @@
+---
+title: "Interest Rates"
+author: "John C. Hull"
+output:
+  pdf_document:
+    toc: true
+---
+
+# Chapter examples
+
+## Example 5.1 - Forward price for an investment asset
+
+$$
+F_0 = S_0 e^{rT}\tag{5.1}
+$$
+
+Consider a 4-month forward contract to buy a zero-coupon bond that will mature 1
+year from today. (This means that the bond will have 8 months to go when the
+forward contract matures.) The current price of the bond is \$930. We assume
+that the 4-month risk-free rate of interest (continuously compounded) is 6\% per
+annum. Because zero-coupon bonds provide no income, we can use equation (5.1)
+with $T = 4/12$, $r = 0.06$, and $S_0 = 930$. The forward price, $F_0$, is given
+by
+
+$$
+F_0 = 930 e^{0.06 \times 4/12} = \$948.79
+$$
+
+---
+
+## Example 5.2 - Known income
+
+$$
+F_0 = (S_0 - I)e^{rT}\tag{5.2}
+$$
+
+Consider a 10-month forward contract on a stock when the stock price is \$50. We
+assume that the risk-free rate of interest (continuously compounded) is 8\% per
+annum for all maturities and also that dividends of \$0.75 per share are
+expected after 3 months, 6 months, and 9 months. The present value of the
+dividends, $I$, is
+
+$$
+I = 0.75e^{-0.08 \times 3/12} + 0.75e^{-0.08 \times 6/12}
++ 0.75e^{-0.08 \times 9/12} = 2.162
+$$
+
+The variable $T$ is 10 months, so that the forward price, $F_0$, from
+equation (5.2), is given by
+
+$$
+F_0 = (50 - 2.162)e^{0.08 \times 10/12} = \$51.14
+$$
+
+---
+
+## Example 5.3 - Known yield
+
+$$
+R_c = m \ln{\left(1 + \frac{R_m}{m} \right)}\tag{4.3}
+$$
+
+$$
+F_0 = S_0 e^{(r - q)T}\tag{5.3}
+$$
+
+Consider a 6-month forward contract on an asset that is expected to provide
+income equal to 2\% of the asset price once during a 6-month period. The
+risk-free rate of interest (with continuous compounding) is 10\% per annum. The
+asset price is \$25. In this case, $S_0 = 25$, $r = 0.10$, and $T = 0.5$. The
+yield is 4\% per annum with semiannual compounding. From equation (4.3), this is
+3.96\% per annum with continuous compoudning. It follows that $q = 0.0396$, so
+that from equation (5.3) the forward price, $F_0$, is given by
+
+$$
+F_0 = 25 e^{(0.10 - 0.0396) \times 0.5} = \$25.77
+$$
+
+---
+
+## Example 5.4 - Valuing forward contracts
+
+$$
+F_0 = S_0 e^{rT}\tag{5.1}
+$$
+
+$$
+f = (F_0 - K)e^{-rT}\tag{5.4}
+$$
+
+A long forward contract on a non-dividend-paying stock was entered into some
+time ago. It currently has 6 months to maturity. The risk-free rate of itnerest
+(with continuous compounding) is 10\% per annum, the stock price is \$25, and
+the delivery price is \$24. In this case $S_0 = 25$, $r = 0.10$, $T = 0.5$, and
+$K = 24$. From equation (5.1), the 6-month forward price, $F_0$, is given by
+
+$$
+F_0 = 25 e^{0.1 \times 0.5} = \$26.28
+$$
+
+From equation (5.4), the value of the forward contract is
+
+$$
+f = (26.28 - 24) e^{-0.1 \times 0.5} = \$2.17
+$$
+
+Equation (5.4) shows that we can value a long forward contract on an asset by
+making the assumption that the price of the asset at the maturity of the forward
+contract equals the forward price $F_0$.
+
+---
+
+## Example 5.5 - Futures prices of stock indices
+
+$$
+F_0 = S_0 e^{(r - q)T}\tag{5.8}
+$$
+
+
+Consider a 3-month futures contract on an index. Suppose that the stocks
+underlying the index provide a dividend yield of 1\% per annum (continuously
+compounded), that the current value of the index is 1,300, and that the
+continuously compunded risk-free interest rate is 5\% per annum. In this case,
+$r = 0.05$, $S_0 = 1,300$, $T = 0.25$, and $q = 0.01$. Hence, the futures price,
+$F_0$, is given by equation (5.8)
+
+$$
+F_0 = 1,300 e^{(0.05 - 0.01)0.25} = \$1,313.07
+$$
+
+---
+
+## Example 5.6 - Forward and futures contracts on currencies
+
+$$
+F_0 = S_0 e^{(r - r_f)T}\tag{5.9}
+$$
+
+Suppose that the 2-year interest rates in Australia and the United States are
+3\% and 1\%, respectively, and the spot exchange rate is 0.7500 USD per AUD.
+From equation (5.9), the 2-year forward exchange rate should be
+
+$$
+0.7500 e^{(.03 - .01)2} = 0.7206
+$$
+
+---
+
+## Example 5.7 - Forward and futures contracts on currencies
+
+$$
+F_0 = S_0 e^{(r - r_f)T}\tag{5.9}
+$$
+
+
+In Table 5.4 on page 140, the September settlement price for the euro is
+about 0.2\% higher than the September settlement price. This indicates that the
+futures prices are increasing at about $4 \times 0.2 = 0.8\%$ per year with
+maturity. From equation (5.9) this is a rough estimate of the amount by which
+short-term euro interest rates were less than short-term U.S. itnerest rates in
+May 2020.
+
+---
+
+## Example 5.8 - Futures on commodities
+
+$$
+F_0 = (S_0 + U)e^{rT}\tag{5.11}
+$$
+
+Consider a 1-year futures contract on an investment asset that provides no
+income. It costs \$2 per unit to store the asset, with the payment being made at
+the end of the year. Assume that the spot price is \$450 per unit and the
+risk-free rate is 7\% per annum for all maturities. This corresponds to
+$r = 0.07$, $S_0 = 450$, $T = 1$, and
+
+$$
+U = 2e^{-0.07 \times 1} = 1.865
+$$
+
+From equation (5.11), the theoretical futures price, $F_0$, is given by
+
+$$
+F_0 = (450 + 1.865)e^{0.07 \times 1} = \$484.63
+$$
+
+# Practice Questions
+
+## 1. Forward price versus value of a forward contract
+
+What is the difference between the forward price and the value of a forward
+contract?
+
+---
+
+The forward price is the agreed-upon price at which the buyer and seller will
+transact the underlying asset at a future date. It is determined at the
+initiation of the contract and set so that the contract has zero value at that
+moment. It depends on the spot price, interest rates, dividends (if any), and
+time to maturity.
+
+The value is how much the contract is worth to a party at a given time (can be
+positive or negative). At initiation, thevalue is zero to both parties. Over
+time, the value changes as market conditions (spot price, interest rates)
+change. It is calculated as the difference between the current forward price and
+the agreed forward price, discounted back to present value.
+
+$$
+\text{Value at time}\ t = [F_t(T) - K] \cdot e^{-r(T - t)}
+$$
+
+Where:
+
+* $F_t(T)$: current forward price for delivery at time $T$
+* $K$: contract price (original forward price)
+* $r$: risk-free rate
+* $T - t$: time remaining
+
+### Summary
+
+| Term | Meaning |
+|:---|:---|
+| Forward price | The price agreed at contract initiation for future delivery |
+| Value of forward contract | The current worth of the contract to one party |
+
+---
+
+## 2. Forward price for an investment asset
+
+Suppose that you enter into a 6-month forward contract on a non-dividend paying
+stock when the stock price is \$30 and the risk-free interest rate (with
+continuous compounding) is 5\% per annum. What is the forward price?
+
+---
+
+We can calculae the forward price using the standard formula for a non-dividend
+paying stock with continuous compounding:
+
+$$
+F_0 = S_0 e^{rT}\tag{5.1}
+$$
+
+Where:
+
+* $F_0$ is the forward price
+* $S_0$ is the spot price (\$30)
+* $r$ is the risk-free rate (0.05)
+* $T$ is the time to maturity (6 months)
+
+$$
+F_0 = 30 e^{.05 \times .5} = 30.75945 \approx 30.76
+$$
+
+---
+
+## 3. Futures prices of stock indices
+
+A stock index currently stands at 350. The risk-free interest rate is 4\% per
+annum (with continuous compounding) and the dividend yield on the index is 3\%
+annum. What should the futures price for a 4-month contract be?
+
+---
+
+To calculate the futures price on a stock index that pays a continuous dividend
+yield, we use the following formula under continuous compounding.
+
+$$
+F_0 = S_0 e^{r - q)T}\tag{5.8}
+$$
+
+Where:
+
+* $F_0$ The future price
+* $S_0$ the current index level (350)
+* $r$ the risk-free rate (4\%)
+* $q$ the dividend yield (3\%)
+* $T = \frac{4}{12} = 0.333$ time to matuiry (4 months)
+
+$$
+F_0 = 350 e^{(0.04 - 0.03) \times .333} = 351.1674 \approx 351.17
+$$
+
+---
+
+## 4. Futures on commodities
+
+Explain carefully why the futures price of gold can be calculated from its spot
+price and other observable variables whereas the futures price of copper cannot.
+
+---
+
+The difference between investment assets and consumption assets.
+
+The ability to calculate a futures price from spot price and observable
+variables like interest rates, storage costs, and convenience yield depends on
+whether the commodity is easily and primarily held for investment or used for
+consumption.
+
+### Gold: Futures price is determinable
+
+Gold is an investment asset that is often held as a store of value, and not
+consumed. It can be stored, does not degrade, non-erishable and highly liquid.
+Because of these traits, the futures price of gold can be derived using the
+cost-of-carry model, which relies on observable variables:
+
+$$
+F_0 = S_0 e^{(r + u - y)T}
+$$
+
+Where:
+
+* $S$ is the spot price
+* $r$ is the risk-free interest rate
+* $u$ storage cots (as a rate per unit)
+* $y$ the convenience yield
+* $T$ the time to maturity
+
+Since all variables are observable or negligible, the futures price of gold is
+deterministic and model-driven.
+
+### Copper: Futres price is not fully determinable
+
+Copper is a consumption commodity that is used in manufacturing, electronics, and
+construction. It is costly to store and can degrade. Copper is also subject to
+supply and demand uncertainty, which makes it valuable to hold for consumption.
+
+The convenience yield for coppper can be significant and unobservable. It
+reflects the non-monetary benefits of physically holding copper (e.g., avoiding
+production delays). Since convenience yield is not directly observable or
+constant, we can't precisely compute copper's futures price from spot price and
+interest rates alone.
+
+---
+
+## 5. Known yield
+
+Explain why a foreign currency can be treated as an asset providing a known
+yield.
+
+---
+
+A foreign currency can be treated as an asset providing a known yield because
+when you hold foreign currency, you have the opportunity to invest it in
+risk-free instruments in the foreign country---such as Treasury bills or bank
+deposits---and earn the foreign risk-free interest rate.
+
+### Intuition
+
+Suppose you hold 1,000 EUR. You can:
+
+* Keep it as cash, or
+* Deposit it in a eurozone bank or buy a euro-denominated bond.
+
+Either way, you can earn the euro interest rate (say, 3\%). So, from the
+perspective of a domestic investor, holding euros is similar to holding an asset
+that pays a known yield of 3\%---just like a stock that pays a known dividend.
+
+### Mathematical view
+
+When pricing a forward contract on a foreign currency (say, EUR/USD), the
+forward price is given by the cost-of-carry formula, treating the foreign
+currency like a dividend-paying asset:
+
+$$
+F_0 = S_0 e^{(r - r_f)T}
+$$
+
+Where:
+
+* $F_0$ is the forward exchange rate
+* $S_0$ is the spot exchange rate
+* $r$ domestic risk-free rate
+* $r_f$ the foreign risk-free rate (the "known yield")
+* $T$ the time to maturity
+
+### Summary
+
+A foreign currency earns its own interest rate in its home market, just like an
+asset with a known yield. That's why, in financial modeling, we treat a foreign
+currency as an investment asset providing a known yield equal to its risk-free
+interest rate.
+
+---
+
+## 6. Futures pricing and expected values
+
+Is the futures price of a stock index greater than or less than the expected
+future value of the index? Explain your answer.
+
+---
+
+The futures price of a stock index is generally less than the expected future
+value of the index. This is due to risk preferences and market pricing under the
+risk-neutral measure rather than the real-world (or "true") probability
+distribution.
+
+### Here's the breakdown
+
+#### 1. Futures price reflects the risk-neutral expectation, not the actual ("real-world") expected return.
+
+* Future prices are determined by arbitrage---not by what investors expect the
+  market to do, but by the cost of carry:
+
+$$
+F_0 = S_0 e^{(r - q)T}
+$$
+
+Where:
+
+* $S$ the spot price
+* $r$ the risk-free rate
+* $q$ the dividend yield
+* $T$ time to maturity
+* This formula does not include any risk premium---it assumes investors are
+  risk-neutral.
+
+#### 2. Expected future value includes the equity risk premium
+
+* In reality, the expected return on the stock index is usually higher than the
+  risk-free rate (because investors demand compensation for risk).
+
+* That means the expected future value of the index under the real-world measure
+  includes this risk premium, and is higher than the futures price.
+
+### Example
+
+Assume:
+
+* Spot index = 1,000
+* Risk-free rate = 4\%
+* Dividend yield = 2\%
+* Time = 1 year
+
+Then the futures price
+
+$$
+F_0 = 1,000 e^{(0.04 - 0.02)} \approx 1020.20
+$$
+
+But if the expected return on the index is 8\%, then the expected future value
+of the index is:
+
+$$
+1,000 e^{0.08} \approx 1083.29
+$$
+
+So, the futures price is \$1020.20, which is less than the expected future
+value \$1083.29.
+
+### Conclusion
+
+The futures price  of a stock index is usually less than the expected future
+value of the index because it reflects a risk-neutral valuation, while the
+expected value reflects investors' actual expectations including a risk premium.
+
+---
+
+## 7.  Valuing forward contracts
+
+A 1-year long forward contract on a non-dividend-paying stock is entered into
+when the stock price is \$40 and the risk-free rate of interest is 5\% per
+annum with continuous compounding.
+
+a. What are the forward price and the initial value of the forward contract?
+b. Six months later, the price of the stock is \$45 and the risk-free
+   interest rate is still 5\%. What are the forward price and the value of
+   the forward contract?
+
+---
+
+### A. Forward price and initial value of the forward contract
+
+From equation 5.1, the forward price ($F_0$) is:
+
+$$
+F_0 = 40 e^{.05 \times 1} = 42.05084 \approx 42.05
+$$
+
+Initialy, the forward contract has zero value to both parties.
+
+### B. Six months later...
+
+* Time remaining: $T = .5$
+* New stock price: $S_0 = 45$
+* Original forward price: 42.05
+
+The new forward price:
+
+$$
+F_t = 45 e^{.05 \times .5} = 46.13918 \approx 46.14
+$$
+
+The new forward price (for a new contract) = \$46.14
+
+The value of the contract:
+
+$$
+f = (46.14 - 42.05) e^{-.05 \times .5} = 3.989018 \approx 3.99
+$$
+
+---
+
+## 8. Calculating the futures price of a stock index
+
+The risk-free rate of interest is 7\% per annum with continuous compounding, and
+the dividend yield on a stock index is 3.2\% per annum. The current value of the
+index is 150. What is the 6-month futures price?
+
+---
+
+$$
+F_0 = S_0 e^{(r-q)T} \tag{5.1}
+$$
+
+Where:
+
+* $F_0$ is the futures price
+* $S_0$ is the current index level ~ 150
+* $r$ is the risk free rate ~ .07
+* $q$ is the dividend yield ~ .032
+* $T$ time ti maturity in years ~ .5
+
+$$
+F_0 = 150 \cdot e^{(.07 - .032)\cdot 0.5} \approx 152.88
+$$
+
+---
+
+## 9. Variable dividend yield and stock index futures
+
+Assume that the risk-free interest rate is 4\% per annum with continuous
+compounding and that the dividend yield on a stock index varies throughout
+the year. In February, May, August, and November, dividends are paid at a rate
+of 5% per annum. In other months, dividends are paid at a rate of 2\% per annum.
+Suppose that the value of the index on July 31 is 1,300. What is the futures
+price for a contract deliverable in December 31 of the same year?
+
+---
+
+Time interval: July 31 - December 31
+
+$$
+\frac{5}{12}
+$$
+
+Adjusted Equation
+
+$$
+F_0 = S_0 e^{(r - \bar{q})T}
+$$
+
+The average annualized dividend yield:
+
+$$
+\bar{q} = \frac{ 2 \cdot 0.05 + 3 \cdot 0.02}{5} = 0.032
+$$
+
+$$
+F_0 = 130 \cdot e^{(0.04 - 0.032)\cdot \frac{5}{12}} \approx 1304.34
+$$
+
+---
+
+## 10. Index futures and arbitrage strategies
+
+Suppose that the risk-free interest rate is 6\% per annum with continuous
+compounding and that the dividend yield on a stock index is 4\% per annum. The
+index is standing at 400, and the futures price for a contract deliverable in
+four months is 405. What arbitrage opportunities does this create?
+
+---
+
+To determine whether there is an arbitrage opportunity, we need to:
+
+1. Calculate the theoretical futures price based on spot price, interest rate,
+   and dividend yield.
+
+2. Compare it to the actual futures price.
+
+3. If there's a discrepancy, evaluate whether casn-and-carry or reverse
+   cash-and-carry arbitrage is possible.
+
+### Step 1: Calculate the theoretical futures price
+
+$$
+F_{\text{theoretical}} = S_0 \cdot e^{(r - q)T}
+$$
+
+Where:
+
+* $S_0 = 400$ is the spot index level.
+* $r = 0.06$ is the risk-free rate.
+* $q = 0.04$ is the dividend yield.
+* $T = \frac{4}{12}$ is the time to maturity.
+
+$$
+F = 400 \cdot e^{(0.06 - 0.04)\cdot \frac{1}{3}} \approx 402.68
+$$
+
+### Step 2: Compare to actual futures price
+
+* Actual futures price is 405
+* Theoretical futures price is 402.68
+
+The actual price is higher than the theoretical price and thus the arbitrage
+opportunity is cash-and-carry arbitrage.
+
+### Step 3: Execute arbitrage strategy
+
+1. Borrow \$400 at 6\% per annum (continuously compounded) for four months.
+2. Buy the index at 400.
+3. Sell the futures contract at 405 (short the futures).
+4. Over 4 months:
+
+> * Receive dividends at 4\% per annum
+$400 \cdot (1 - e^{-0.04 \cdot \frac{1}{3}}) \approx 5.28$
+> * Repay loan $400 \cdot e^{0.06 \cdot \frac{1}{3}} \approx 408.08$
+
+5. At futures maturity:
+
+> * Deliver the index via the futures contract and receive 405.
+> * Total inflow: 405 + 5.28 (dividends) = 410.28
+> * Total outflow: repay loan = 408.08
+
+Profit $\approx$ 410.28 - 408.08 = \$2.20 per index unit
+
+### Final answer
+
+There is an arbitrage opportunity because the actual futures price (405) is
+above the theoretical price (402.68). You can execute a cash-and-carry arbitrage
+by:
+
+* Buying the index,
+* Shorting the futures,
+* Earning dividends and lcking in a risk-free profit of approximately \$2.20 per
+  index unit.
+
+---
+
+## 11. Short-term interest rates from currency differentials
+
+Estimate the difference between short-term interest rates in Japan and the
+United States on May 21, 2020, from the information in Table 5.4 on page 140.
+
+### Japanese Yen, USD per 100 yen, 12.5 million yen
+
+| Date | Open | High | Low | Prior Settlement | Last trade | Change | Volume |
+|:---|:---|:---|:---|:---|:---|:---|:---|:---|
+|June 2020 | 0.93015 | 0.93035 | 0.92745 | 0.93070 | 0.92970 | -0.00100 | 61,018 |
+| Sept. 2020 | 0.9340 | 0.93125 | 0.92895 | 0.93200 | 0.93125 | -0.00075 | 453 |
+
+---
+
+To estimate the difference between short-term interest rates in Japan and the
+United States on May 21, 2020, we can use the prices of currency futures for
+Japanese yen.
+
+Each futures contract is on 12.5 million yen, quoted in USD per 100 yen. The
+relevant futures prices:
+
+* June 2020 contract: 0.92970
+* September 2020 contract: 0.93125
+
+Let's interpret this using the covered interest parity (CIP) condition, which
+relates spot and forward exchange rates to interest rate differentials:
+
+$$
+F_0 = S_0 \cdot e^{(r_{\text{USD}} - r_{\text{JPY}})T}
+$$
+
+But since we don't have the spot exchange rate directly, we treat the June
+contract as the spot proxy (it's very close to expiration), and use the
+September contract as the forward.
+
+### Step-by-step calculation
+
+Let:
+
+* $S_0 = 0.92970$ June 2020 spot
+* $F_0 = 0.93125$ Sept 2020 forward price (quote)
+* $T = 3/12 = 0.25$ years (June to September)
+
+We use `R` to solve
+
+```{r problem 11: calculate may futures}
+S.0 <- 0.92970
+F.0 <- 0.93125
+T <- .25
+f <- function(r.diff) S.0 * exp(r.diff * T) - F.0
+uniroot(f, upper=1, lower=1e-4, tol=1e-8)$root
+```
+
+The difference between short-term interest rates in the U.S. and Japan on May
+21, 2020, is approximately 0.667\% (U.S. higher)
+
+This implies that short-term interest rates in the U.S. were about 0.667
+percentage points higher than in Japan at the time.
+
+---
+
+## 12.
+
+The 2-month interest rates in Switzerland and the United States are,
+respectively, 1\% and 2\% per annum with continuous compounding. The spot price
+of the Swiss franc is \$1.0500. The futures price for a contract deliverable in
+2 months is \$1.0500. What arbitrage opportunities does this create?
+
+---
+
+Given:
+
+* Swiss 2-month rate: $r_{\text{CHF}} = 1\%$
+* U.S. 2-month rate: $r_{\text{USD}} = 2\%$
+* Spot price of CHF: $S = 1.0500$ USD/CHF
+* Futures price: $F = 1.0500$ USD/CHF
+* Time to maturity: $T = 2/12 = 1/6 years$
+
+All interest rates are continuously compounded.
+
+### Step 1: What should the futures price be?
+
+Using covered interest parity (CIP):
+
+$$
+F_0 = S_0 \cdot e^{(r_{\text{USD}} - r_{\text{CDF}})T} \approx 1.0518
+$$
+
+### Step 2: Compare to actual futures price
+
+* Theoretical futures price: 1.0518
+* Actual futures price: 1.0500
+
+The actual price is too low relative to the theoretical price.
+
+### Step 3: Arbitrage strategy -- Reverse cash-and-carry
+
+To exploit undervalued futures:
+
+1. Borrow CHF at 1\% per annum for 2 months.
+2. Convert CHF to USD at spot rate $S = 1.0500$.
+3. Invest USD at 2\% per annum for 2 months.
+4. Enter into a long futures contract to buy CHF in 2 months at 1.0500.
+5. At maturity:
+
+  * Use proceeds from USD investment to buy CHF via the futures contract.
+  * Repay CHF loan.
+
+You've locked in a better forward rate than interest rate parity justifies, so
+you earn riskless arbitrage profit.
+
+### Final Answer
+
+Yes, there is an arbitrage opportunity because the futures price (1.0500) is too
+low relative to its theoretical value (1.05175).
+
+The arbitrage involves:
+
+* Borrowing Swiss francs
+* Converting to U.S. dollars
+* Investing in U.S. at higher interest
+* Locking in a cheap futures contract to repurchase Swiss francs
+
+This earns a risk-free profit due to the mispricing in the futures market.
+
+---
+
+## 13.
+
+The spot price of silver is \$25 per ounce. The storage costs are \$0.24 per
+ounce per year payable quarterly in advance. Assuming that interest rates are
+5\% per annum for all maturities, calculate the futures price of silver for
+delivery in 9 months.
+
+---
+
+To calculate the futures price of silver when there are storage costs, we adjust
+the cost-of-carry formula accordingly.
+
+### Given
+
+* Spot price $S_0 = \$25$ per ounce
+* Storage cost = \$0.24 per year, paid quarterly in advance
+* Time to maturity: $T = \frac{9}{12} = 0.75$ years.
+* Risk-free rate: $r = 5\% = 0.05$, with continuous compounding
+
+### Step 1: Understand the storage costs
+
+Quarterly payments = \$0.24/4 = \%0.06 per quarter.
+
+Since they are paid in advance, the present value (PV) of each is discounted
+from its payment time, not end of quarter.
+
+Payments occur at:
+
+* $t = 0$
+* $t = 0.25$
+* $t = 0.50$
+
+(We ignore the 4th payment at $t = 0.75$ since the contract ends before the
+next payment.)
+
+Present value of storage costs:
+
+$$
+\begin{aligned}
+PV(\text{storage}) &= 0.06 \cdot e^{-0.05 \cdot 0}
+  + 0.06 \cdot e^{-0.05 \cdot 0.25} + 0.06 \cdot e^{-0.05 \cdot 0.05}\\
+  &= 0.06 \cdot 2.9629\\
+  &\approx 0.1777733
+\end{aligned}
+$$
+
+### Step 2: Apply the cost-of-carry formula
+
+$$
+\begin{aligned}
+F_0 &= (S_0 + PV(\text{storage}))\cdot e^{rT}\\
+  &= (25 + 0.1778) \cdot e^{-.05 \cdot 0.75}\\
+  &\approx 26.13
+\end{aligned}
+$$
+
+The 9-month futures price of silver is approximatgely: \$26.13 per ounce.
+
+---
+
+## 14.
+
+Suppose that $F_1$ and $F_2$ are two futures contracts on the same commodity
+with times to maturity, $t_1$ and $t_2$, where $t_2 > t_1$. Prove that
+$F_2 \le F_1 e^{r(t_2 - t_1)}$, where $r$ is the interest rate (assumed
+constant) and there are no storage costs. For the purposes of this problem,
+assume that a futures contract is the ssame as a forward contract.
+
+---
+
+We are asked to prove that for two futures (or forward) prices $F_1$ and $F_2$
+with maturities $t_1$ and $t_2$ respectively, where $t_2 > t_1$, the following
+inequality holds:
+
+$$
+F_2 \le F_1 e^{r(t_2 - t_1)}
+$$
+
+Assumptions:
+
+* Both contracts are on the same commodity
+* No storage costs
+* Interest rate $r$ is constant (continuous compounding)
+* Futures behave like forwards (i.e., delivery-style contracts with no interim
+  cash flows)
+
+### Intuition behind the inequality
+
+This inequality asserts a no-arbitrage condition: If the futures price for a
+longer-maturity contract were too high, arbitrageurs could lock in a riskless
+profit by:
+
+* Selling the longer-term contract (i.e., taking a short position),
+* Buying the shorter-term contract and rolling it forwarrd,
+* Earning the risk-free return in between.
+
+### Step-by-Step proof
+
+Suppose $F_2 > F_1 e^{r(t_2 - t_1)}$.
+
+We'll show that this leads to an arbitrage opportunity, violating the
+no-arbitrage principle.
+
+### Arbitrage Strategy (Assume $F_2 > F_1 e^{r(t_2 - t_1)}$):
+
+1. At time 0:
+
+   * Enter a long position in the contract maturing at $t_1$ (agree to buy the
+     commodity at $F_1$).
+   * Enter a short position in the contract maturing at $t_2$ (agree to sell the
+     commodity at $F_2$).
+   * Borrow $F_1$ at the risk-free rate $r$ until $t_1$.
+
+2. At time $t_1$:
+
+   * Use borrowed funds $F_1 e^{r t_1}$ to buy the commodity via the long
+     contract.
+   * Hold the commodity from $t_1$ to $t_2$ (no storage cost).
+   * No cost to holding.
+
+3. At time $t_2$:
+
+   * Deliver the commodity to fulfill the short futures contract, receiving
+     $F_2$.
+
+### Net cash flows
+
+* Time 0: Net cash flow = 0 (only entering into contracts, borrowing $F_1$, no
+  initial cost).
+* Time $t_1$: Buy commodity for $F_1$, repay loan = $F_1 e^{r t_1}$
+* Time $t_2$: Receive $F_2$
+
+Thus, profit at $t_2$:
+
+$$
+\text{Profit} = F_2 - F_1 e^{r(t_2 - t_1)} \cdot e^{r t_1}
+  = F_2 - F_1 e^{r t_2}
+$$
+
+But we assumed $F_2 > F_1 e^{r(t_2 - t_1)} \Rightarrow$ arbitrage profit > 0.
+
+This contradicts the no-arbitrage condition, hence:
+
+$$
+F_2 \le F_1 e^{r(t_2 - t_1)}
+$$
+
+### Conclusion
+
+Under the assumptions (no storage costs, constant interest rate, futures =
+forwards), the no-arbitrage condition implies:
+
+$$
+F_2 \le F_1 e^{r(t_2 - t_1)}
+$$
+
+This inequality ensures there is no opportunity to profit from price
+discrepancies between futures of different maturities.
+
+---
+
+## 15.
+
+When a known future cash outflow in a foreign currency is hedged by a company
+using a forward contract, there is no foreign exchange risk. When it is hedged
+using futures contracts, the daily settlement process does leave the company
+exposed to some risk. Explain the nature of this risk. In particular, consider
+whether the company is better off using a futures contract or a forward contract
+when:
+
+a. The value of the foreign currency falls rapidly during the life of the
+contract.
+
+b. The value of the foreign currency rises rapidly during the life of the
+contract.
+
+c. The value of the foreign currency first rises and then falls back to its
+initial value.
+
+d. The value of the foreign currency first falls and then rises back to its
+initial value.
+
+Assume that the forward price equals the futures price.
+
+---
+
+When a company hedges a known future foreign currency cash outflow, such as a
+payment it must make in a nother currency, it can use forward or futures
+contracts. If forward and futures prices are equal, both lock in the same
+exchange rate for the final settlement. However, futures contracts are marked to
+amrket daily, meaning gains or losses are realized and settled each day, while
+forward contracts settle only once at maturity.
+
+Because of this, futures contracts introduce "margin risk" or "liquidity risk"
+even when the overall hedge is economically sound. This risk arises from cash
+flow timing differences between the hedge and the underlying exposure.
+
+### Nature of the risk with futures
+
+#### Forward contract:
+
+No intermediate cash flows. The company is not required to post margin or deal
+with mark-to-market volatility. The gain or loss is realized at contract
+maturity.
+
+#### Futures contracts:
+
+Requires daily margining. Gains/losses from currency movements are realized
+immediately, leading to potential cash flow mismatches, especially if the
+foreign currency value reverses before contract maturity.
+
+Now, let's analyze each scenario assuming the company needs to pay in the
+foreign currency at contract maturity and uses a futures contract to hedge.
+
+### The foreign currency falls rapidly during the life of the contract
+
+* The futures position incurs losses early (because the company has a long
+  futures position to hedge a future outflow).
+
+* Dure to daily settlement, the company must post margin or realize cash losses
+  early.
+
+* These losses are not offset by lower payment in the foreign currency until
+  later, at maturity.
+
+* Foreard contract is better: No margin required; the loss is settled at the
+  end.
+
+### The foreign currency rises rapidly during the life of the contract
+
+* The futures position shows gains early, and the company receives cash inflows
+  from daily marking to market.
+
+* These gains provide early liquidity before the actual outflow.
+
+* These gains provide early liquidity before the actual outflow.
+
+* Even though both forward and futures end with the same value, the futures
+  hedge improves cash flow.
+
+* Better to use a futures contract.
+
+### The foreign currency first rises, then falls back to its initial value
+
+* The company receives gains early but then returns them as the currency falls
+  (daily losses).
+
+* Net effect at maturity is zero, but cash inflows early followed by outflows
+  later may cause liquidity strain.
+
+* Forward contract avoids this churn.
+
+* Better to use a forward contract.
+
+### The foreign currency first falls, then rises back to its initial value
+
+* The company experiences early losses (posts margin), then recovers gains
+  later.
+
+* The hedge is still economically correct at maturity, but the company may face
+  temporary liquidity pressure.
+
+* Better to use a forward contract.
+
+### Concluison
+
+| Scenario | Best hedge instrument | Reason |
+|:---|:---|:---|
+| Currency falls rapidly | Forward | Avoids early cash outflows from futures losses |
+| Currency rises rapidly | Futures | Provides early gains and cash inflows |
+| Currency rises then falls | Forward | Avoids unnecessary margin churn |
+| Currency falls then rises | Forward | Avoids early liquidity drain |
+
+Thus, for managing foreign exchange exposure with minimal liquidity risk,
+forwards are generally preferred, except in cases where early gains from
+favorable movements in futures might be beneficial.
+
+---
+
+## 16.
+
+It is sometimes argued that a forward exchange rate is an unbiased predictor of
+future exchange rates. Under what circumstances is this so?
+
+---
+
+The claim that a forward exchange rate is an unbiased predictor of future spot
+exchange rates is grounded in expectations theory, and it holds only under
+specific assumtpions.
+
+### When is the forward rate an unbiased predictor?
+
+The forward exchange rate is an unbiased predictor of the future spot rate if
+the following conditions are met:
+
+1. __Rational expectaions:__ Market participants form expectations about future
+   spot rates rationally, using all available information.
+
+2. __Risk neutrality:__ Investors are indifferent to risk; they do not require a
+   risk premium for holding foreign exchange positions.
+
+3. __Efficient markets:__ There are no arbitrage opportunities, and all known
+   information is already reflected in prices.
+
+4. __No transaction costs, taxes, or capital controls:__ These can distort
+   arbitrage relationships and lead to deviations between forward rates and
+   expected spot rates.
+
+### What does "unbiased" mean?
+
+The forward rate being unbiased means that:
+
+$$
+F_0 = E(S_t)
+$$
+
+Where:
+
+* $E(S_t)$ is the expected spot rate at time $t$.
+* $F_0$ is the forward rate agreed at initial time.
+
+So, on average over time, the forward rate equals the future spot rate. It does
+not mean it's a good predictor in every instance.
+
+### When the forward rate is not unbiased
+
+In the real world, the forward rate often deviates systematically from future
+spot rates due to:
+
+* __Risk premia:__ If investors are risk-averse, they may demand a premium for
+  exposure to certain currencies. This leads to a bias in the forward rate.
+
+* __Speculation and carry trades:__ Investors seeking higher interest rate
+  differentials can distort forward pricing.
+
+* __Behavioral biases and market inefficiencies__
+
+### Empirical evidence
+
+Empirical studies (like those on the "forward premium puzzle") have shown that
+forward rates are often poor predictors of future spot rates, especially in the
+short run and for high-interest-rate currencies.
+
+---
+
+## 17.
+
+Show that the growth rate in an index futures price equals the excess return on
+the portfolio underlying the index over the risk-free rate. Assume that the
+risk-free interest rate and the dividend yield are constant.
+
+---
+
+To show that the growth rate in an index futures price equals the excess return
+on the underlying portfolio over the risk-free rate, we assume:
+
+* The risk-free rate $r$ is constant (continuously compounded),
+* The dividend yield $q$ on the index is constant (also continuously
+  compounded),
+* The index futures price at time $t$ is $F(t)$.
+* The spot price of the index at time $t$ is $S(t)$.
+
+### Step 1: Futures pricing formula
+
+The futures price of a stock index that pays a known continuous dividend yield
+$q$ is given by:
+
+$$
+F(t) = S(t) e^{(r - q)(T -t)}
+$$
+
+Where:
+
+* $T$ is the time to maturity of the futures contract,
+* $(r - q)$ is the cost of carry (risk-free rate minus dividend yield).
+
+This expression comes from no-arbitrage pricing: buying the index (and earning
+dividends) while borrowing at the risk-free rate must match the futures payoff.
+
+### Step 2: Compute the growth rate of the futures price
+
+To find the instantaneous rate of change (growth rate) of the futures price,
+take the derivative with respect to $t$:
+
+$$
+\frac{dF(t)}{dt} = \frac{d}{dt}\left[ S(t) e^{(r - q)(T - t)} \right]
+$$
+
+Applying the product rule:
+
+$$
+\frac{dF(t)}{dt} = \frac{dS(t)}{dt} e^{(r - q)(T - t)}
+  + S(t) \cdot \frac{d}{dt} \left(e^{(r - q)(T - t)} \right)
+$$
+
+Now, compute the derivative of the exponential term:
+
+$$
+\frac{d}{dt} \left(e^{(r - q)(T - t)} \right) = - (r - q) e^{(r - q)(T - t)}
+$$
+
+So,
+
+$$
+\frac{dF(t)}{dt} = \frac{dS(t)}{dt} e^{(r - q)(T - t)}
+  - (r - q) S(t) e^{(r - q)(T - t)}
+$$
+
+Factor out $e^{(r - q)(T - t)}$:
+
+$$
+\frac{dF(t)}{dt} = \left( \frac{dS(t)}{dt}
+  - (r - q)S(t) \right) e^{(r - q)(T - t)}
+$$
+
+Now divide by $F(t) = S(t) e^{(r - q)(T - t)}$ to get the growth rate:
+
+$$
+\begin{aligned}
+\frac{1}{F(t)} \cdot \frac{dF(t)}{dt} = \frac{1}{S(t)}
+  \cdot \left(\frac{dS(t)}{dt} - (r - q)S(t) \right)\\
+  \Rightarrow \frac{1}{F(t)} \cdot \frac{dF(t)}{dt}
+  = \frac{1}{S(t)} \cdot \frac{dS(t)}{dt} - (r - q)
+\end{aligned}
+$$
+
+This gives:
+
+$$
+\text{Growth rate of futures price} = \frac{1}{S(t)}
+  \cdot \frac{dS(t)}{dt} - (r - q)
+$$
+
+But from the basic asset return formula:
+
+$$
+\frac{1}{S(t)} \cdot \frac{dS(t)}{dt} + q = \text{Total return on the index}
+$$
+
+So:
+
+Growth rate of futures price = Return on the index - q - (r - q)
+ = Return on the index - risk-free rate.
+
+### Interpretation
+
+This result shows that the rate at which the futures price increases reflects
+how much the index outperforms the risk-free rate. If the index earns exactly
+the risk-free rate, the futures price stays constant. If the index outperforms,
+the futures price rises, if it underperforms, the futures price falls.
+
+---
+
+## 18.
+
+Explain carefully what is meant by the expected price of a commodity on a
+particular future date. Suppose that the futures price for crude oil declines
+with the maturity of the contract at the rate of 2\% per year. Assume that
+speculators tend to be short crude oil futures and hedgers tend to be long. What
+does the Keynes and Hicks argument imply about the expected future price of oil?
+
+---
+
+### What is the expected price of a commodity on a future date?
+
+The expected price of a commodity on a particular future date is the market's
+consensus estimate--based on current information--of what the spot price of the
+commodity will be at that future time. It reflect the average of all possible
+future spot prices, weighted by their probabilities, as perceived today.
+
+Mathematically, if $S_T$ is the spot price at future time $T$, then the expected
+price is:
+
+$$
+E(S_T)
+$$
+
+This expectation is generally taken under the real-world (physical) probability
+measure---not the risk-neutral measure used in pricing derivatives. It
+incorporates market beliefs, supply and demand expectations, geopolitical risks,
+and other real-world uncertainties.
+
+### How do futures prices relate to expected prices?
+
+In an ideal frictionless market with:
+
+* no risk premiums,
+* no storage costs or convenience yields,
+* and no arbitrage opportunities,
+
+the futures price $F(t, T)$ would equal the expected future spot price:
+
+$$
+F(t, T) = E(S_T)
+$$
+
+However, in reality, futures prices often differ from expected future spot
+prices because of risk premiums. This is where the Keynes and Hicks theory comes
+in.
+
+### Keynes and Hicks' Theory: Normal backwardation
+
+Keynes and Hicks (1930s) introduced the idea of normal backwardation, which
+explains why futures prices may be lower than expected future spot prices.
+
+* __Hedgers__ (e.g., oil producers) want to protect themselves from a fall in
+  prices, so they take long positions in futures.
+
+* __Speculators__ are willing to take the opposite short positions, but only if
+  compensated for the risk.
+
+* Therefore, futures prices are set below the expected future spot price to
+  offer speculators a positive expected return.
+
+This creates a risk premium in the futures market.
+
+Mathematically:
+
+$$
+F(t, T) < E(S_T)
+$$
+
+### Application to crude oil futures
+
+#### Assumptions:
+
+* The futures price for crude oil declines with contract maturity at a rate of
+  2\% per year.
+
+* Speculators are short crude oil futures.
+
+* Hedgers are long crude oil futures.
+
+#### Interpretation:
+
+If the futures curve is downward sloping (i.e., backwardation), and speculators
+are net short, then--according to Keynes and Hicks--the futures price is below
+the expected future spot price.
+
+So, the market is offering speculators an expected profit (positive expected
+return) for taking the risk of falling prices.
+
+### Conclusion:
+
+> The Keynes and Hicks argument implies that the expected future spot price of
+> crude oil is higher than the futures price.
+
+So, even though futures prices are declining with maturity (suggesting lower
+future prices), the theory says this reflects a risk premium, not an unbiased
+forecast. The actual expected spot price of oil in the future is above the
+quoted futures price curve.
+
+---
+
+## 19.
+
+The Value Line Index is designed to reflect changes in the value of a portfolio
+of over 1,600 equally weighted stocks. Prior to March 9, 1988, the change in the
+index from one day to the next was calculated as the geometric average of the
+changes in the prices of the stocks underlying the index. In these
+circumstances, does equation (5.8) correctly relate the futures price of the
+index to its cash price? If not, does the equation overstate or understate the
+futures price?
+
+$$
+F_0 = S_0 e^{(r - q)T}\tag{5.8}
+$$
+
+---
+
+Equation 5.8 is the standard pricing formula for stock index futures. This
+formula assumes that the index is a value-weighted portfolio of stocks and that
+dividends are paid proportionally to the index weight (as with the S&P 500).
+
+### Issue with geometric averaging (Value Line Index pre-1988)
+
+Prior to March 9, 1988, the Value Line Index used the geometric average of the
+price relatives of its ~1,600 equally weighted stocks:
+
+$$
+\text{Index}_t = \left( \prod_{i = 1}^n \frac{P_{i, t}}{P_{i,t-1}} \right)^{1/n}
+$$
+
+This geometric averaging method does not conform to the assumptions behind
+Equation 5.8, which is derived under arbitrage arguments applicable to
+value-weighted or replicable portfolios.
+
+### Why equation 5.8 fails in this case
+
+The geometric average of returns is generally lower than the arithmetic average
+due to Jensen's inequality. Because geometric averaging reduces the effect of
+high-return stocks, it results in a lower expected return compared to a
+value-weighted index. The dividend yield $q$ is hard to define properly in this
+context. Most importantly: you cannot replicate the index exactly with a
+tradeable portfolio due to geometric weighting. Hence, no-arbitrage pricing
+(used to derive equation 5.8) breaks down.
+
+### Does equation 5.8 overstate or understate the futures price?
+
+Because the geometric average tends to understate the growth rate of the index
+compared to a value-weighted index, using equation 5.8 (which assumes
+exponential growth at the rate $r - q$) will overstate the true futures price.
+
+### Conclusion
+
+> No, equation 5.8 does not correctly relate the futures price to the spot price
+> of the Value Line Index before March 9, 1988. It overstates the futures price
+> because it assumes a higher growth rate than what a geometric average of stock
+> returns would actually produce.
+
+This discrepency was one of the reasons why the Value Line Index changed its
+calculation method in 1988 to an arithmetic average, making it more consistent
+with traditional futures pricing models.
+
+---
+
+## 20.
+
+A U.S. company is interested in using the futures contracts traded by the CME
+Group to hedge its Australian dollar exposure. Define $r$ as the interest rate
+(all maturities) on the U.S. dollar and $r_f$ as the interest rate (all
+maturities) on the Australian dollar. Assume that $r$ and $r_f$ are constant and
+that the company uses a contract expiring at time $T$ to hedge an exposure at
+time $t$ ($T > t$).
+
+a. Show that the optimal hedge ratio is $e^{(r_f - r)(T - t)}$, ignoring daily
+   settlement.
+
+b. Show that, when $t$ is 1 day, the optimal hedge ratio is almost exactly
+   $S_0/F_0$, where $S_0$ is the current spot price of the currency and $F_0$ is
+   the current futures price of the currency for the contract maturing at time
+   $T$.
+
+c. Show that the company can take account of the daily settlement of futures
+   contracts for a hedge that lasts longer than 1 day by adjusting the hedge
+   ratio so that it always equals the spot price of the currency divided by the
+   futures price of the currency.
+
+---
+
+This question examines optimal hedging with foreign exchange futures,
+particularly when the hedging horizon is shorter than the futures contract
+maturity. We'll walk through each part.
+
+Given:
+
+* $r$ USD interest rate (continuously compounded)
+* $r_f$ AUD interest rate (continuously compounded)
+* $T$ expiration of the futures contract
+* $t < T$ time of actual exposure
+* $S_0$ current spot rate (USD per AUD)
+* $F_0$ current futures price for delivery at $T$
+
+### (a) Optimal hedge ratio $h^* = e^{(r_f - r)(T - t)}$
+
+The goal is to find how much of the futures contract should be used to hedge a
+foreign currency exposure maturing at $t$, using a futures contract that matures
+at $T > t$.
+
+#### Step-by-step:
+
+1. The forward price $F_0$ for time $T$ is given by the cost-of-carry model:
+
+$$
+F_0 = S_0 e^{(r - r_f)T}
+$$
+
+2. Now consider the value of one unit of foreign currency (e.g., AUD 1) at time
+   $t$, discounted from $T$. The present value at time $t$ of a short position
+   in a futures contract maturing at $T$ is:
+
+$$
+V_t = F_0 e^{-r(T - t)} - S_t
+$$
+
+3. But we want to match this with the exposure in foreign currency, which grows
+   at $r_f$. So we scale the hedge such that the foreign currency value at $t$
+   is equivalent to the USD value delivered by the futures at $T$:
+
+$$
+h^* = \frac{e^{r_f(T - t)}}{e^{r(T - t)}} = e^{(r_f - r)(T - t)}
+$$
+
+#### Result
+
+$$
+h^* = e^{(r_f - r)(T - t)}
+$$
+
+### (b) When $t = 1$ day, show $h^* \approx \frac{S_0}{F_0}$
+
+$$
+h^* = e^{(r_f - r)(T - t)} \approx 1 + (r_f - r)(T - t)
+$$
+
+Also, recall:
+
+$$
+F_0 = S_0 e^{(r - r_f)T} \Rightarrow \frac{S_0}{F_0} = e^{(r_f - r)T}
+$$
+
+Now, if $T - t$ is very small (e.g., 1 day $\approx \frac{1}{365}$), then:
+
+$$
+h^* = e^{(r_f - r)(T - t)} \approx \frac{S_0}{F_0}
+$$
+
+Why? Because:
+
+$$
+\frac{S_0}{F_0} = e^{(r_f - r)T} = e^{(r_f - r)(T - t)} \cdot e^{(r_f - r)T}
+  = h^* \cdot^{(r_f - r)t}
+$$
+
+If $t$ is small (1 day), then $e^{(r_f - r)t} \approx 1$, so:
+
+$$
+h^* \approx \frac{S_0}{F_0}
+$$
+
+### (c) Hedging with daily settlement: update hedge ratio to $\frac{S_t}{F_t}$
+
+#### Problem:
+
+Futures are marked to market daily. This means gains and losses are realized
+before the final exposure date.
+
+#### Insight:
+
+To stay correctly hedged through time, you must rebalance the hedge so that the
+ratio of spot to futures stays correct for the current state.
+
+#### Solution:
+
+Adjust the hedge ratio continuously as:
+
+$$
+h^*_t = \frac{S_t}{F_t}
+$$
+
+This ensures the hedge remains delta-neutral, even in the presence of daily cash
+flows from futures.
+
+---
+
+## 21.
+
+What is the cost of carry for:
+
+a. a non-dividend-paying stock
+b. a stock index
+c. a commodity with storage costs
+d. a foreign currency.
+
+---
+
+The cost of carry is the net cost or benefit of holding an asset until the
+maturity of a forward or futures contract. It typically includes financing
+costs, income (like dividends), and storage or convenience yields.
+
+### a. Non-dividend-paying stock
+
+* __Cost of carry:__ $c = r$
+
+Since the stock pays no dividends, the only cost is financing the position
+(e.g., borrowing money to buy the stock). Therefore, the cost of carry ($c$) is
+the risk-free interest rate ($r$).
+
+### b. Stock index
+
+* __Cost of carry:__ $c = r - q$
+
+The dividend yield ($q$) acts as a negative cost (i.e., a benefit) when holding
+the index. Therefore, the cost of carry ($c$) is the risk-free interest rate
+($r$) minus the dividend yield ($q$).
+
+### c. Commodity with storage costs
+
+* __Cost of carry:__ $c = r - u$
+
+Commodities often incur storage costs, and may also involve insurance or
+spoilage. If there's also a convenience yield ($y$), the formula becomes:
+$c = r + u - y$
+
+$y$ reflects the non-monetary benefit of physically holding the comodity (e.g.,
+to ensure supply).
+
+### d. Foreign currency
+
+* __Cost of carry:__ $c = r - r_f$
+
+Holding foreign currency yields interest at rate $r_f$, while the opportunity
+cost of capital is $r$. So the net cost of carry is the difference.
+
+---
+
+## 22.
+
+The spot exchange rate between the Swiss franc and U.S. dollar is 1.0404 (\$ per
+franc). Interest rates int he United States and Switzerland are 0.25\% and 0\%
+per annum, respectively, with continuous compounding. The 3-month forward
+exchange rate was 1.0300 (\$ per franc). What arbitrage strategy was possible?
+How does your answer change if the forward exchange rate is 1.0500 (\$ per
+franc).
+
+---
+
+To determine the arbitrage strategy, we compare the theoretical forward rate
+implied by interest rate parity with the actual forward rate quoted in the
+market.
+
+### Given:
+
+* Spot rate, $S_0 = 1.0404$ (USD/CHF)
+* U.S. interest rate, $r = 0.25\% = 0.0025$ per annum (continuous compounding)
+* Swiss interest rate, $r_f = 0.00$
+* Time to maturity, $T = 3$ months $= 0.25$ years
+* Market forward rate $F_0 = 1.0300$ (USD/CHF)
+
+### Step 1: Compute the theoretical forward rate
+
+Using the interest rate parity formula (with continuous compounding):
+
+$$
+\begin{aligned}
+F_0 &= S_0 \cdot e^{(r - r_f)T}\\
+  &= 1.0404 e^{(0.0025 - 0.00)(0.25)}\\
+  &\approx 1.04105
+\end{aligned}
+$$
+
+### Case 1: Market forward rate = 1.0300 $\rightarrow$ Too low
+
+You can profit by buying low and selling high in the forward market.
+
+Arbitrage strategy:
+
+1. Borrow CHF (e.g., 1 million CHF) at 0\% for 3 months.
+
+2. Convert to USD at spot: $1,000,000 \times 1.0404 = 1,040,400$ USD.
+
+3. Invest USD at 0.25\% for 3 months:
+   $1,040,400 \cdot e^{.0025 \cdot .25} \approx 1,041,050$
+
+4. Enter a forward contract to buy CHF in 3 months at 1.0300
+
+5. In 3 months use your 1,041,050 USD to buy back CHF at 1.0300:
+   $1,041,050/1.0300 \approx 1,010,729$ CHF
+
+6. Repay 1 million CHF, and pocket the profit of 10,729 CHF.
+
+This is covered interest arbitrage: No exchange rate risk and a guaranteed
+profit.
+
+### Case 2: Market forward rate = 1.0500 $\rightarrow$ Too high
+
+Now you can sell high in the forward market and buy low in the spot.
+
+Reverse arbitrage strategy:
+
+1. Borrow USD (e.g., 1,040,400 USD) at 0.25\% for 3 months.
+
+2. Convert to CHF at spot: $1,040,400/1.0404 = 1,000,000$ CHF
+
+3. Invest CHF at 0\% for 3 months $1,000,000$ CHF
+
+4. Enter a forward contract to sell CHF for USD at 1.0500.
+
+5. In 3 months, deliver 1,000,000 CHF for:
+   $1,000,000 \times 1.0500 = 1,050,000$ USD
+
+6. Repay USD loan: $1,040,400 \cdot e^{.000625} \approx 1,041,050$
+
+7. Profit $1,050,000 - 1,041,050 = 8,950$ USD
+
+---
+
+## 23. Futures price of an index
+
+An index is 1,200. The three-month risk-free rate is 3\% per annum and the
+dividend yield over the next three months is 1.2\% per annum. The six-month
+risk-free rate is 3.5\% per annum and the dividend yield over the next six
+months is 1\% per annum. Estimate the futures price of the index for three-month
+and six-month contracts. All interest rates and dividend yields are continuously
+compounded.
+
+---
+
+$$
+F_0 = S_0 \cdot e^{(r - q)T}
+$$
+
+### Where:
+
+* $F_0$: futures price
+* $S_0$: current index level = 1,200
+* $r$: risk-free interest rate (continuously compounded)
+* $q$: dividend yield (continuously compounded)
+* $T$: time to maturity (in years)
+
+### 1. Three-month futures price
+
+Given:
+
+* $r = 0.03$
+* $q = 0.012$
+* $T = \frac{3}{12} = 0.25$
+
+$$
+F_0^{(3m)} = 1200 \cdot e^{(0.03 - 0.012)\cdot 0.25} \approx 1,205.41
+$$
+
+### 2. Six-month futures price
+
+Given:
+
+* $r = 0.035$
+* $q = 0.01$
+* $T = \frac{6}{12} = 0.5$
+
+$$
+F_0^{(6m)} = 1200 \cdot e^{(0.035 - 0.01)\cdot 0.5} \approx 1,215.09
+$$
+
+---
+
+## 24. 
+
+Suppose the current USD/euro exchange rate is 1.2000 dollar per euro. The
+six-month forward exchange rate is 1.1950. The six-month USD interest rate is
+1\% per annum continuously compouned. Estimate the six-month euro interest rate.
+
+---
+
+$$
+F_0 = S_0 e^{(r - r_f)T}
+$$
+
+$$
+\begin{aligned}
+1.1950 = 1.2000 \cdot e^{(.01 - r_f)T}\\
+e^{(.01 - r_f)\cdot .5} = \frac{1.1950}{1.2000}\\
+(r_f - .01)\cdot .5 = \ln{\left( \frac{1.1950}{1.2000} \right)}\\
+r_f = .01 - 2 \cdot \ln{\left( \frac{1.1950}{1.2000} \right)}\\
+r = 0.01835
+\end{aligned}
+$$
+
+This can be solved via `R`
+
+```{r problem 24}
+F.0 <- 1.1950
+S.0 <- 1.2000
+r <- .01
+T <- .5
+f <- function(r.f) S.0 * exp((r - r.f)*T) - F.0
+(uniroot(f, upper=1, lower=1e-4, tol=1e-8)$root)
+```
+
+---
+
+## 25.
+
+The spot price of oil is \$50 per barrel and the cost of storing a barrel of oil
+for one year is \$3, payable at the end of the year. The risk-free interest rate
+is 5\% per annum continuously compounded. What is an upper bound for the
+one-year futures price of oil?
+
+---
+
+Given:
+
+* $S_0$: Spot price = 50
+* $r$: risk-free rate = .05
+* $U$ = present value of storage costs
+* $T$ = Time to maturity = 1 year
+
+$$
+F_0 > (S_0 + U) \cdot e^{rT}
+$$
+
+The present value of the storage costs ($U$):
+
+$$
+\begin{aligned}
+U &= 3 \cdot e^{-rT}\\
+  &= 3 \cdot e^{-.05}\\
+  &= 2.8537
+\end{aligned}
+$$
+
+The upper bound of the futures price is:
+
+$$
+\begin{aligned}
+F_{\text{upper bound}} &= (50 + 2.8537) \cdot e^{.05}\\
+  &= 55.56
+\end{aligned}
+$$
+
+---
+
+## 26.
+
+A company that is uncertain about the exact date when it will pay or receive a
+foreign currency may try to negotiate with its bank a forward contract that
+specifies a period during which delivery can be made. The company wants to
+reserve the right to choose the exact delivery date to fit in with its own cash
+flows. Put yourself in the position of the bank. How would you price the product
+that the company wants?
+
+---
+
+If you're a bank pricing a window forward contract (a forward contract with a
+delivery window instead of a fixed delivery date), you must account for the
+flexibility it gives the client. This flexibility adds value for the client and
+risk for the bank, so the price (forward rate) must be adjusted accordingly.
+
+---
+
+### Key considerations for the bank
+
+#### Client optionality:
+
+The clien can choose the most favorable delivery date within the window. This is
+similar to giving them a free option---they'll deliver (or take delivery) when
+the forward rate is most advantageous.
+
+#### Hedging challenge:
+
+The bank cannot perfectly hedge the exposure because the exact date is
+uncertain. This introduces basis risk.
+
+#### Volatility and time window:
+
+The longer and more volatile the window, the more optionality it gives the
+client---and the more costly it is to hedge.
+
+#### Midpoint vs. Worst point pricing:
+
+The bank may price the forward based on: The midpoint of the forward rates over
+the window if risk-sharing). Or, more conservatively, the least favorable (for
+the bank) forward rate in the window to compensate for the optionality.
+
+### Pricing approaches
+
+#### Worst-case forward rate:
+
+Price the forward at the least favorable rate (for the bank) over the delivery
+window:
+
+$$
+\text{Forward rate} = \text{min}\{F(t_1), F(t_2), \ldots, F(t_n)\}
+$$
+
+or
+
+$$
+\text{Forward rate} = \text{max}\{F(t_1), F(t_2), \ldots, F(t_n)\}
+$$
+
+depending on whether the client is buying or selling the currency.
+
+#### Average forward plus optionality premium:
+
+Compute the average forward rate over the window and add a premium to reflect
+the cost of optionality (possible estimated using options pricing models like
+Black-Scholes).
+
+### Bottom line
+
+To price the product, the bank would typically either:
+
+* Quote a conservative forward rate that protects against the most adverse date
+  the client could choose, or
+
+* Charge an additional premium or spread to compensate for the optionality the
+  client receives.
+
+This turns the product into a structured forward contract, which blends elements
+of forwards and options.
+
+---
+
+## 27.
+
+A company enters into a forward contract with a bank to sell a foreign currency
+for $K_1$ at time $T_1$. The exchange rate at time $T_1$ proves to be $S_1$
+($> K_1$). The company asks the bank if it can roll the contract forward until
+time $T_2$ ($> T_1$) rather than settle at time $T_1$. The bank agrees to a new
+delivery price, $K_2$. Explain how $K_2$ should be calculated.
+
+---
+
+When a company wants to roll a forward contract from time $T_1$ to a later time
+$T_2$, the bank essentially replaces the original contract with a new forward
+contract. The new forward price $K_2$ must reflect:
+
+* The current spot or forward rate at time $T_1$,
+
+* The time value of money over the new interval $[T_1, T_2]$,
+
+* The fact that the original contract had an in-the-money or out-of-the-money
+  value at time $T_1$.
+
+### Given:
+
+* Original forward contract to sell foreign currency at price $K_1$ at time
+  $T_1$,
+
+* At time $T_1$, the spot exchange rate is $S_1$ and $S_1 > K_1$,
+
+* New forward contract desired for settlement at $T_2 > T_1$ with new delivery
+  price $K_2$.
+
+### Step-by-step: How the bank should calculate $K_2$
+
+#### 1. Value the original contract at $T_1$:
+
+Since the company had a contract to sell at $K_1$, and the spot is $S_1$, the
+value of the contract at $T_1$ is:
+
+$$
+V_1 = K_1 - S_1\ \ \text{(from the company's perspective, this is a loss)}
+$$
+
+But this is from the bank's perspective (bank will lose money if it honors the
+contract at the old rate). To be fair, the value should be based on the forward
+price at time $T_1$, not the spot price.
+
+So more accurately:
+
+$$
+V_1 = K_1 - F(T_1, T_1) = K_1 - S_1
+$$
+
+if we assume the forward price equals the spot price at maturity (no arbitrage).
+
+#### 2. Calculate new forward price $K_2$:
+
+The new delivery price $K_2$ must:
+
+* Reflect the current forward price from $T_1$ to $T_2$, say $F(T_1, T_2)$,
+
+* Adjust for the gain or loss on the original contract (i.e., the bank should
+  recoup any loss it would have realized at $T_1$).
+
+Thus, the fair adjustment leads to:
+
+$$
+K_2 = F(T_1, T_2) + \frac{V_1}{e^{r(T_2 - T_1)}}
+$$
+
+Here, $r$ is the domestic risk-free rate and the term
+$\frac{V_1}{e^{r(T_2 - T_1)}}$ discounts the bank's loss (or gain over the new
+forward period.
+
+### Final formula
+
+$$
+K_2 = F(T_1, T_2) + \frac{K_1 - S_1}{e^{r(T_2 - T_1)}}
+$$
+
+This means the new forward price equals the market forward rate over the
+extended horizon plus the present value of the difference between the original
+contract price and the spot rate at the roll time.
+
+### Interpretation
+
+* If the original forward was out of the money for the bank (i.e., $K_1 < S_1$),
+  the bank adds a premium to the new forward price $K_2$. 
+
+* If the original forward was in the money, $K_2$ might be below the new market
+  forward price.
+
+This ensures no arbitrage and fair compensation for both parties in the
+roll-forward arrangement.
+
+---
