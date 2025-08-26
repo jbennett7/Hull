@@ -71,9 +71,9 @@ zeros <- c(
            './work/zeros/z30yr.csv'
 )
 
-## Load U.S. Bond data (downloaded from  Schwab)
+## Load U.S. Bond data (downloaded from )
 #bonds <- function(files){
-#    # Downloaded Schwab data has a trailing comma, which
+#    # Downloaded data has a trailing comma, which
 #    # `read_csv` complains about because it thinks there
 #    # are more variables than the headers suggest.
 #    suppressWarnings(do.call(rbind,
