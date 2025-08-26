@@ -72,23 +72,26 @@ zeros <- c(
 )
 
 ## Load U.S. Bond data (downloaded from  Schwab)
-bonds <- function(files){
-    suppressWarnings(do.call(rbind,
-         lapply(files,
-         read_csv,
-         show_col_types=F,
-         na=c("--")))) %>%
-    select(-Action, -Quote, -`Estimated Total`) %>%
-    filter(
-        !is.na(Price)
-    ) %>%
-    mutate(
-      Maturity = as.Date(Maturity, format="%m/%d/%Y"),
-      TTM = time_length(interval(today(), Maturity), "years"),
-    )
-}
+#bonds <- function(files){
+#    # Downloaded Schwab data has a trailing comma, which
+#    # `read_csv` complains about because it thinks there
+#    # are more variables than the headers suggest.
+#    suppressWarnings(do.call(rbind,
+#         lapply(files,
+#         read_csv,
+#         show_col_types=F,
+#         na=c("--")))) %>%
+#    select(-Action, -Quote, -`Estimated Total`) %>%
+#    filter(
+#        !is.na(Price)
+#    ) %>%
+#    mutate(
+#      Maturity = as.Date(Maturity, format="%m/%d/%Y"),
+#      TTM = time_length(interval(today(), Maturity), "years"),
+#    )
+#}
 
-## An attempt to figure out my own YTM.
+## An attempt to figure out my own zero rates (not used).
 zero.rate <- function(data){
   func <- function(r, price, ttm) price * exp(r * ttm) - 100
 
@@ -99,130 +102,168 @@ zero.rate <- function(data){
   )
 }
 
-### ATTM is a factor that aggregates bonds by maturity
-### type: 3-month 6-month, etc...
-reference <- c(1/4, 1/2, 3/4, 1, 1.5, 2, 3, 4, 5, 10, 20, 30)
-labels <- c( '3m', '6m', '9m', '1y', '1.5y', '2y', '3y', '4y', '5y', '10y', '20y', '30y')
+attm <- function(data) {
+  reference <- c(1/4, 1/2, 3/4, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5)
+  labels <- c('3m', '6m', '9m', '1y', '1.5y', '2y', '2.5y', '3y',
+              '3.5y', '4y', '4.5y', '5')
+  #reference <- c(1/4, 1/2, 3/4, 1, 1.5, 2)
+  #labels <- c('3m', '6m', '9m', '1y', '1.5y', '2y')
 
-tzeros <- bonds(zeros) %>%
-    select(Maturity, Price, YTM, TTM) %>%
+  data |>
+  rowwise() |>
+  mutate(
+      ATTM = reference[which.min(abs(reference - TTM))],
+      ATTM = factor(
+          ATTM,
+          levels = reference,
+          labels = labels
+      )
+  )
+}
+
+bonds <- suppressMessages(suppressWarnings(
+    read_csv(
+        './data/bonds_2025-08-26.csv',
+        na=c('--')
+    )
+)) %>%
+    select(-Action, -Quote, -`Estimated Total`, -YTW1) %>%
+    filter(
+        !is.na(Price)
+    ) %>%
+    mutate(
+        Maturity = mdy(Maturity),
+        TTM = time_length(interval(today(), Maturity), "years")
+    ) %>%
+    attm() %>%
+    select(-Min, -Max, -`Accrued Interest`) %>%
+    filter(
+        Coupon > 0
+    )
+
+zeros <- suppressMessages(suppressWarnings(
+    read_csv(
+        './data/zeros_2025-08-26.csv',
+        na=c('--')
+    ) %>%
+    select(
+        -Action,
+        -Quote,
+        -`Estimated Total`
+    ) %>%
+    filter(
+        !is.na(Price)
+    ) %>%
+    mutate(
+        Maturity = mdy(Maturity),
+        TTM = time_length(interval(today(), Maturity), "years"),
+    ) %>%
+    attm() %>%
+    select(-Min, -Max)
+))
+
+# Determine the present value of a US coupon bond using zero
+# rates as the discount rate. Current rates are only for
+# 6m, 1y, 1.5y, and 2y. 2 year max bond.
+present.value <- function(data, zrates) {
+   data %>% mutate(
+        PV = {
+            dates = sort(Maturity %m-%
+                months(seq(0, by=6, length.out = floor(TTM*2))))
+            ttm = time_length(interval(today(), dates), "years")
+            zrates = zrates[1:(length(ttm))]
+            Coupon * sum(exp(-ttm*zrates)) + 100 * exp(-last(ttm)*last(zrates))
+        }
+   )
+}
+
+zrates <- zeros %>%
     zero.rate() %>%
-    mutate(
-       ATTM = reference[which.min(abs(reference - TTM))],
-       ATTM = factor(
-           ATTM,
-           levels = reference,
-           labels = labels
-       )
-    )
-
-tbonds <- bonds(files) %>%
-    filter(Coupon > 0) %>%
-    select(Maturity, Coupon, Price, YTM, TTM) |>
-    rowwise() |>
-    mutate(
-        ATTM = reference[which.min(abs(reference - TTM))],
-        ATTM = factor(
-            ATTM,
-            levels = reference,
-            labels = labels
-        )
-    )
-
-
-## Now do something with this
-rollmean(reference.rates, 2)['2025-08-21']
-reference.rates['2025-08-21']
-reference.rates['2025-08-22']
-tbonds %>%
     group_by(ATTM) %>%
     summarize(
-        YTM = max(YTM)
-    )
+        YTM = max(Zero)
+    ) %>%
+    filter(ATTM %in% c('6m', '1y', '1.5y', '2y'))
 
-#dgs3mo %>% filter(date == '2025-08-22')
-#
-#tzeros %>%
-#  group_by(ATTM) %>%
-#  summarize(
-#     YTM = max(YTM)
-#  )
-#
-#tbonds %>%
+df <- data.frame(bonds %>% filter(ATTM %in% c('6m', '1y', '1.5', '2y')) |>
+    filter(floor(TTM*2) > 0) |>
+    rowwise() |>
+    present.value(zrates$YTM/100))[57,]
+
+#                                Description Coupon   Maturity Quantity   Price
+#57 US Treasury 6.125% 11/15/2027, 912810FB9  6.125 2027-11-15      300 105.344
+#     YTM      TTM ATTM       PV
+#57 3.593 2.221311   2y 115.4958
+
+#df
+
+
+coupon <- 3
+r <- c(.05, .058, .064, .068)
+ttm <- c(.5, 1, 1.5, 2)
+price <- 98.39
+
+coupon <- 6.125
+r <- zrates$YTM/100
+    dates <- sort(as.Date("2027-11-15") %m-% months(seq(0, by=6, length.out = 4)))
+ttm <- time_length(interval(today(), dates), "years")
+price <- 105.344
+
+
+f <- function(r, c, t, p) c * sum(exp(-t*r)) + 100 * exp(-last(t)*last(r)) - p
+uniroot(f, c(-1, 1), c=coupon, t=ttm, p=price)$root
+
+### ATTM is a factor that aggregates bonds by maturity
+### type: 3-month 6-month, etc...
+#reference <- c(1/4, 1/2, 3/4, 1, 1.5, 2, 3, 4, 5, 10, 20, 30)
+#labels <- c( '3m', '6m', '9m', '1y', '1.5y', '2y', '3y', '4y', '5y', '10y', '20y', '30y')
+
+# Using zero bonds, get the max YTM and use them for zero rates
+# for 6m, 1y, 1.5y, and 2y.
+#tzeros <- bonds(zeros) %>%
+#    select(Maturity, Price, YTM, TTM) %>%
+#    zero.rate() %>%
+#    mutate(
+#       ATTM = reference[which.min(abs(reference - TTM))],
+#       ATTM = factor(
+#           ATTM,
+#           levels = reference,
+#           labels = labels
+#       )
+#    ) %>%
 #    group_by(ATTM) %>%
 #    summarize(
-#        YTM = max(YTM)
-#    )
-
-#ttm <- tbonds$TTM
-#reference[which.min(abs(reference - ttm))]
-
-#sapply(ttm, function(val) reference[which.min(abs(reference - ttm))])
-#sapply(ttm, function(val) print(val))
-#sapply(ttm, function(x) reference[which.min(abs(reference - x))])
-
-#data.frame(
-#tzeros %>% 
-#    group_by(ATTM) %>%
-#    summarize(MaxYield = max(YTM))
-#)
-
-#data.frame(
-#tbonds %>%
-#    select(TTM, ATTM)
-#    group_by(ATTM) %>%
-#    summarize(MaxYield = max(YTM))
-#)
-
-#tbonds <- tbonds[1,]
-#ncoupons = tbonds$TTM*2
-#dates <- sort(tbonds$Maturity %m-%
-#    months(seq(0, by=6, length.out = ncoupons)))
-#zrates <- c(3.50, 3.62, 3.60, 3.66, 3.66, 3.67, 3.70, 3.76, 3.82, 3.89, 4.09)/100
-#ttm <- time_length(interval(today(), dates), "years")
-#
-#zcr <- head(zrates, -1)
-#ctm <- head(ttm, -1)
-#
-#zlr <- last(zrates)
-#ltm <- last(ttm)
-#
-#coupon <- tbonds$Coupon
-#lcoupon <- coupon + 100
-#coupon
-
-#f <- function(r) sum(coupon * exp(-ctm*zcr)) + lcoupon * exp(-ltm*r) - tbonds$Price
-#uniroot(f, c(-1, 1))$root
-
-#sum(coupon * exp(-zcr*ctm)) + lcoupon*exp(-zlr*ltm)
-
-#coupons <- tbonds$Coupon
-#l <- 5
-#price <- 104.929
-#zrates <- c(2.01, 2.225)/100
-#ttm <- c(.5, 1)
-#l <- 1.5
-#coupons <- 2
-#price <- 102.5
-
-#p <- 100 + coupons
-#f <- function(r) sum(coupons * exp(-ttm*zrates)) + p * exp(-l*r)
-#uniroot(function(r) f(r) - price, c(-1, 1))$root
+#      YTM = max(YTM)
+#   ) %>%
+#   filter(ATTM %in% c('6m', '1y', '1.5y', '2y'))
 
 #tbonds <- bonds(files) %>%
-#    select(Description, Coupon, Maturity, Price, YTM, TTM) %>%
 #    filter(Coupon > 0) %>%
-#    mutate(
-#      N_Coupons = TTM * 2,
-#    ) |>
+#    select(Maturity, Coupon, Price, YTM, TTM) |>
 #    rowwise() |>
 #    mutate(
-#        Rate = {
-#            dates <- sort(Maturity %m-%
-#                months(seq(0, by=6, length.out = N_Coupons)))
-#            ttm <- time_length(interval(today(), dates), "years")
-#            f <- function(r) Coupon * sum(exp(zrates[-1]*ttm[-1])) +
-#                100 * exp(zrates[length(zrates)]*ttm[length(zrates)]) - Price
-#            uniroot(f, c(-1,1))$root
-#        }
+#        ATTM = reference[which.min(abs(reference - TTM))],
+#        ATTM = factor(
+#            ATTM,
+#            levels = reference,
+#            labels = labels
+#        )
 #    )
+
+#zero.rates <- tzeros$YTM/100
+# 2026-02-28  4.62  100.   4.06 0.510 6m    116.
+
+#dates <- sort(as.Date("2026-02-28") %m-% months(seq(0, by=6, length.out = floor(0.510*2))))
+
+#ttm = time_length(interval(today(), dates), "years")
+
+#4.62 * exp(-ttm*zero.rates[1]) + 100 * exp(-ttm*zero.rates[1])
+
+#bonds %>%
+#    select(Description, Maturity, Coupon, Price, YTM, TTM) %>%
+#    filter(
+#        Coupon > 0
+#    )
+#
+#zeros %>%
+#    select(Description, Maturity, Price, YTM, TTM)
