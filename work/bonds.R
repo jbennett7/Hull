@@ -99,7 +99,7 @@ present.value <- function(data, zrates) {
             ttm = time_length(interval(start.date, dates), "years")
             zs = unlist(sapply(ttm, function(t)
                 zrates[which.min(abs(zrates$TTM - t)), "Zero"]))
-            Coupon * sum(exp(-ttm*zs)) + 100 * exp(-last(ttm)*last(zs))
+            (Coupon/2) * sum(exp(-ttm*zs)) + 100 * exp(-last(ttm)*last(zs))
         }
    )
 }
@@ -112,7 +112,8 @@ bonds <- suppressMessages(suppressWarnings(
 )) %>%
     select(-Action, -Quote, -`Estimated Total`, -YTW1) %>%
     filter(
-        !is.na(Price)
+        !is.na(Price),
+        !is.na(YTM)
     ) %>%
     mutate(
         Maturity = mdy(Maturity),
@@ -170,6 +171,62 @@ tbonds <- bonds %>%
     ) %>%
     present.value(zrates)
 
+#tbonds %>% mutate(Error = (PV - Price)/Price*100) %>% filter(abs(Error) > 1)
+
 #x11()
 #plot(x=tbonds$TTM, y=tbonds$YTM, type='l')
 #Sys.sleep(30)
+
+bond.1yr <- data.frame(bonds) %>%
+    filter(
+        !str_detect(Description, "TIP"),
+    ) %>%
+    filter(ATTM == '1y') %>%
+    slice_max(YTM)
+
+#bond1$Coupon/2 * exp(-z.6m$YTM/100 * bond1$TTM) + 100 * exp(-z.6m$YTM/100 * bond1$TTM)
+
+z.6m <- zeros %>% filter(ATTM == '6m')
+
+zrates <- zeros %>% rowwise() %>%
+    zero.rate() %>%
+    group_by(ATTM) %>%
+    summarize(Zero = max(Zero))
+#    mutate(
+#        Zero = {
+#            f <- function(r) Price * exp(r * TTM) - 100
+#            uniroot(f, c(-1, 1))$root*100
+#        }
+#    ) %>%
+#    select(Description, ATTM, YTM, Zero) %>%
+#    group_by(ATTM) %>%
+#    summarize(Zero = max(Zero))
+
+#x11()
+#plot(x=zrates$TTM, y=zrates$Zero, type='l')
+#Sys.sleep(30)
+
+#zbond <- bonds %>%
+#    filter(ATTM == '1.5y', TTM > 1.5) %>%
+#    select(Maturity, Price, YTM, Coupon, TTM, ATTM) %>%
+#    mutate(
+#        Zero = {
+#            zs = (zrates %>% filter(ATTM %in% c('6m', '1y')))$Zero/100
+#            dates = sort(Maturity %m-%
+#                 months(seq(0, by=6, length.out=3)))
+#            ttm = time_length(interval(start.date, dates), "years")
+#            f <- function(r)
+#                (Coupon/2) * sum(exp(-head(ttm,-1)*zs)) +
+#                    100 * exp(-last(ttm)*r) - Price
+#            uniroot(f, c(-1, 1))$root*100
+#        } 
+#    )
+
+# 2027-03-15 101.   3.75  4.25   1.55 1.5y 
+#zrates
+#f <- function(r) exp(.0340*.25)*exp(r*.25) - exp(.0352*.5)
+#uniroot(f, c(-1,1))$root
+f <- function(r, t1, t2, z1, z2) exp(z1*t1)*exp(r*t1) - exp(z2*t2)
+rF <- uniroot(f, interval=c(-1, 1), t1=.25, t2=.5, z1=.0340, z2=.0352)$root
+rF
+(.0352*.5 - .0340*.25)/(.5-.25)
