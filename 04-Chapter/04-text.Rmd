@@ -6,6 +6,11 @@ output:
     toc: true
 ---
 
+```{r setup, message=F, echo=F}
+pretty = function(x, y=2) format(round(x, y), big.mark=',')
+require(tidyverse)
+```
+
 # 4.1 Types of rates
 
 ## Treasury rates
@@ -177,9 +182,97 @@ or 8.08\% per annum. This means that on a \$1,000 loan, interest payments of
 
 # 4.5 Zero rates
 
+The $n$-year zero-coupon interest rate is the rate of interest earned on an
+investment that starts today and lasts for $n$ years. All the interest and
+principal is realized at the end of $n$ years. The $n$-year zero-coupon interest
+rate is sometimes referred to ast he _n-year spot rate_, the _n-year zero rate_
+or just the _n-year zero_.
 
+# 4.6 Bond pricing
 
+Most bonds pay coupons to the holder periodically. The bond's principal (which
+is also known as its par value or face value) is paid at the end of its life.
+The theoretical price of a bond can be calculated as the present value of all
+the cash flows that will be received by the owner of the bond.
 
+Consider the following zero rates with continuous compounding for different
+maturities
+
+```{r table 4.2; zero rates, echo=F}
+maturity <- c(0.5, 1.0, 1.5, 2.0)
+zero.rate <- c(5.0, 5.8, 6.4, 6.8)
+knitr::kable(tibble(maturity, zero.rate))
+```
+
+If a 2-year bond with a principal of \$100 provides coupons at the rate of 6\%
+per annum semiannually. To calculate the present value of the first coupon of
+\$3, we discount it at 5.0\% for 6 months; to calculate the present value of the
+second coupon of \$3, we discount it at 5.8\% for 1 year; and so on.
+
+$$
+3 e^{-0.05 \times 0.5} + 3 e^{-0.058 \times 1.0} + 
+    3 e^{-0.064 \times 1.5} + 103 e^{-0.068 \times 2.0} = 98.39
+$$
+
+Therefore, that 2-year \$100 par value bond with a 6\% coupon rate is worth
+\$98.39 today.
+
+## Bond yield
+
+A bond's yield is the single discount rate that, when applied to all cash flows,
+gives a bond price equal to its market price. Suppose that the theoretical price
+of the bond we have been considering, \$98.39, is also its market value (i.e.,
+the market's price of the bond is in exact agreement with the data in Table
+4.2). If $y$ is the yield on the bond, expressed with continuous compounding, it
+must be true that
+
+$$
+3 e^{-y \times 0.5} + 3 e^{-y \times 1.0} + 3 e^{-y \times 1.5} +
+  103 e^{-y \times 2.0} = 98.39
+$$
+
+Solving for $y$ we get $y = 6.76\%$.
+
+## Par yield
+
+The _par yield_ for a certain bond maturity is the coupon rate that causes the
+bond price to equal its par value. Suppose that the coupon on a  2-year bond is
+$c$ per annum. Using the zero rates from above, the value of the bond is equal
+to its par value of 100 when
+
+$$
+\frac{c}{2} e^{-0.05 \times 0.5} + \frac{c}{2} e^{-0.058 \times 1.0} +
+  \frac{c}{2} e^{-0.064 \times 1.5} +
+  (100 + \frac{c}{2}) e^{-0.068 \times 2.0} = 100
+$$
+
+When solved, this equation gives $c = 6.87$. The 2-year par yield is
+therefore 6.87\% per annum.
+
+More generally, if $d$ is the present value of \$1 received at the maturity of
+the bond, $A$ is the value of an annuity that pays one dollar on each coupon
+payment date, and $m$ is the number of coupon payments per year, then the par
+yield $c$ must satisfy
+
+$$
+100 = A \frac{c}{m} + 100 d
+$$
+
+so that
+
+$$
+c = \frac{100 - 100d)m}{A}
+$$
+
+In our example, $m = 2$, $d = e^{-0.068 \times 2} = 0.87284$, and
+
+$$
+A = e^{-0.05 \times 0.5} + e^{-0.058 \times 1.0} +
+    e^{-0.064 \times 1.5} + e^{-0.068 \times 2.0} = 3.70027
+$$
+
+The formula confirms that the par yield is 6.87\% per annum. A bond with this
+coupon and semiannual payments is worth par.
 
 ## Example 4.3 - Calculating the forward rate agreement value
 
