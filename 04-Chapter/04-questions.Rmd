@@ -1,0 +1,1372 @@
+---
+title: "Interest Rates"
+author: "John C. Hull"
+output:
+  pdf_document:
+    toc: true
+---
+
+# Practice questions
+
+## 1. Interest rates and compounding interest
+
+A bank quotes an interest rate of 7\% per annum with quarterly compounding. What
+is the equivalent rate with (a) continuous compounding and (b) annual
+compounding?
+
+---
+
+Effect of compounding frequency on the value of \$100 at the end of 1 year with
+the interest rate is 7\% per annum
+
+### 1. Convert to effective annual rate (EAR):
+
+$$
+\begin{aligned}
+\text{EAR} &= \left(1 + \frac{r_q}{m}\right)^{m} - 1\\
+  &= \left(1 + \frac{0.07}{4}\right)^4 - 1\\
+  &= .0719
+\end{aligned}
+$$
+
+### 2. Convert to continuous compounding
+
+$$
+\begin{aligned}
+\text{EAR} &= e^{r_c} - 1 \Rightarrow \ln{(1 + \text{EAR})}\\
+r_c &= \ln{(1 + 0.071361)}\\
+  &\approx 0.0694
+\end{aligned}
+$$
+
+```{r problem 1: interest rates}
+interest.rate <- .07
+compound.frequency <- 4
+time <- 1
+face.value <- 1
+
+# convert to ear
+ear <- (1 + interest.rate/compound.frequency)^(compound.frequency) - 1
+cat("Annual EAR:", ear, "\n")
+
+# convert to continuous compounding
+continuous.compounding <- function(r) {exp(r) - 1 - ear}
+cc <- uniroot(continuous.compounding, lower=1e-4, upper=1, tol=1e-8)$root
+cat("Continuous compounding:", cc, "\n")
+```
+
+---
+
+## 2. Bond pricing and zero rates
+
+The 6-month and 1-year zero rates are both 5\% per annum. For a bond that has a
+life of 18 months and pays a coupon of 4\% per annum (with semiannual payments
+and one having just been made), the yield is 5.2\% per annum. What is the bond's
+price? What is the 18-month zero rate? All rates are quoted with semiannual
+compounding.
+
+---
+
+### Given:
+
+* Zero rates (with semiannual compounding):
+  $r_{0.5} = r_{1.0} = 5\%\ \text{per annum}$
+* Bond details:
+  - Maturity: 18 months (1.5 years)
+  - Coupon: 4\% per annum $\rightarrow$ 2\% semiannually
+  - Yield: 5.2\%
+  - Face value: Assume \$100 (typical unless otherwise specified)
+  - Last coupon just paid, so remain payments:
+    * 2\% at 6 months
+    * 2\% at 12 months
+    * 102\% at 18 months (coupon + principal)
+
+### Bond price
+
+The semiannual yield rate:
+
+$$
+Y = \frac{.052}{2} = .026
+$$
+
+Bond price:
+
+$$
+\begin{aligned}
+B &= \frac{2}{(1 + 0.026)} + \frac{2}{(1 + .026)^2}
+  + \frac{102}{(1 + .026)^3}\\
+  &\approx 98.29
+\end{aligned}
+$$
+
+---
+
+## 18-month zero rate
+
+We now use the zero-coupon bond pricing approach, but we already know the bond
+price (\$98.29) and the zero rates for 6 and 12 months. Let $r$ be the 18-month
+zero rate (semiannual compounding).
+
+We discount using known zero rates:
+
+$$
+\begin{aligned}
+r_{0.5} = r_{1.0} = 5\% \Rightarrow 2.5\%\ \text{per 6 months}\\\\
+\text{Price} &= \frac{2}{(1.025)^1} + \frac{2}{(1.025)^2}
+  + \frac{102}{(1 + r)^3}\\\\
+r &\approx 2.60\%\ \text{semiannual}
+\end{aligned}
+$$
+
+The annual zero rate is $2 \times 2.60\% = 5.20\%$
+
+```{r problem 2: calculate 18-month zero rate}
+f <- function(r) 2/(1.025)^1 + 2/(1.025)^2 + 102/(1 + r)^3 - 98.29
+uniroot(f, lower=1e-4, upper=1, tol=1e-8)$root * 2
+```
+
+---
+
+## 3. Compounding rates
+
+An investor receivees \$1,100 in one year in return for an investment of \$1,000
+now. Calculate the percentage return per annum with:
+
+a. Annual compounding
+b. Semiannual compounding
+c. Monthly compounding
+d. Continuous compounding
+
+---
+
+We are only interested in one year return (i.e. n=1)
+
+The general equations for calculating compounding interest:
+
+$$
+B = A(1 + R/m)^{m}
+$$
+
+### A. Annual compounding
+
+$$
+\begin{aligned}
+1,100 &= 1,000 \cdot (1 + R)\\
+R &= \frac{1,100}{1,000} - 1\\
+  &= .10
+\end{aligned}
+$$
+
+### B. Semiannual compounding
+
+$$
+\begin{aligned}
+1,100 &= 1,000 \cdot \left(1 + \frac{R}{2} \right)^{2}\\
+R &= 2 \cdot \left(\sqrt{\left(\frac{1,100}{1,000}\right)} - 1\right)\\
+  &= .0976
+\end{aligned}
+$$
+
+### C. Monthly compounding
+
+$$
+\begin{aligned}
+1,100 &= 1,000 \cdot \left(1 + \frac{R}{12}\right)^{12}\\\\
+R &= 12 \cdot \left(\left(\frac{1,100}{1,000}\right)^{1/12} - 1 \right)\\
+  &= .0957
+\end{aligned}
+$$
+
+
+### D. Continuous compounding
+
+$$
+\begin{aligned}
+B &= A e^{R}\\
+\frac{B}{A} &= e^{R}\\
+R &= \ln{\left(\frac{B}{A}\right)}\\
+  &= \ln{\left(\frac{1,100}{1,000}\right)}\\
+  &= .0953
+\end{aligned}
+$$
+
+### Calculations
+
+```{r problem 3: calculating rates}
+B <- 1100
+A <- 1000
+M <- c(1,2,12)
+
+f.asm <- function(r) A * (1 + r/m)^m - B
+f.c <- function(r) A * exp(r) - B
+
+for(m in M){
+  print(round(uniroot(f.asm, lower=1e-4, upper=1, tol=1e-8)$root, 4))
+}
+round(uniroot(f.c, lower=1e-4, upper=1, tol=1e-8)$root, 4)
+```
+
+---
+
+## 4. Forward interest rates
+
+Suppose that risk-free zero interest rates with continuous compounding are as
+follows:
+
+```{r problem 4: table, echo=F}
+maturity <- c(3, 6, 9, 12, 15, 18)
+rate <- c(.03, .032, .034, .035, .036, .037)
+knitr::kable(data.frame(Maturity=maturity, Rate=rate),
+             caption="Risk free zero interest rates, per annum")
+```
+
+Calculate forward interest rates for the second, third, fourth, fifth, and sixth
+quarters.
+
+---
+
+To calculate the forward rates from the table of zero rates with continuous
+compounding we use the following formula:
+
+$$
+\begin{aligned}
+f(t_1, t_2) &= \frac{R(t_2) \cdot t_2 - R(t_1) \cdot t_1}{t_2 - t_1}
+\end{aligned}
+$$
+
+using R
+
+```{r problem 4: forward interest rates}
+f <- function(z, t) (z[-1] * t[-1] - z[-length(z)] * t[-length(t)]) /
+    (t[-1] - t[-length(t)])
+f(rate, maturity)
+```
+
+---
+
+## 5.  Forward rate agreements (FRA)
+
+Assuming that SOFR rates are as in the previous problem, what is the value of an
+FRA where the holder will pay SOFR and receive 4.5\% (quarterly compounded) for
+a three-month period starting in one year on a principal of \$1,000,000?
+
+---
+
+To value a forward rate agreement (FRA) where the holder pays SOFR and receives
+4.5\% (quarterly compounded).
+
+* The notional is \$1,000,000
+* The fixed ratre received is 4.5\% quarterly compounded
+* The floating rate (SOFR) is derived from the zero curve in the previous
+  problem
+* The FRA covers a 3-month period starting in 1 year, i.e., from $T_1 = 1.0$
+  year to $T_2 = 1.25$ years.
+* Interest rates are quoted with continuous compounding
+
+### Step 1: Extract SOFR forward rate from 1.0 to 1.25 years.
+
+* R(1.0) = 3.5\%
+* R(1.25) = 3.6\%
+
+Now calculate the forward rate using the formula:
+
+$$
+f(1.0, 1.25) = \frac{R(1.25) \cdot 1.25 - R(1.0) \cdot 1.0}
+  {0.25} = 0.04
+$$
+
+### Step 2: Convert 4.5\% quarterly-compounded to continuously compounded
+
+We use:
+
+$$
+\begin{aligned}
+r_{\text{cont}} &= m \cdot \ln{\left(1 + \frac{R}{m}\right)}\ \ 
+\text{where}\ m=4,\ R = 0.045\\
+r_{\text{cont}} &= 4 \cdot \ln{\left(1 + \frac{0.045}{4}\right)}\\
+  &= 0.4475
+\end{aligned}
+$$
+
+So the fixed rate (continuously compounded) is approximately 4.475\%.
+
+### Step 3: Value the FRA
+
+The FRA is valued as the present value of the difference between the fixed and
+forward floating rate:
+
+$$
+\text{Value} = N \cdot (r_{\text{fixed}} - f) \cdot (T_2 - T_1) \cdot
+  e^{-R(T_2))\cdot T_2}
+$$
+
+Using:
+
+* $N = 1,000,000$
+* $r_{\text{fixed}} = 0.04475$
+* $f = 0.04$
+* $T_2 = 1.25$
+* $R(1.25) = 0.036$
+
+$$
+V = 1,000,000 \cdot (0.04475 - 0.04) \cdot 0.25 \cdot e^{-0.036 \cdot 1.25}
+  = \$1,135
+$$
+
+---
+
+## 6. Term structure of interest rates
+
+The term structure of interest rates is upward sloping. Put the following in
+order of magnitude:
+
+a. The 5-year zero rate
+b. The yield on a 5-year coupon-bearing bond
+c. The forward rate corresponding to the period between 4.75 and 5 years in the
+   future.
+
+What is the answer when the term structure of interest rates is downward
+sloping?
+
+---
+
+When the term structure of interest rates is upward sloping, it means that
+longer-term interest rates are higher than shorter-term ones.
+
+### Upward sloping yield curve
+
+#### A. The 5-year zero rate
+
+This is the yield on a zero-coupon bond maturing in 5 years. It reflects the
+average expected short rates over 5 years.
+
+#### B. The yield on a 5-year coupon-bearing bond
+
+This is a weighted average of yields over the life of the bond. Since some cash
+flows come earlier, it tends to be lower than the zero rate.
+
+#### C. The forward rate for 4.75 to 5 years
+
+This reflects the market's expectation of the short-term rate between 4.75 and 5
+years in the future. Since the yield curve is rising, this short-term forward
+rate is higher than both the zero and coupon yields.
+
+#### Order (from lowest to highest)
+
+b < a < c
+
+### Downward sloping yield curve
+
+Now, the term structure implies that future rates are expected to be lower.
+
+The order will be reversed: c < a < b
+
+---
+
+## 7. Duration
+
+What does duration tell you about the sensitivity of a bond portfolio to
+interest rates. What are the limitations of the duration measure?
+
+---
+
+Duration measures a bond's sensitivity to interest rate changes. Specifically,
+it estimates the percentage change in a bond's price for a 1\% (or 100 basis
+points) change in interest rates, assuming all other factors stay constant.
+
+### What duration tells you:
+
+#### Macaulay duration
+
+The weighted average time to receive the bond's cash flows.
+
+#### Modified duration
+
+The percentage change in the price for a small change in yield.
+
+$$
+\text{Modified duration} = \frac{\text{Macaulay duration}}
+  {1 + \text{yield per period}}
+$$
+
+For example, if a bond has a modified duration of 5, then its price will
+decrease by approximately 5\% if interest rates rise by 1\%.
+
+### Limits of duration
+
+#### 1. Assumes parallel shifts
+
+Duration assumes interest rates move uniformly across all maturities, which
+rarely happens in reality (non-parallel shifts in the yield curve are common).
+
+#### 2. Small changes only
+
+It's a linear approximation, so it becomes less accurate for large interest rate
+changes due to convexity (the curve of the price-yield relationship).
+
+#### 3. Ignores optionality
+
+It doesn't account for bonds with embedded options (like callable or puttable
+bonds), where cash flows may change as rates change.
+
+#### 4. Static cash flows
+
+Assumes fixed cash flows, which is not true for floating rate bonds or
+mortgage-backed securities where prepayment risk alters cash flows.
+
+#### 5. Yield vs. curve shifts
+
+Duration typically relates to yield to maturity, but actual risk may come from
+specific spot rate or forward rate curve changes.
+
+### Example
+
+We have a bond with a 5-year maturity, 5\% annual coupon (paid once a year), and
+a face value of \$100
+
+This plot is for the bond's price against interest rates from 1\% to 10\%. The
+tangent line at the current yield shows how duration approximates price changes.
+
+```{r problem 7: Duration}
+# Bond parameters
+face_value <- 100
+coupon_rate <- 0.05
+maturity <- 5
+coupon <- face_value * coupon_rate
+
+# Interest rate range
+rates <- seq(0.01, 0.10, by = 0.001)
+
+# Bond price function
+bond_price <- function(r, n, c, FV) {
+  sum <- 0
+  for (i in 1:n) {
+    sum <- sum + c / (1 + r)^i
+  }
+  sum + FV / (1 + r)^n
+}
+
+# Calculate prices for each rate
+prices <- sapply(rates, bond_price, n = maturity, c = coupon, FV = face_value)
+
+# Chosen yield for duration approximation
+r0 <- 0.05
+p0 <- bond_price(r0, maturity, coupon, face_value)
+
+# Modified duration (approximate)
+mod_duration <- (bond_price(r0 - 0.001, maturity, coupon, face_value) -
+                 bond_price(r0 + 0.001, maturity, coupon, face_value)) /
+                (2 * 0.001 * p0)
+
+# Tangent line using duration
+approx_prices <- p0 - mod_duration * p0 * (rates - r0)
+
+# Plot
+plot(rates, prices, type = "l", col = "blue", lwd = 2,
+     ylab = "Bond Price", xlab = "Interest Rate",
+     main = "Bond Price vs Interest Rate with Duration Approximation")
+lines(rates, approx_prices, col = "red", lwd = 2, lty = 2)
+legend("topright", legend = c("Actual Price", "Duration Approximation"),
+       col = c("blue", "red"), lty = c(1, 2), lwd = 2)
+```
+
+---
+
+## 8. Interest rate comparisons
+
+What rate of interest with continuous compounding is equivalent to 8\% per annum
+with monthly compounding?
+
+---
+
+$$
+\begin{aligned}
+A \left( 1 + \frac{R_1}{m_1} \right)^{m_1} &= A \cdot e^{R_2}\\
+R_2 &= 12 \cdot \ln{\left(1 + .08/12 \right)}\\
+  &= 0.0797
+\end{aligned}
+$$
+
+---
+
+## 9. Interest paid each quarter with a 4\% continuous compounded annual rate
+
+A deposit account pays 4\% per annum with continuous compounding, but interest
+is actually paid quarterly. How much interest will be paid each quarter on a
+\$10,000 deposit?
+
+---
+
+To find the interest paid each quarter on a \$10,000 deposit with a 4\%
+continuously compounded annual rate, but with quarterly payments:
+
+### Step 1: Convert the continuous rate to a quarterly effective rate:
+
+$$
+\text{Effective quarterly rate} = e^{r \times t} - 1
+$$
+
+where:
+
+* $r = 0.04$ (continuous annual rate)
+* $t = \frac{1}{4}$ (a quarter of a year)
+
+The effective quarterly rate:
+
+$$
+e^{0.04 \times 0.25} - 1 \approx 0.01005
+$$
+
+### Step 2: Calculate the interest paid per quarter
+
+$$
+\text{interest} = 10,000 \times 0.01005 \approx \$100.50
+$$
+
+---
+
+## 10. Bond price, continuous compounding
+
+Suppose that 6-month, 12-month, 18-month, 24-month, and 30-month zero rates are,
+respectively: 4\%, 4.2\%, 4.4\%, 4.6\%, and 4.8\% per annum, with continuous
+compounding. Estimate the cash price of a bond with a face value of 100 that
+will mature in 30 months and pay a coupon of 4\% per annum semiannually.
+
+---
+
+```{r problem 10: bond, echo=F}
+bond <- c("6-month", "12-month", "18-month", "24-month", "30-month")
+zero.rate <- c(.04, .042, .044, .046, .048)
+knitr::kable(data.frame(bond, zero.rate),
+             caption="Zero rates")
+```
+
+$$
+\begin{aligned}
+2e^{-.04 \times 0.5} + 2e^{-.042 \times 1.0} + 2e^{-.044 \times 1.5}
+  + 2e^{-.046 \times 2.0} + 102e^{-.048 \times 2.5} = 98.04
+\end{aligned}
+$$
+
+---
+
+## 11. Bond yield, semiannual compounding
+
+A 3-year bond provides a coupon of 8\% semiannually and has a cash price of 104.
+What is the bond's yield?
+
+---
+
+The bond yield is the single discount rate that, when applied to all cash flows,
+gives a bond price equal to its market price.
+
+We can use `R` to calculate the bond yield
+
+```{r problem 11: bond yield}
+cash.flows <- c(4, 4, 4, 4, 4, 104)
+iter <- 1:6
+
+f <- function(y) sum(cash.flows * (1 + y)^-iter) - 104
+
+y <- uniroot(f, lower=1e-4, upper=1, tol=1e-8)$root
+cat("Semiannual yield:", round(y, 3), "\n")
+cat("Annual yield:", round(y*2, 3))
+```
+
+---
+
+## 12. Par yield
+
+Suppose that the 6-month, 12-month, 18-month, and 24-month zero rates are 5\%,
+6\%, 6.5\%, and 7\%, respectively. What is the 2-year par yield?
+
+---
+
+The par yield for a certain bond maturity is the coupon rate that causes the
+bond price to equal its par value.
+
+```{r problem 12: par yield}
+iter <- c(.5, 1, 1.5, 2)
+zero.rate <- c(.05, .06, .065, .07)
+
+f <- function(C){
+  (C/2)*exp(-.05*.5)+(C/2)*exp(-.06*1)+(C/2)*exp(-.065*1.5)+
+    (100+(C/2))*exp(-.07*2) - 100
+}
+
+uniroot(f, lower=1, upper=10, tol=.001)$root
+```
+
+---
+
+## 13. Forward interest rates
+
+Suppose that risk-free zero interest rates with continuous compounding are as
+follows
+
+```{r problem 13: forward interest rates, echo=F}
+maturity <- c(1, 2, 3, 4, 5)
+rate <- c(.02, .03, .037, .042, .045)
+
+knitr::kable(data.frame(maturity, rate))
+```
+
+Calculate forward interest rates for the second, third, fourth, and fifth years.
+
+---
+
+To calculate the forward rates from the table of zero rates with continuous
+compounding we use the formula:
+
+$$
+f(t_1, t_2) = \frac{R(t_2) \cdot t_2 - R(t_1) \cdot t_1}{t_2 - t_1}
+$$
+
+```{r problem 13: calculating forward interest rates}
+f <- function(z, t) (z[-1] * t[-1] - z[-length(z)] * t[-length(t)]) /
+     (t[-1] - t[-length(t)])
+
+forward.rate <- f(rate, maturity)
+
+knitr::kable(data.frame(Maturity=maturity,
+                        Zero.rate=rate,
+                        Forward.Rate=c(NA, forward.rate)),
+             caption="Calculation of forward rates")
+```
+
+---
+
+## 14. Calculating zero rates
+
+A 10-year 8\% coupon bond currently sells for \$90. A 10-year 4\% coupon bond
+currentl sells for \$80. What is the 10-year zero rate? (_Hint_: Consider taking
+a long position in two of the 4\% coupon bonds and a short position in one of
+the 8\% coupon bonds.)
+
+---
+
+We are given:
+
+* Bond 1: 10-year 8\% coupon bond, price = \$90
+* Bond 2: 10-year 4\% coupon bond, price = \$80
+
+Coupons are likely paid annually unless otherwise stated.
+
+Hint strategy: Take a long position in 2 of the 4\% bonds and a short position
+in 1 of the 8\% bonds.
+
+### Step 1: Cash flows
+
+* One 8\% bond pays \$8 per year for 10 years + \$100 at maturity.
+* One 4\% bond pays \$4 per year for 10 years + \$100 at maturity.
+
+Therefore:
+
+* Long 2 x 4\% bonds gives:
+
+  - \$8 per year (4 + 4)
+  - \$200 at maturity (100 + 100)
+
+* Short 1 x 8\% bond gives:
+
+  - -\$8 per year
+  - -\$100 at maturity
+
+### Step 2: Net cash flows (long 2 x 4\% bonds, short 1 x 8\% bond)
+
+Each year for 10 years:
+
+* Coupons: $+8 - 8 = 0 \Rightarrow$ No net coupon payments.
+
+At maturity:
+
+* Principal repayment: $+200 - 100 = +100 \Rightarrow$ Net \$100 received at
+  year 10.
+
+Thus:
+
+* No cash flows until year 10, when you receive \$100.
+
+### Step 3: Cost to set up the position
+
+* Buy 2 bonds at \$80 each \$160
+* Sell 1 bond at \$90 $\rightarrow$ +\$90
+
+Total cost = 160 - 90 = 70
+
+Thus:
+
+* You pay \$70 today to receive \$100 in 10 years.
+
+### Step 4: Implied 10-year zero rate
+
+The equation is:
+
+$$
+70 e^{r \times 10} = 100
+$$
+
+Solving for $r$:
+
+$$
+r = \frac{\ln{\left(\frac{10}{7}\right)}}{10} \approx 0.0356675
+$$
+
+3.567\% per annum (with continuous compounding)
+
+---
+
+## 15. Liquidity preference theory and the term structure of interest
+
+Explain carefully why liquidity preference theory is consistent with the
+observation that the term structure of interest rates tends to be upward-sloping
+more often than it is downward-sloping.
+
+---
+
+Liquidity preference theory says that investors prefer short-term bonds over
+long-term bonds because short-term bonds are more liquid and less risky.
+
+* __Liquidity:__ Short-term bonds are easier to sell quickly without a large
+  price discount.
+* __Risk:__ Short-term bonds are less exposed to interest rate changes (which
+  can cause bond prices to fluctuate).
+
+Because investors generally prefer short-term investments, they must be
+compensated with a higher yield to be willing to invest in long-term bonds. This
+extra yield is called a liquidity premium.
+
+So, according to liquidity preference theory:
+
+* The observed long-term interest rates include not only expectations about
+  future short-term rates but also a positive liquidity premium.
+* Even if investors expect future short-term rates to stay the same, the
+  liquidity premium causes long-term rates to be higher than short-term rates.
+
+Thus, the term structure tends to slope upward more often because of this
+built-in liquidity premium.
+
+### Summary
+
+* Investors demand a higher return for committing money for longer periods.
+* This pushes up long-term rates relative to short-term rates.
+* As a result, the yield curve is more often upward-sloping.
+
+---
+
+## 16. The zero curve
+
+"When the zero curve is upward-sloping, the zero rate for a particular maturity
+is greater than the par yield for that maturity. When the zero curve is
+downward-sloping the reverse is true." Explain why this is so.
+
+---
+
+First, remember:
+
+* The zero rate for a maturity is the yield earned if you invest in a single
+  payment (a zero-coupon bond) at that maturity.
+
+* The par yield is the coupon rate that makes the price of a bond equal to its
+  face value (usually 100)---meaning the bonds sells "at par."
+
+### If the zero curve is upward-sloping
+
+* Future zero rates (for longer maturities) are higher than current ones.
+
+* A par bond pays multiple coupons (earlier cash flows) and one final principal.
+
+* These earlier coupons are discounted at lower rates (because they're sooner),
+  while the principal at the end is discounted at a higher zero rate.
+
+* Because the coupons are discounted at lower rates, the present value of the
+  bond is relatively high---but we want the bond price to equal par (100).
+
+* Therefore, the coupon rate (par yield) doesn't need to be as high as the zero
+  rate for the bond to sell for 100.
+
+The result is that when the zero curve is upward-sloping, the par yield is less
+than the zero rate for that maturity.
+
+### If the zero curve is downward-sloping
+
+* Future zero rates are lower than current ones.
+
+* Now, early coupons are discounted at higher rates, and the final payment is
+  discounted at a lower rate.
+
+* This pushes down the present value of early coupons and raises the present
+  value of the final principal payment.
+
+* To balance it out and sell the bond at par (100), the bond must offer a higher
+  coupon rate.
+
+The result when the zero curve is downward-slopoing, the par yield is greater
+than the zero rate for that maturity.
+
+---
+
+## 17. Repo markets
+
+Why does a loan in the repo market involve very little credit risk?
+
+---
+
+A loan in the repo market (repurchase agreement market) involves very little
+credit risk because it is secured by collateral.
+
+Here's how it works:
+
+* In a repo, the borrower sells securities (like Treasury bonds) to the lender
+  today and promises to buy them back at a slightly higher price later (often
+  overnight or within a few days).
+
+* If the borrower defaults, the lender already holds the securities and can sell
+  them to recover the loaned money.
+
+* The collateral is usually high-quality, liquid assets (like government bonds),
+  so it's easy to sell without much loss.
+
+* Often, there's also a "haircut"---the lender lends less than the full value of
+  the collateral (say, 98\% of its value), which provides an extra safety buffer
+  against small price declines.
+
+---
+
+## 18. Bond analysis
+
+A 5-year bond with a yield of 7\% (continuously compounded) pays an 8\% coupon
+at the end of each year.
+
+a. What is the bond's price?
+b. What is the bond's duration?
+c. Use the duration to calculate the effect on the bond's price of a 0.2\%
+   decrease in its yield.
+b. Recalculate the bond's price on the basis of a 6.8\% per annum yield and
+   verify that the result is in agreement with your answer to (c).
+
+---
+
+### Given:
+
+* Maturity: 5 years
+* Coupon: 8\% of face value (usually assume \$100 face value, so \$8 paid at the
+  end of each year)
+* Yield: 7\% per annum, continuously compounding
+
+### A. Bond Price
+
+$$
+\begin{aligned}
+\text{B} &= \sum_{i=1}^{5}{8 e^{-0.07i}} + 100 e^{-0.07 \times 5}\\
+  &= 103.05
+\end{aligned}
+$$
+
+### B. What is the bond's duration
+
+$$
+\begin{aligned}
+D &= \frac{\sum_{i=1}^{n}{t_i c_i e^{-yt_i}} + n100 e^{-yn}}{B}\\
+  &= \frac{\sum_{i=1}^{5}{i 8 e^{-0.07 i}} + 5 \cdot 100 e^{-0.07 \times 5}}
+    {103.05}\\
+  &= 4.32\ \text{years}
+\end{aligned}
+$$
+
+---
+
+### C. Use the duration to calculate the effect of a 0.2\% decrease in yield
+
+Price change estimation using duration:
+
+$$
+\begin{aligned}
+\Delta P &\approx -D \times \Delta y \times P\\
+  &= -(4.32)(-0.002)(103.05)\\
+  &= 0.890
+\end{aligned}
+$$
+
+The price is expected to increase by about \$0.89
+
+### D. Recalculate the bond's price at 6.8\% yield
+
+$$
+\begin{aligned}
+\text{B} &= \sum_{i=1}^{5}{8 e^{-0.068i}} + 100 e^{-0.068 \times 5}\\
+  &= 103.95
+\end{aligned}
+$$
+
+---
+
+## 19. Calculating zero rates for bonds using bootstrapping
+
+The cash prices of 6-month and 1-year Treasury bills are 94.0 and 89.0. A
+1.5-year Treasury bond that will pay coupons of \$4 every 6 months currently
+sells for \$94.84. A 2-year Treasury bond that will pay coupons of \$5 every 6
+months currently sells for \$97.12. Calculate the 6-month, 1-year, 1.5-year, and
+2-year Treasury zero rates.
+
+---
+
+To calculate the zero rates (spot rates) for the given maturities, we'll use the
+concept of bootstrapping from bond prices. These are the 6-month, 1-year,
+1.5-year, and 2-year zero-coupon rates, compounded semiannually.
+
+### Step 1: 6-month zero rate
+
+The price of a 6-month Treasury bill is 94.0, and the face value is \$100. Let
+$R_0$ be the 6-month (0.5-year) zero rate, compounded semiannually.
+
+$$
+\begin{aligned}
+94 &= \frac{100}{(1 + R_0/2)^1}\\
+(1 + R_0/2) &= \frac{100}{94} = 1.06383\\
+R_0 &= 2 \times (1.06383 - 1) = 0.12766
+\end{aligned}
+$$
+
+### Step 2: 1-Year zero rate
+
+The price of a 1-year is 89.0. Let $R_1$ be the 1-year zero rate:
+
+$$
+\begin{aligned}
+89 &= \frac{100}{(1 + R_1/2)^2}\\
+(1 + R_1/2)^2 &= \frac{100}{89} = 1.1236\\
+(1 + R_1/2) &= \sqrt{1.1236} = 1.0597\\
+2 \times (1.0597 - 1) &= 0.1194
+\end{aligned}
+$$
+
+### Step 3: 1.5-year zero rate (using bond)
+
+The 1.5-year bond pays \$4 every 6 months, so 3 cash flows of \$4, \$4, and
+\$104.
+
+Price = 94.84
+
+We already know:
+
+* $R_0 = 12.766\%$
+* $R_1 = 11.94\%$
+
+Let $R_{1.5}$ be the 1.5-year zero rate.
+
+Discounting the first two known cash flows:
+
+$$
+\begin{aligned}
+\text{PV} &= \frac{4}{(1+R_0/2)^1} + \frac{4}{(1 + R_1/2)^2}\\
+  &= \frac{4}{1.06383} + \frac{4}{(1.0597)^2}\\
+  &\approx 3.759 + 3.562\\
+  &= 7.321
+\end{aligned}
+$$
+
+Then,
+
+$$
+\begin{aligned}
+94.84 &= 7.321 + \frac{104}{(1 + R_{1.5}/2)^3}\\
+\frac{104}{(1 + R_{1.5}/2)^3} &= 94.84 - 7.321\\
+  &= 87.519\\
+(1 + R_{1.5}/2)^3 &= \frac{104}{87.519}\\
+  &= 1.1886\\
+1 + R_{1.5}/2 &= (1.1886)^{1/3}\\
+  &= 1.0592\\
+R_{1.5} &= 2 \times (1.0592 - 1)\\
+  &= 0.1184
+\end{aligned}
+$$
+
+### Step 4: 2-Year zero rate (using bond)
+
+The 2-year bond pays \$5 every 6 months. So cash flows are \$5, \$5, \$5 and
+\$105.
+
+Price = 97.12
+
+We already know $R_0, R_1, R_{1.5}$. Let $R_2$ be the 2-year zero rate.
+
+Discount first 3 cash flows:
+
+$$
+\begin{aligned}
+\text{PV} &= \frac{5}{(1.06383)} + \frac{5}{(1.0597)^2} + \frac{5}{(1.0592)^3}\\
+  &\approx 4.70 + 4.45 + 4.13\\
+  &= 13.28
+\end{aligned}
+$$
+
+Then:
+
+$$
+\begin{aligned}
+97.12 = 13.28 + \frac{105}{(1 + R_2/2)^4}\\
+\frac{105}{(1 + R_2/2)^4} &= 83.84\\
+(1 + R_2/2)^4 &= \frac{105}{83.84}\\
+  &= 1.2524\\
+(1 + R_2/2) &= (1.2524)^{1/4}\\
+  &= 1.0576\\
+R_2 &= 2 \times (1.0576 - 1)\\
+  &= .1152
+\end{aligned}
+$$
+
+### Final answer: zero rates
+
+| Maturity | Zero Rate |
+|:---|:---|
+| 6 months | 12.77\% |
+| 1 year | 11.94\% |
+| 1.5 years | 11.84\% |
+| 2 years | 11.52\% |
+
+---
+
+## 20. Decomposition of an interest rate swap
+
+"An interest rate swap where 6-month LIBOR is exchanged for a fixed rate of 5\%
+on a principal of \$100 million for 5 years involves a known cash flow and a
+portfolio of nine FRAs." Explain this statement.
+
+---
+
+This statement refers to the decomposition of an interest rate swap into a
+portfolio of forward rate agreements (FRAs) and explains how the cash flows in
+the swap can be understood in terms of those simpler instruments.
+
+### Interest rate swap basics
+
+An interest rate swap is a contract between two parties to exchange interest
+payments based on a notional principal. In this case:
+
+* One party pays 6-month LIBOR (a floating rate)
+* The other party pays a fixed rate of 5\% (compounded semiannually)
+* Notional principal is \$100 million.
+* Duration is 5 years
+* Payment frequency is every 6 months (so there are 10 payment periods).
+
+### Known cash flow
+
+The fixed rate side (5\% annually, or 2.5\% every 6 months) is known and
+predetermined:
+
+$$
+\text{Fixed payment} = 2.5\% \times \$100 \text{million}
+  = \$2.5 \text{million every 6 months}
+$$
+
+So this stream of payments is known in advance and easy to discount or value.
+
+### Portfolio of nine FRAs
+
+The floating side (6-month LIBOR) resets every 6 months and is not known ahead
+of time.
+
+However, it can be decomposed into a series of nine FRAs as follows:
+
+* At each reset date (every 6 months), a new FRA effectively begins, locking in
+  the interest rate for the next 6 months.
+* Since there are 10 total payment periods over 5 years, the swap has 9 reset
+  dates, after the first fixing.
+* Each FRA is a contract that pays the difference betweent LIBOR and the forward
+  rate agreed at the start (which would be zero in this synthetic structure),
+  for a 6-month period, on the notional.
+
+So, the floating leg is economically equivalent to a portfolio of nine FRAs, one
+for each future period where LIBOR will reset (i.e., from 6 months to 5 years in
+6-month steps).
+
+### Why is this useful?
+
+* This decomposition helps in valuing or hedging the swap.
+* The fixed leg is a known annuity.
+* The floating leg's value can be built from current forward LIBOR rates using
+  FRAs.
+
+### Summary
+
+The floating leg of a swap can be replicated by a portfolio of FRAs, each one
+starting on a future reset date and lasting for 6 months. Since the swap lasts 5
+years and resets semiannually, there are 9 such future floating-rate
+resets---thus, nine FRAs. The fixed leg is simply a stream of known fixed
+payments.
+
+---
+
+## 21. Compounding and interest rates
+
+When compounded annually an interest rate is 11\%. What is the rate when
+expressed with (a) semiannual compounding, (b) quarterly compounding, (c) montly
+compounding, (d) weekly compoundings, and (e) daily compounding.
+
+---
+
+To convert an annually compounded rate (here, 11\%) to other compounding
+frequencies:
+
+$$
+(1 + r_{\text{annual}}) = (1 + r_{\text{periodic}})^m
+$$
+
+Where:
+
+* $r_{\text{annual}} = 0.11$
+* $m$ is the number of compounding periods per year.
+* $r_{\text{periodic}}$ is the periodic rate.
+
+We solve for $r_{\text{periodic}} = (1 + 0.11)^{1/m} - 1$
+
+Then, multiply by $m$ to get the equivalent nominal rate with that compounding
+frequency.
+
+### A. Semiannual compounding (m=2)
+
+$$
+r_{\text{semi}} = (1.11)^{1/2} - 1 = 0.053685
+$$
+
+The nominal rate:
+
+$$
+2 \times 5.3685\% = 10.737\%
+$$
+
+### B. Quarterly compounding (m=4)
+
+$$
+r_{\text{quarterly}} = (1.11)^(1/4) - 1 = 0.026407
+$$
+
+The nominal rate:
+
+$$
+4 \times 2.6407\% = 10.563\%
+$$
+
+### C. Monthly compounding (m=12)
+
+$$
+r_{\text{monthly}} = (1.11)^{1/12} - 1 = 0.008748
+$$
+
+The nominal rate:
+
+$$
+12 \times 0.8748\% = 10.498\%
+$$
+
+### D. Weekly compounding (m=52)
+
+$$
+r_{\text{weekly}} = (1.11)^{1/52} - 1 = 0.002025
+$$
+
+The nominal rate:
+
+$$
+52 \times 0.2025\% = 10.53\%
+$$
+
+### E. Daily compounding (m=365)
+
+$$
+r_{\text{daily}} = (1.11)^{1/365} - 1 = 0.000288
+$$
+
+The nominal rate:
+
+$$
+365 \times 0.0288\% = 10.512\%
+$$
+
+---
+
+## 22. Bond pricing and yield
+
+The table below gives Treasury zero rates and cash flows on a Treasury bond.
+Zero rates are continuously compounded.
+
+a. What is the bond's theoretical price?
+b. What is the bond's yield assuming it sells for its theoretical price?
+
+| Maturity (years) | Zero rate | Coupon payment | Principal |
+|:---:|:---:|:---:|:---:|
+| 0.5 | 2.0\% | \$20 | |
+| 1.0 | 2.3\% | \$20 | |
+| 1.5 | 2.7\% | \$20 | |
+| 2.0 | 3.2\% | \$20 | \$1,000 |
+
+---
+
+### A. Bond theoretical price
+
+$$
+\begin{aligned}
+20 e^{-.02 \times .5} + 20 e^{-.023 \times 1} + 20 e^{-.027 \times 1.5}
+  + 1020 e{-.032 \times 2} = \$1015.32
+\end{aligned}
+$$
+
+### B. Bond yield
+
+$$
+\begin{aligned}
+20 e^{-y \times .5} + 20 e^{-y \times 1} + 20 e^{-y \times 1.5}
+  + 1020 e{-y \times 2} = \$1015.32
+\end{aligned}
+$$
+
+```{r problem 22: bond pricing and yield}
+f <- function(y) {
+  20 * sum(exp(-y * seq(.5, 1.5, by=.5))) + 1020 * exp(-y * 2) - 1015.32
+}
+
+uniroot(f, upper=1, lower=1e-4, tol=1e-8)$root
+```
+
+---
+
+## 23. Calculating bond yield
+
+A 5-year bond provides a coupon of 5\% per annum payable semiannually. Its price
+is 104. What is the bond's yield?
+
+---
+
+The equation for the bond's price using its yield
+
+$$
+104 = \frac{5}{2} \times \frac{(1 - (1 + y)^{-10})}{y}
+  + \frac{100}{(1 + y)^{10}}
+$$
+
+using `R` we can solve for $y$:
+
+```{r problem 23: calculating bond yield}
+f <- function(y) 5/2 * (1 - (1 + y)^-10)/y + 100 * (1 + y)^-10 - 104
+y <- uniroot(f, upper=1, lower=1e-4, tol=1e-8)$root
+cat("Semiannual:", y, "\n")
+cat("Annual:", y * 2, "\n")
+```
+
+---
+
+## 24. Interest rate compounding
+
+An interest rate is quoted as 5\% per annum with semiannual compounding. What is
+the equivalent rate with (a) annual compounding, (b) monthly compounding, and
+(c) continuous compounding.
+
+---
+
+### Step 1: Compute the effective annual rate (EAR)
+
+$$
+\text{EAR} = \left( 1 + \frac{0.05}{2} \right)^2 - 1 = .050625
+$$
+
+### A. The equivalent rate with annual compounding
+
+Since EAR is already based on annual growth, the equivalent rate with annual
+compounding is the EAR: .050625.
+
+### B. Equivalent rate with monthly compounding
+
+We solve for the nominal annual rate $r$ with monthly compounding that gives the
+same EAR:
+
+```{r problem 24: interest rate compounding: monthly compounding}
+f <- function(r) (1 + r/12)^12 - 1.050625
+uniroot(f, upper=1, lower=1e-4, tol=1e-8)$root
+```
+
+### C. Equivalent rate with continuous compounding
+
+```{r problem 24: interest rate compounding: continuous compounding}
+f <- function(r) exp(r) - 1.050625
+uniroot(f, upper=1, lower=1e-4, tol=1e-8)$root
+```
+
+---
+
+## 25. Bond yields and duration
+
+Portfolio A consists of a 1-year zero-coupon bond with a face value of \$2,000
+and a 10-year zero-coupon bond with a face value of \$6,000. Portfolio B
+consists of a 5.95-year zero-coupon bond with a face value of \$5,000. The
+current yield on all bonds is 10\% per annum.
+
+a. Show that both portfolios have the same duration.
+b. Show that the percentage changes in the values of the two portfolios for
+   a 0.1\% per annum increase in yields are the same.
+c. What are the percentage changes in the values of the two portfolios for
+   a 5\% per annum increase in yields?
+
+---
+
+### Given:
+
+* Portfolio A:
+  - 1-year zero-coupon bond par value \$2,000
+  - 10-year zero-coupon bond par value \$6,000
+* Portfolio B:
+  - 5.95-year zero-coupon bond par value \$5,000
+* Current yield: 10\%
+
+### Bond duration
+
+The price of a zero-coupon bond:
+
+$$
+\begin{aligned}
+\text{Portfolio A:}\\
+P_{\text{1 year}} &= 2,000 e^{-.1} = 1809.68\\
+P_{\text{10 year}} &= 6,000 e^{-.1 \times 10} = 2207.28\\\\
+\end{aligned}
+$$
+
+Total portfolio value: $1809.68 + 2207.28 = 4016.96$
+
+Duration
+
+$$
+\begin{aligned}
+D_A &= \frac{1809.67 \cdot 1 + 2207.28 \cdot 10}{4016.96}\\
+    &= 5.95
+\end{aligned}
+$$
+
+Portfolio B:
+
+$$
+P_B = 5,000 e^{-.1 \times 5.95} = 2757.81
+$$
+
+Since it is a single zero:
+
+$$
+D = \frac{\sum^{n}_{i=1}{t_i c_i e^{-y t_i}}}{B}
+$$
+
+Since $B = \sum^n_{i=1}{c_i e^{-y t_i}}$
+
+$$
+D = t = 5.95\ \text{years}
+$$
+
+---
+
+## 26. Bond pricing, interest rates and duration
+
+Verify that DerivaGem agrees with the price of the bond in Section 4.6. Test how
+well DV01 predicts the effect of a 1-basis-point increase in all rates. Estimate
+the duration of the bond from DV01. Use DV01 and Gamma to predict the effecto of
+a 200-basis-point increase in all rates. Use Gamma to estimate the bond's
+convexity. (_Hint:_ In DerivaGem, DV01 is $dB/dy$, where $B$ isthe price of the
+bond and $y$ is its yield measured in basis points and Gamma is $d^2B/dy^2$,
+where $y$ is measured in percent.)
